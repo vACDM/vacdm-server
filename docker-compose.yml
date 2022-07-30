@@ -1,0 +1,17 @@
+version: '2.4'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: development
+      args:
+        - NODE_ENV=development
+    ports:
+      - '3030:3000/tcp'
+      - '9229:9229/tcp'
+    volumes:
+      - .:/opt:delegated
+    environment:
+      - MONGO_URI
