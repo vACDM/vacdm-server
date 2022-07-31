@@ -1,5 +1,5 @@
 import mongoose, { HydratedDocument } from 'mongoose';
-import timeUtils from 'utils/time.utils';
+import timeUtils from '../utils/time.utils';
 import Pilot from '@shared/interfaces/pilot.interface';
 
 export type PilotDocument = HydratedDocument<Pilot>;
