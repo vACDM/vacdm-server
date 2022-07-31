@@ -2,7 +2,7 @@ import mongoose, { HydratedDocument } from 'mongoose';
 import timeUtils from 'utils/time.utils';
 import Pilot from '@shared/interfaces/pilot.interface';
 
-type PilotDocument = HydratedDocument<Pilot>;
+export type PilotDocument = HydratedDocument<Pilot>;
 
 const pilotSchema = new mongoose.Schema(
   {
