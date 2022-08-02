@@ -1,0 +1,74 @@
+.textColorLightGreen {
+  color: var(--green-200);
+}
+
+.textColorGreen {
+  color: var(--green-600);
+}
+
+.textColorOrange {
+  color: var(--orange-600);
+}
+
+.textColorGrey {
+  color: var(--surface-400);
+}
+
+@font-face {
+  font-family: 'digital';
+  src: url('./assets/fonts/advanced_dot_digital-7-webfont.woff2') format('woff2'),
+        url('./assets/fonts/advanced_dot_digital-7-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+
+}
+
+.textColorRed {
+  color: var(--red-500);
+}
+
+
+.vdgs-container {
+  font-family: 'digital';
+  color: var(--orange-400);
+  font-size: 40px;
+  background-color: var(--surface-900);
+}
+
+
+
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20vh;
+    max-width: 80vw;
+    animation: App-logo-spin infinite 30s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
