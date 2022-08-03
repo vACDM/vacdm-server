@@ -89,9 +89,27 @@ export async function deletePilot(
   }
 }
 
+export async function updatePilot(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const pilot: PilotDocument = await pilotService.updatePilot(
+      req.params.callsign,
+      req.body
+    );
+
+    res.json(pilot);
+  } catch (error) {
+    next(error);
+  }
+}
+
 export default {
   addPilot,
   getAllPilots,
   getPilot,
   deletePilot,
+  updatePilot,
 };
