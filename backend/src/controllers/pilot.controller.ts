@@ -38,7 +38,14 @@ export async function getAllPilots(
   }
 
   try {
-    const pilots: PilotDocument[] = await pilotService.getAllPilots(filter);
+    let pilots: PilotDocument[] = await pilotService.getAllPilots(filter);
+
+    if (!req.query.debug) {
+      pilots = pilots.map((pilot: PilotDocument) => {
+        pilot.log = [];
+        return pilot;
+      });
+    }
 
     res.json(pilots);
   } catch (error) {
@@ -55,6 +62,10 @@ export async function getPilot(
     const pilot: PilotDocument = await pilotService.getPilot(
       req.params.callsign
     );
+
+    if (!req.query.debug) {
+      pilot.log = [];
+    }
 
     res.json(pilot);
   } catch (error) {
