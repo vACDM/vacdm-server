@@ -25,6 +25,7 @@ function Navbar(props: any) {
     {
        label:'Flow Management',
        icon:'pi pi-fw pi-user',
+       command: () => {navigate('/flow-management') }
     }
   ];
 

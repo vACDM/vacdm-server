@@ -13,6 +13,7 @@ import Vdgs from "./components/Vdgs";
 import Debug from "./components/Debug";
 import { Suspense } from "react";
 import Loading from "components/Loading";
+import FlowManagement from "components/FlowManagement";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="/vdgs/:callsign" element={<Vdgs />} />
           <Route path="/debug/:callsign" element={<Debug />} />
           <Route path="/logo" element={<Loading />} />
+          <Route path="/flow-management" element={<FlowManagement />} />
           <Route path="/" element={<PilotsTable />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

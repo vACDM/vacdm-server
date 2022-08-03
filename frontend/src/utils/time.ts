@@ -24,7 +24,12 @@ function calculateVdgsDiff(time: Date | undefined) {
   return diff;
 }
 
+function flowTimeFormat (time: Date | undefined) {
+  return dayjs(time).utc().format('dddd, DD.MM.YYYY HH:mm UTC')
+}
+
 export default {
   formatTime,
   calculateVdgsDiff,
+  flowTimeFormat
 };
