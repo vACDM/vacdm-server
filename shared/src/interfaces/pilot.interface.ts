@@ -9,6 +9,7 @@ interface Pilot {
   vacdm: {
     eobt: Date;
     tobt: Date;
+    tobt_state: 'GUESS' | 'FLIGHTPLAN' | 'CONFIRMED' | 'NOW';
 
     exot: Number;
     manual_exot: boolean;

@@ -16,6 +16,11 @@ const pilotSchema = new mongoose.Schema(
     vacdm: {
       eobt: { type: Date, default: timeUtils.emptyDate },
       tobt: { type: Date, default: timeUtils.emptyDate },
+      tobt_state: {
+        type: String,
+        enum: ['GUESS', 'FLIGHTPLAN', 'CONFIRMED', 'NOW'],
+        default: 'GUESS',
+      },
 
       exot: { type: Number, default: -1 },
       manual_exot: { type: Boolean, default: false },
