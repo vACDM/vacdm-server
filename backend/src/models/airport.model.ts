@@ -1,7 +1,7 @@
 import mongoose, { HydratedDocument } from 'mongoose';
 import Airport from '@shared/interfaces/airport.interface';
 
-type AirportDocument = HydratedDocument<Airport>;
+export type AirportDocument = HydratedDocument<Airport>;
 
 const airportSchema = new mongoose.Schema(
   {
