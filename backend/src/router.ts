@@ -3,8 +3,11 @@ import miscController from './controllers/misc.controller';
 import { NextFunction, Request, Response, Router } from 'express';
 import pilotController from './controllers/pilot.controller';
 import airportController from './controllers/airport.controller';
+import requestloggerUtils from './utils/requestlogger.utils';
 
 const router = Router();
+
+router.use(requestloggerUtils);
 
 router.get('/datafeed', miscController.getDataFeed);
 router.get('/datafeed/:callsign', miscController.getDataFeedPilot);
