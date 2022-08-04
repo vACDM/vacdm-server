@@ -3,8 +3,12 @@ import miscController from './controllers/misc.controller';
 import { NextFunction, Request, Response, Router } from 'express';
 import pilotController from './controllers/pilot.controller';
 import flowController from './controllers/flow.controller';
+import airportController from './controllers/airport.controller';
+import requestloggerUtils from './utils/requestlogger.utils';
 
 const router = Router();
+
+router.use(requestloggerUtils);
 
 router.get('/datafeed', miscController.getDataFeed);
 router.get('/datafeed/:callsign', miscController.getDataFeedPilot);
@@ -17,6 +21,12 @@ router.patch('/pilots/:callsign', pilotController.updatePilot)
 
 router.get('/measures', flowController.getAllMeasures)
 router.get('/legacy-measures', flowController.getLegacyMeasures)
+
+router.get('/airports', airportController.getAllAirports);
+router.post('/airports', airportController.addAirport);
+router.get('/airports/:icao', airportController.getAirport);
+router.delete('/airports/:icao', airportController.deleteAirport);
+router.patch('/airports/:icao', airportController.updateAirport)
 
 router.use((req: Request, res: Response, next: NextFunction) =>
   next(new APIError('Not Found', null, 404))
