@@ -16,13 +16,13 @@ const Vdgs = () => {
   const [pilot, setPilot] = useState<Pilot>();
   const [loading, setLoading] = useState(true);
   const [loadingTobt, setLoadingTobt] = useState(false);
-  const [inputTextValue, setinputTextValue] = useState('');
-  const [validity, setValidity] = useState('');
+  const [inputTextValue, setinputTextValue] = useState("");
+  const [validity, setValidity] = useState("");
   const [wrongFormat, setwrongFormat] = useState("");
 
   useEffect(() => {
-    setwrongFormat('');
-    setValidity('')
+    setwrongFormat("");
+    setValidity("");
     if (!callsign || callsign === "") {
       return;
     }
@@ -45,22 +45,28 @@ const Vdgs = () => {
   function vdgsColorController(time: Date | undefined) {
     let now = dayjs().second(0);
     let tsat = dayjs(time).second(0);
-    return now.diff(tsat, 'minute') > 5 ? 'textColorRed"´' : '';
+    return now.diff(tsat, "minute") > 5 ? 'textColorRed"´' : "";
   }
 
   async function updateTobt() {
-    
-    let regex = new RegExp('^(0[0-9]|1[0-9]|2[0-3])[0-5][0-9]$');
+    let p = pilot;
+    if (p) {
+      p.vacdm.tobt = dayjs(TimeUtils.formatVdgsTobt(inputTextValue)).toDate();
+      p.vacdm.tsat = dayjs(-1).toDate();
+    }
+
+    let regex = new RegExp("^(0[0-9]|1[0-9]|2[0-3])[0-5][0-9]$");
     if (regex.test(inputTextValue)) {
       setLoadingTobt(true);
-      setwrongFormat('')
-      setValidity('')
+      setPilot(p);
+      setwrongFormat("");
+      setValidity("");
       setinputTextValue(inputTextValue);
       await VdgsService.updateTobt(inputTextValue, callsign);
       setLoadingTobt(false);
     } else {
-      setValidity('p-invalid');
-      setwrongFormat('Allowed Format: HHMM')
+      setValidity("p-invalid");
+      setwrongFormat("Allowed Format: HHMM");
     }
   }
 
@@ -101,14 +107,16 @@ const Vdgs = () => {
             <h5>Update TOBT (UTC-Time when ready for Pushback)</h5>
             <div className="flex flex-wrap gap-2">
               <div className="">
-              <InputText
-                className={validity}
-                placeholder="HHMM"
-                value={inputTextValue}
-                onChange={(e) => setinputTextValue(e.target.value)}
-                aria-describedby="tobt-help"
-              ></InputText>
-              <small id="tobt-help" className="block">{wrongFormat}</small>
+                <InputText
+                  className={validity}
+                  placeholder="HHMM"
+                  value={inputTextValue}
+                  onChange={(e) => setinputTextValue(e.target.value)}
+                  aria-describedby="tobt-help"
+                ></InputText>
+                <small id="tobt-help" className="block">
+                  {wrongFormat}
+                </small>
               </div>
               <Button
                 label="Submit TOBT"
