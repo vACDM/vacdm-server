@@ -24,12 +24,21 @@ function calculateVdgsDiff(time: Date | undefined) {
   return diff;
 }
 
-function flowTimeFormat (time: Date | undefined) {
-  return dayjs(time).utc().format('dddd, DD.MM.YYYY HH:mm UTC')
+function flowTimeFormat(time: string | undefined) {
+  return dayjs(time).utc().format("dddd, DD.MM.YYYY HH:mm UTC");
+}
+
+function formatVdgsTobt(time: string) {
+  return dayjs
+    .utc()
+    .set("hour", parseInt(time.substring(0, 2)))
+    .set("minute", parseInt(time.substring(2)))
+    .toISOString();
 }
 
 export default {
   formatTime,
   calculateVdgsDiff,
-  flowTimeFormat
+  flowTimeFormat,
+  formatVdgsTobt,
 };

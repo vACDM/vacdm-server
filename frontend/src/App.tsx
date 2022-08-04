@@ -20,6 +20,7 @@ function App() {
     <>
       <Router>
         <Navbar />
+        <div className="mt-2">
         <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/airports" element={<AirportsTable />} />
@@ -31,6 +32,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
         </Suspense>
+        </div>
       </Router>
     </>
   );
