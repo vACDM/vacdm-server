@@ -1,6 +1,7 @@
 import Pilot from '@shared/interfaces/pilot.interface';
 import nestedobjectsUtils from '../utils/nestedobjects.utils';
 import pilotModel, { PilotDocument } from '../models/pilot.model';
+import airportService from './airport.service';
 
 export async function getAllPilots(filter: { [key: string]: any } = {}) {
   try {
@@ -74,22 +75,44 @@ export async function updatePilot(
     const changesOps =
       nestedobjectsUtils.getValidUpdateOpsFromNestedObject(changes);
 
+    // do not allow changing callsign
+    delete changesOps['callsign'];
+
     // necessary changes
-    const pilot = await pilotModel
-      .findOneAndUpdate({ callsign }, { $set: changesOps })
+    const pilotDocument = await pilotModel
+      .findOneAndUpdate({ callsign }, { $set: changesOps }, { new: true })
       .exec();
 
-    if (!pilot) {
+    if (!pilotDocument) {
       throw new Error('pilot does not exist');
     }
 
-    return pilot;
+    await calculations(pilotDocument);
+
+    await pilotDocument.save();
+
+    return pilotDocument;
   } catch (e) {
     throw e;
   }
 }
 
 async function calculations(pilot: PilotDocument): Promise<PilotDocument> {
+  // determine taxi zone
+  if (!pilot.inactive && !pilot.vacdm.manual_exot) {
+    let taxizone = await airportService.determineTaxizone(pilot);
+
+    pilot.vacdm.exot = taxizone.exot;
+    pilot.vacdm.taxizone = taxizone.taxizone;
+
+    pilot.log.push({
+      time: new Date(),
+      namespace: 'calculations',
+      action: 'determined taxizone',
+      data: { position: pilot.position, taxizone },
+    });
+  }
+
   return pilot;
 }
 

@@ -1,6 +1,9 @@
-import Airport from '@shared/interfaces/airport.interface';
+import Airport, { AirportTaxizone } from '@shared/interfaces/airport.interface';
 import nestedobjectsUtils from '../utils/nestedobjects.utils';
 import airportModel, { AirportDocument } from '../models/airport.model';
+import { PilotDocument } from '../models/pilot.model';
+import scopecoordsUtils from 'utils/scopecoords.utils';
+import pointInPolygon from 'point-in-polygon';
 
 export async function getAllAirports(filter: { [key: string]: any } = {}) {
   try {
@@ -87,6 +90,53 @@ export async function updateAirport(
   }
 }
 
+export async function determineTaxizone(
+  pilot: PilotDocument
+): Promise<{ taxizone: string; exot: number }> {
+  let icao: string = pilot.flightplan.departure;
+
+  let airport: AirportDocument = await getAirport(icao);
+
+  if (!airport) {
+    throw new Error('pilot is not located at known airport');
+  }
+
+  let airportDefaultZone = {
+    taxizone: 'default taxitime',
+    exot: airport.standard_taxitime,
+  };
+
+  let pilotPos = [pilot.position.lat, pilot.position.lon];
+  let taxizone: AirportTaxizone | undefined = undefined;
+
+  for (let thisTaxizone of airport.taxizones) {
+    let poly = thisTaxizone.polygon.map(
+      scopecoordsUtils.parseAndConvertScopeCoords
+    );
+    if (pointInPolygon(pilotPos, poly)) {
+      taxizone = thisTaxizone;
+      break;
+    }
+  }
+
+  if (!taxizone) {
+    return airportDefaultZone;
+  }
+
+  let timeDefinition = taxizone.taxitimes.find(
+    (def) => def.rwy_designator == pilot.clearance.dep_rwy
+  );
+
+  if (!timeDefinition) {
+    return airportDefaultZone;
+  }
+
+  return {
+    taxizone: taxizone.label,
+    exot: timeDefinition.minutes,
+  };
+}
+
 export default {
   getAllAirports,
   getAirport,
@@ -94,4 +144,5 @@ export default {
   deleteAirport,
   doesAirportExist,
   updateAirport,
+  determineTaxizone,
 };
