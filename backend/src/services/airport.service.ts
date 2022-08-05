@@ -59,11 +59,11 @@ export async function doesAirportExist(icao: string): Promise<boolean> {
 }
 
 export async function updateAirport(
-  callsign: string,
+  icao: string,
   changes: Partial<Airport>
 ): Promise<AirportDocument> {
   try {
-    const pilotExists: boolean = await doesAirportExist(callsign);
+    const pilotExists: boolean = await doesAirportExist(icao);
 
     if (!pilotExists) {
       throw new Error('pilot does not exist');
@@ -74,7 +74,7 @@ export async function updateAirport(
 
     // necessary changes
     const pilot = await airportModel
-      .findOneAndUpdate({ callsign }, { $set: changesOps })
+      .findOneAndUpdate({ callsign: icao }, { $set: changesOps })
       .exec();
 
     if (!pilot) {
