@@ -29,8 +29,25 @@ function Navbar(props: any) {
     }
   ];
 
+
+  const redirectToVatsimAuth = () => {
+   let authUrl = [
+      'https://auth-dev.vatsim.net/oauth/authorize',
+      '?',
+      'client_id=424',
+      '&',
+      'redirect_uri=',
+      'http://localhost:3030/api/v1/auth/login',
+      '&',
+      'response_type=code',
+      '&',
+      'scope=full_name+vatsim_details+email+country',
+    ].join('');
+    window.location.replace(authUrl);
+  }
+
   const start = <img alt="logo" src={logo} height="40" className="mr-2"></img>;
-  const end = <Button label="Login" />;
+  const end = <Button label="Login with VATSIM SSO" className="p-button-outlined p-button-success" onClick={redirectToVatsimAuth} />;
 
     return <Menubar model={items} start={start} end={end} />;
   }
