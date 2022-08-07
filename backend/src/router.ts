@@ -5,7 +5,7 @@ import pilotController from './controllers/pilot.controller';
 import flowController from './controllers/flow.controller';
 import airportController from './controllers/airport.controller';
 import requestloggerUtils from './utils/requestlogger.utils';
-import authController from 'controllers/auth.controller';
+import authController from './controllers/auth.controller';
 
 const router = Router();
 
@@ -29,7 +29,7 @@ router.get('/airports/:icao', airportController.getAirport);
 router.delete('/airports/:icao', airportController.deleteAirport);
 router.patch('/airports/:icao', airportController.updateAirport);
 
-router.get('auth/login', authController.authUser);
+router.get('/auth/login', authController.authUser);
 
 router.use((req: Request, res: Response, next: NextFunction) =>
   next(new APIError('Not Found', null, 404))

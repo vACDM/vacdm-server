@@ -1,27 +1,27 @@
 import axios from "axios";
-import userModel from "models/user.model";
+import userModel from "../models/user.model";
 import jwt from 'jsonwebtoken';
-import nestedobjectsUtils from "utils/nestedobjects.utils";
-import User from "@shared/interfaces/user.interface";
-import mongoose from "mongoose";
+import nestedobjectsUtils from "../utils/nestedobjects.utils";
+import config from '../config';
+
 
 export async function authUser(code: any) {
     let body = {
         grant_type: "authorization_code",
-        client_id: process.env.CLIENT_ID,
-        client_secret: process.env.CLIENT_SECRET,
-        redirect_uri: process.env.PUBLIC_URL + "/api/v1/auth/login",
+        client_id: config().clientId,
+        client_secret: config().clientSecret,
+        redirect_uri: config().publicUrl + "/api/v1/auth/login",
         code: code
       };
     
       try {
         const tokenResponse = await axios.post(
-          process.env.VATSIM_AUTH_URL + "/oauth/token",
+          config().vatsimAuthUrl + "/oauth/token",
           body
         );
     
         const userResponse = await axios.get(
-          process.env.VATSIM_AUTH_URL + "/api/user",
+          config().vatsimAuthUrl + "/api/user",
           {
             headers: {
               Authorization: "Bearer " + tokenResponse.data.access_token,
@@ -36,7 +36,7 @@ export async function authUser(code: any) {
     
         let user = await userModel.findOne({ "apidata.cid": userFromApi.cid });
     
-        const updateOps: User = {
+        const updateOps: any = {
           apidata: userFromApi,
           access_token: tokenResponse.data.access_token,
           refresh_token: tokenResponse?.data?.refresh_token ?? null,
@@ -53,7 +53,7 @@ export async function authUser(code: any) {
           {
             cid: userFromApi.cid,
           },
-          process.env.JWT_SECRET,
+          config().jwtSecret,
           {
             expiresIn: "1h"
           }
@@ -68,20 +68,20 @@ export async function authUser(code: any) {
           );
         } else {
           // user does not exist, create in database
-          updateOps._id = new mongoose.Types.ObjectId();
-          user = new User(updateOps);
+          // updateOps._id = new mongoose.Types.ObjectId();
+          user = new userModel(updateOps);
           await user.save();
         }
     
         
     
-        res.cookie("vacdm_token", token, {
-          secure: false,
-          httpOnly: false,
-        });
+        return token;
       
     
 
+    } catch (err) {
+      throw err;
+      
     }
 };
   export default {authUser};
