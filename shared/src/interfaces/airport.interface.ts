@@ -5,10 +5,7 @@ export interface Airport {
 
   taxizones: AirportTaxizone[];
 
-  capacities: {
-    rwy_designator: string;
-    capacity: number;
-  }[];
+  capacities: AirportCapacity[];
 }
 
 export interface AirportTaxizone {
@@ -19,6 +16,12 @@ export interface AirportTaxizone {
   }[];
   label: string;
   taxiout: boolean;
+}
+
+export interface AirportCapacity {
+  rwy_designator: string;
+  capacity: number;
+  alias: string;
 }
 
 export default Airport;
