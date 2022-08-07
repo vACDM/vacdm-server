@@ -32,7 +32,7 @@ interface Pilot {
     taxizone: string;
 
     blockAssignment: Date;
-    blockID: number;
+    blockId: number;
     block_rwy_designator: string;
   };
 
