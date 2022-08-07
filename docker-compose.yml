@@ -15,3 +15,8 @@ services:
       - .:/opt:delegated
     environment:
       - MONGO_URI
+      - CLIENT_ID
+      - CLIENT_SECRET
+      - PUBLIC_URL
+      - VATSIM_AUTH_URL
+      - JWT_SECRET
