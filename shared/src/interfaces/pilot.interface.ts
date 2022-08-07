@@ -11,7 +11,7 @@ interface Pilot {
     tobt: Date;
     tobt_state: 'GUESS' | 'FLIGHTPLAN' | 'CONFIRMED' | 'NOW';
 
-    exot: Number;
+    exot: number;
     manual_exot: boolean;
 
     tsat: Date;
@@ -22,8 +22,8 @@ interface Pilot {
     asat: Date;
     aobt: Date;
 
-    delay: Number;
-    prio: Number;
+    delay: number;
+    prio: number;
 
     sug: Date;
     pbg: Date;
@@ -32,8 +32,8 @@ interface Pilot {
     taxizone: string;
 
     blockAssignment: Date;
-    blockID: Number;
-    block_rwy_designator: String;
+    blockID: number;
+    block_rwy_designator: string;
   };
 
   flightplan: {
