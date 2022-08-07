@@ -1,8 +1,11 @@
-import Airport, { AirportTaxizone } from '@shared/interfaces/airport.interface';
+import Airport, {
+  AirportCapacity,
+  AirportTaxizone,
+} from '@shared/interfaces/airport.interface';
 import nestedobjectsUtils from '../utils/nestedobjects.utils';
 import airportModel, { AirportDocument } from '../models/airport.model';
 import { PilotDocument } from '../models/pilot.model';
-import scopecoordsUtils from 'utils/scopecoords.utils';
+import scopecoordsUtils from '../utils/scopecoords.utils';
 import pointInPolygon from 'point-in-polygon';
 
 export async function getAllAirports(filter: { [key: string]: any } = {}) {
@@ -95,7 +98,10 @@ export async function determineTaxizone(
 ): Promise<{ taxizone: string; exot: number }> {
   let icao: string = pilot.flightplan.departure;
 
-  let airport: AirportDocument = await getAirport(icao);
+  let airport: AirportDocument | undefined = undefined;
+  try {
+    airport = await getAirport(icao);
+  } catch (error) {}
 
   if (!airport) {
     throw new Error('pilot is not located at known airport');
@@ -137,6 +143,46 @@ export async function determineTaxizone(
   };
 }
 
+export async function determineRunway(pilot: PilotDocument): Promise<string> {
+  try {
+    let icao: string = pilot.flightplan.departure;
+
+    let capacityData: AirportCapacity = await getCapacity(
+      icao,
+      pilot.vacdm.block_rwy_designator
+    );
+
+    return capacityData.alias != ''
+      ? capacityData.alias
+      : capacityData.rwy_designator;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getCapacity(
+  icao: string,
+  rwy_designator: string
+): Promise<AirportCapacity> {
+  try {
+    const airport: Airport = await getAirport(icao);
+
+    const potentialCapacity: AirportCapacity | undefined =
+      airport.capacities.find(
+        (cap) =>
+          cap.rwy_designator == rwy_designator || cap.alias == rwy_designator
+      );
+
+    if (!potentialCapacity) {
+      throw new Error('no fitting capacity available');
+    }
+
+    return potentialCapacity;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export default {
   getAllAirports,
   getAirport,
@@ -145,4 +191,6 @@ export default {
   doesAirportExist,
   updateAirport,
   determineTaxizone,
+  determineRunway,
+  getCapacity,
 };
