@@ -4,12 +4,16 @@ import { NextFunction, Request, Response, Router } from 'express';
 import pilotController from './controllers/pilot.controller';
 import flowController from './controllers/flow.controller';
 import airportController from './controllers/airport.controller';
+import metaController from './controllers/meta.controller';
 import requestloggerUtils from './utils/requestlogger.utils';
 import authController from './controllers/auth.controller';
 
 const router = Router();
 
 router.use(requestloggerUtils);
+
+router.get('/version', metaController.getVersion);
+router.get('/config', metaController.getConfig);
 
 router.get('/datafeed', miscController.getDataFeed);
 router.get('/datafeed/:callsign', miscController.getDataFeedPilot);

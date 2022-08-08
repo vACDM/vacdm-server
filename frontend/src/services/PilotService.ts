@@ -17,7 +17,7 @@ async function getPilots(): Promise<Pilot[]> {
       if (!callsign || callsign === '') {
         throw new Error ('Callsign must be no empty string!')
       }
-      const response = await axios.get('https://vacdm.dotfionn.de/api/v1/pilots/' + callsign + (debug ?  '?debug' : ''));
+      const response = await axios.get('/api/v1/pilots/' + callsign + (debug ?  '?debug' : ''));
       return response.data;
     } catch (error) {
       console.error(error);

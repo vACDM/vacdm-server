@@ -1,6 +1,9 @@
 import Pilot from '@shared/interfaces/pilot.interface';
 import nestedobjectsUtils from '../utils/nestedobjects.utils';
 import pilotModel, { PilotDocument } from '../models/pilot.model';
+import airportService from './airport.service';
+import timeUtils from '../utils/time.utils';
+import cdmService from './cdm.service';
 
 export async function getAllPilots(filter: { [key: string]: any } = {}) {
   try {
@@ -74,22 +77,147 @@ export async function updatePilot(
     const changesOps =
       nestedobjectsUtils.getValidUpdateOpsFromNestedObject(changes);
 
+    // do not allow changing callsign
+    delete changesOps['callsign'];
+
+    // if tobt is explicitly changed, set state to confirmed, unless tobt_state is explicitly set
+    if (changesOps['vacdm.tobt'] && !changesOps['vacdm.tobt_state']) {
+      changesOps['vacdm.tobt_state'] = 'CONFIRMED';
+    }
+
+    if (changes.vacdm?.tobt_state) {
+      switch (changes.vacdm?.tobt_state) {
+        case 'FLIGHTPLAN': {
+          changesOps['vacdm.prio'] = 1;
+          break;
+        }
+        case 'CONFIRMED': {
+          changesOps['vacdm.prio'] = 3;
+          break;
+        }
+        case 'CONFIRMED': {
+          changesOps['vacdm.prio'] = 3;
+          break;
+        }
+      }
+    }
+
     // necessary changes
-    const pilot = await pilotModel
-      .findOneAndUpdate({ callsign }, { $set: changesOps })
+    const pilotDocument = await pilotModel
+      .findOneAndUpdate({ callsign }, { $set: changesOps }, { new: true })
       .exec();
 
-    if (!pilot) {
+    if (!pilotDocument) {
       throw new Error('pilot does not exist');
     }
 
-    return pilot;
+    await calculations(pilotDocument);
+
+    await pilotDocument.save();
+
+    return pilotDocument;
   } catch (e) {
     throw e;
   }
 }
 
 async function calculations(pilot: PilotDocument): Promise<PilotDocument> {
+  const allPilots: PilotDocument[] = await getAllPilots();
+
+  // determine runway
+  if (!pilot.inactive && timeUtils.isTimeEmpty(pilot.vacdm.tsat)) {
+    try {
+      let runwayDesignator: string = await airportService.determineRunway(
+        pilot
+      );
+
+      pilot.vacdm.block_rwy_designator = runwayDesignator;
+
+      pilot.log.push({
+        time: new Date(),
+        namespace: 'calculations',
+        action: `determined runway ${runwayDesignator}`,
+        data: {
+          position: pilot.position,
+          airport: pilot.flightplan.departure,
+        },
+      });
+    } catch (error) {
+      pilot.log.push({
+        time: new Date(),
+        namespace: 'calculations',
+        action: 'failed to determine runway',
+        data: {
+          position: pilot.position,
+          airport: pilot.flightplan.departure,
+          error,
+        },
+      });
+    }
+  }
+
+  // determine taxi zone
+  if (!pilot.inactive && !pilot.vacdm.manual_exot) {
+    try {
+      let taxizone = await airportService.determineTaxizone(pilot);
+
+      pilot.vacdm.exot = taxizone.exot;
+      pilot.vacdm.taxizone = taxizone.taxizone;
+
+      pilot.log.push({
+        time: new Date(),
+        namespace: 'calculations',
+        action: `determined taxizone ${taxizone.taxizone}`,
+        data: {
+          position: pilot.position,
+          taxizone,
+          airport: pilot.flightplan.departure,
+        },
+      });
+    } catch (error) {
+      pilot.log.push({
+        time: new Date(),
+        namespace: 'calculations',
+        action: 'failed to determine taxizone',
+        data: {
+          position: pilot.position,
+          airport: pilot.flightplan.departure,
+          error,
+        },
+      });
+    }
+  }
+
+  // put into blocks
+  if (true) {
+    try {
+      const { initialBlock, initialTtot } =
+        cdmService.determineInitialBlock(pilot);
+
+      pilot.vacdm.blockId = initialBlock;
+      pilot.vacdm.ttot = initialTtot;
+
+      const { finalBlock, finalTtot } = await cdmService.putPilotIntoBlock(
+        pilot,
+        allPilots
+      );
+
+      pilot.log.push({
+        time: new Date(),
+        namespace: 'calculations',
+        action: `determined ttot`,
+        data: { initialBlock, initialTtot, finalBlock, finalTtot },
+      });
+    } catch (error) {
+      pilot.log.push({
+        time: new Date(),
+        namespace: 'calculations',
+        action: `failed to determine ttot`,
+        data: { error },
+      });
+    }
+  }
+
   return pilot;
 }
 

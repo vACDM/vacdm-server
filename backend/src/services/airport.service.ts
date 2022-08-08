@@ -1,6 +1,12 @@
-import Airport from '@shared/interfaces/airport.interface';
+import Airport, {
+  AirportCapacity,
+  AirportTaxizone,
+} from '@shared/interfaces/airport.interface';
 import nestedobjectsUtils from '../utils/nestedobjects.utils';
 import airportModel, { AirportDocument } from '../models/airport.model';
+import { PilotDocument } from '../models/pilot.model';
+import scopecoordsUtils from '../utils/scopecoords.utils';
+import pointInPolygon from 'point-in-polygon';
 
 export async function getAllAirports(filter: { [key: string]: any } = {}) {
   try {
@@ -59,11 +65,11 @@ export async function doesAirportExist(icao: string): Promise<boolean> {
 }
 
 export async function updateAirport(
-  callsign: string,
+  icao: string,
   changes: Partial<Airport>
 ): Promise<AirportDocument> {
   try {
-    const pilotExists: boolean = await doesAirportExist(callsign);
+    const pilotExists: boolean = await doesAirportExist(icao);
 
     if (!pilotExists) {
       throw new Error('pilot does not exist');
@@ -74,7 +80,7 @@ export async function updateAirport(
 
     // necessary changes
     const pilot = await airportModel
-      .findOneAndUpdate({ callsign }, { $set: changesOps })
+      .findOneAndUpdate({ callsign: icao }, { $set: changesOps })
       .exec();
 
     if (!pilot) {
@@ -87,6 +93,96 @@ export async function updateAirport(
   }
 }
 
+export async function determineTaxizone(
+  pilot: PilotDocument
+): Promise<{ taxizone: string; exot: number }> {
+  let icao: string = pilot.flightplan.departure;
+
+  let airport: AirportDocument | undefined = undefined;
+  try {
+    airport = await getAirport(icao);
+  } catch (error) {}
+
+  if (!airport) {
+    throw new Error('pilot is not located at known airport');
+  }
+
+  let airportDefaultZone = {
+    taxizone: 'default taxitime',
+    exot: airport.standard_taxitime,
+  };
+
+  let pilotPos = [pilot.position.lat, pilot.position.lon];
+  let taxizone: AirportTaxizone | undefined = undefined;
+
+  for (let thisTaxizone of airport.taxizones) {
+    let poly = thisTaxizone.polygon.map(
+      scopecoordsUtils.parseAndConvertScopeCoords
+    );
+    if (pointInPolygon(pilotPos, poly)) {
+      taxizone = thisTaxizone;
+      break;
+    }
+  }
+
+  if (!taxizone) {
+    return airportDefaultZone;
+  }
+
+  let timeDefinition = taxizone.taxitimes.find(
+    (def) => def.rwy_designator == pilot.clearance.dep_rwy
+  );
+
+  if (!timeDefinition) {
+    return airportDefaultZone;
+  }
+
+  return {
+    taxizone: taxizone.label,
+    exot: timeDefinition.minutes,
+  };
+}
+
+export async function determineRunway(pilot: PilotDocument): Promise<string> {
+  try {
+    let icao: string = pilot.flightplan.departure;
+
+    let capacityData: AirportCapacity = await getCapacity(
+      icao,
+      pilot.vacdm.block_rwy_designator
+    );
+
+    return capacityData.alias != ''
+      ? capacityData.alias
+      : capacityData.rwy_designator;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getCapacity(
+  icao: string,
+  rwy_designator: string
+): Promise<AirportCapacity> {
+  try {
+    const airport: Airport = await getAirport(icao);
+
+    const potentialCapacity: AirportCapacity | undefined =
+      airport.capacities.find(
+        (cap) =>
+          cap.rwy_designator == rwy_designator || cap.alias == rwy_designator
+      );
+
+    if (!potentialCapacity) {
+      throw new Error('no fitting capacity available');
+    }
+
+    return potentialCapacity;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export default {
   getAllAirports,
   getAirport,
@@ -94,4 +190,7 @@ export default {
   deleteAirport,
   doesAirportExist,
   updateAirport,
+  determineTaxizone,
+  determineRunway,
+  getCapacity,
 };
