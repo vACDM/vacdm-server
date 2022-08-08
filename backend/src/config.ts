@@ -1,7 +1,25 @@
-export default function config() {
+interface vacdmConfig {
+  mongoUri: string,
+  port: number,
+  role: "API" | "WORKER",
+  pluginSettings: {
+    serverName: string,
+    allowSimSession: boolean,
+    allowObsMaster: boolean
+  },
+
+  clientId: string,
+  clientSecret: string,
+  publicUrl: string,
+  vatsimAuthUrl: string,
+  jwtSecret: string
+}
+
+export default function config(): vacdmConfig {
   return {
     mongoUri: process.env.MONGO_URI || '',
     port: Number(process.env.PORT) || 3000,
+    role: process.env.ROLE != "API" ? "WORKER" : "API",
     pluginSettings: {
       serverName: process.env.SERVER_NAME ?? 'vACDM Server',
       allowSimSession: process.env.ALLOW_SIM == 'true' ?? false,
