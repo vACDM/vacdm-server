@@ -4,7 +4,7 @@ import axios from 'axios'
 
 async function getPilots(): Promise<Pilot[]> {
     try {
-      const response = await axios.get<Pilot[]>('https://vacdm.dotfionn.de/api/v1/pilots');
+      const response = await axios.get<Pilot[]>('/api/v1/pilots');
       return response.data;
     } catch (error) {
       console.error(error);
