@@ -17,7 +17,7 @@ FROM base as development
 
 WORKDIR /opt/backend
 
-RUN npm install --quiet --unsafe-perm --no-progress --no-audit
+RUN npm install --quiet --unsafe-perm --no-progress --no-audit --include=dev
 
 CMD npm run run:dev
 
@@ -27,11 +27,9 @@ CMD npm run run:dev
 
 FROM base as backendbuild
 
-RUN pwd && ls -la
-
 WORKDIR /opt/backend
 
-RUN pwd && ls -la
+RUN npm install --quiet --unsafe-perm --no-progress --no-audit --include=dev
 
 RUN npx tsc -p ./tsconfig.json
 
