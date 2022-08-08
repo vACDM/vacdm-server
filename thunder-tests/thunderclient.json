@@ -78,13 +78,13 @@
   {
     "_id": "ab4735d9-8ab2-4108-afb8-1aa6e0cb7c3c",
     "colId": "f8df80ce-c3f6-43a5-b6f1-21a085c481ee",
-    "containerId": "2db3e1bc-2bdc-42c6-a979-85c6ad999ee7",
+    "containerId": "86b0a674-9486-481d-82db-786274aa8d27",
     "name": "add pilot",
     "url": "http://localhost:3030/api/v1/pilots",
     "method": "POST",
-    "sortNum": 20000,
+    "sortNum": 10000,
     "created": "2022-08-07T23:33:28.147Z",
-    "modified": "2022-08-07T23:36:34.851Z",
+    "modified": "2022-08-07T23:58:06.747Z",
     "headers": [],
     "params": [],
     "body": {
@@ -92,6 +92,20 @@
       "raw": "{\n  \"position\": {\n    \"lat\": 50.03465,\n    \"lon\": 8.528469999999999\n  },\n  \"vacdm\": {\n    \"eobt\": \"2022-08-07T22:56:00.000Z\"\n  },\n  \"flightplan\": {\n    \"flight_rules\": \"I\",\n    \"departure\": \"EDDF\",\n    \"arrival\": \"RJTT\"\n  },\n  \"clearance\": {\n    \"dep_rwy\": \"18\",\n    \"sid\": \"CINDY4S\",\n    \"initial_climb\": \"0\",\n    \"assigned_squawk\": \"\",\n    \"current_squawk\": \"1000\"\n  },\n  \"callsign\": \"DLH716\"\n}",
       "form": []
     },
+    "tests": []
+  },
+  {
+    "_id": "a61866d4-826a-444e-a2fb-37848f9386d9",
+    "colId": "f8df80ce-c3f6-43a5-b6f1-21a085c481ee",
+    "containerId": "86b0a674-9486-481d-82db-786274aa8d27",
+    "name": "delete pilot",
+    "url": "http://localhost:3030/api/v1/pilots/DLH716",
+    "method": "DELETE",
+    "sortNum": 70000,
+    "created": "2022-08-07T23:58:16.138Z",
+    "modified": "2022-08-07T23:59:24.156Z",
+    "headers": [],
+    "params": [],
     "tests": []
   }
 ]
