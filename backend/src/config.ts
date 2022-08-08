@@ -19,7 +19,7 @@ export default function config(): vacdmConfig {
   return {
     mongoUri: process.env.MONGO_URI || '',
     port: Number(process.env.PORT) || 3000,
-    role: process.env.ROLE != "API" ? "WORKER" : "API",
+    role: process.env.ROLE != "WORKER" ? "API" : "WORKER",
     pluginSettings: {
       serverName: process.env.SERVER_NAME ?? 'vACDM Server',
       allowSimSession: process.env.ALLOW_SIM == 'true' ?? false,
