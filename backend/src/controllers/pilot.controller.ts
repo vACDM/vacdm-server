@@ -40,7 +40,7 @@ export async function getAllPilots(
   try {
     let pilots: PilotDocument[] = await pilotService.getAllPilots(filter);
 
-    if (!req.query.debug) {
+    if (req.query.debug == undefined) {
       pilots = pilots.map((pilot: PilotDocument) => {
         pilot.log = [];
         return pilot;
@@ -63,7 +63,7 @@ export async function getPilot(
       req.params.callsign
     );
 
-    if (!req.query.debug) {
+    if (req.query.debug == undefined) {
       pilot.log = [];
     }
 
