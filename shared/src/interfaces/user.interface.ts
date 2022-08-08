@@ -23,7 +23,6 @@ interface User {
 
   access_token: string;
   refresh_token: string;
-  vacdm_token: string;
 }
 
 export interface LongVatsimDetails {
