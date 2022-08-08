@@ -91,7 +91,10 @@ export async function putPilotIntoBlock(
   return await putPilotIntoBlock(pilot, allPilots);
 }
 
-function setTime(pilot: PilotDocument): { finalBlock: number; finalTtot: Date } {
+function setTime(pilot: PilotDocument): {
+  finalBlock: number;
+  finalTtot: Date;
+} {
   if (pilot.vacdm.delay == 0) {
     pilot.vacdm.tsat = pilot.vacdm.tobt;
 
@@ -103,7 +106,10 @@ function setTime(pilot: PilotDocument): { finalBlock: number; finalTtot: Date } 
     });
   } else {
     pilot.vacdm.ttot = blockUtils.getTimeFromBlock(pilot.vacdm.blockId);
-    pilot.vacdm.tsat = timeUtils.addMinutes(pilot.vacdm.ttot, -pilot.vacdm.exot);
+    pilot.vacdm.tsat = timeUtils.addMinutes(
+      pilot.vacdm.ttot,
+      -pilot.vacdm.exot
+    );
 
     pilot.log.push({
       time: new Date(),
@@ -116,7 +122,12 @@ function setTime(pilot: PilotDocument): { finalBlock: number; finalTtot: Date } 
   return { finalBlock: pilot.vacdm.blockId, finalTtot: pilot.vacdm.ttot };
 }
 
+export async function cleanupPilots() {}
+export async function optimizeBlockAssignments() {}
+
 export default {
   determineInitialBlock,
   putPilotIntoBlock,
+  cleanupPilots,
+  optimizeBlockAssignments,
 };

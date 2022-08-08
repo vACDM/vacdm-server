@@ -9,6 +9,7 @@ import router from './router';
 import mongoose from 'mongoose';
 
 import config from './config';
+import cdmService from './services/cdm.service';
 // import session from './utils/session';
 
 (async () => {
@@ -19,6 +20,27 @@ import config from './config';
   }
 
   await mongoose.connect(config().mongoUri);
+
+  if (config().role == 'WORKER') {
+    setInterval(async () => {
+      try {
+        await cdmService.cleanupPilots();
+      } catch (error) {
+        logger.error('error occurred when cleaning up pilots');
+      }
+    }, 10000);
+
+    while (true) {
+      try {
+        await cdmService.optimizeBlockAssignments();
+      } catch (error) {
+        logger.error('error occurred when optimizing block assignments');
+      }
+      await cdmService.cleanupPilots();
+    }
+
+    // return, do not initialize express app
+  }
 
   const app = express();
 
