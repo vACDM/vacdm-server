@@ -26,7 +26,7 @@ import config from './config';
 
   app.use('/api/v1', router);
 
-  const frontendRoot = '/opt/frontend/dist';
+  const frontendRoot = '/opt/frontend/build';
   app.use(express.static(frontendRoot));
   app.use((req, res) => res.sendFile(`${frontendRoot}/index.html`));
 
