@@ -1,4 +1,3 @@
-import { classNames } from "primereact/utils";
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import dayjs from "dayjs";
@@ -86,7 +85,7 @@ const Vdgs = () => {
                     TOBT {TimeUtils.formatTime(pilot?.vacdm.tobt)} UTC
                   </div>
                   <div className="text-center">
-                    TSAT {TimeUtils.formatTime(pilot?.vacdm.tsat)}
+                    TSAT {TimeUtils.formatTime(pilot?.vacdm.tsat)} UTC
                   </div>
                   <div className="text-center">
                     <span className={vdgsColorController(pilot?.vacdm?.tsat)}>
