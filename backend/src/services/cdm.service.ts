@@ -1,8 +1,12 @@
 import { AirportCapacity } from '@shared/interfaces/airport.interface';
-import { PilotDocument } from '../models/pilot.model';
+import config from '../config';
+import pilotModel, { PilotDocument } from '../models/pilot.model';
 import blockUtils from '../utils/block.utils';
 import timeUtils from '../utils/time.utils';
 import airportService from './airport.service';
+
+import Logger from '@dotfionn/logger';
+const logger = new Logger("vACDM:services:cdm");
 
 export function determineInitialBlock(pilot: PilotDocument): {
   initialBlock: number;
@@ -122,7 +126,53 @@ function setTime(pilot: PilotDocument): {
   return { finalBlock: pilot.vacdm.blockId, finalTtot: pilot.vacdm.ttot };
 }
 
-export async function cleanupPilots() {}
+export async function cleanupPilots() {
+  // delete long inactive pilots
+  const pilotsToBeDeleted = await pilotModel.find({
+    inactive: true,
+    updatedAt: { $lte: new Date(Date.now() - config().timeframes.timeSinceInactive).getTime() },
+  }).exec();
+
+  logger.debug(new Date(Date.now() - config().timeframes.timeSinceInactive), new Date())
+
+  logger.debug("pilotsToBeDeleted", pilotsToBeDeleted);
+  
+  for (let pilot of pilotsToBeDeleted) {
+    // no delete for now
+    // await pilotModel.findByIdAndDelete(pilot._id);
+    logger.debug("deleted inactive pilot", pilot.callsign);
+  }
+  
+  // deactivate long not seen pilots
+  const pilotsToBeDeactivated = await pilotModel
+  .find({
+    inactive: { $not: { $eq: true } },
+    updatedAt: {
+      $lt: new Date(Date.now() - config().timeframes.timeSinceLastSeen).getTime(),
+    },
+  })
+  .exec();
+  
+  logger.debug("pilotsToBeDeactivated", pilotsToBeDeactivated);
+
+  for (let pilot of pilotsToBeDeactivated) {
+    pilot.inactive = true;
+
+    pilot.log.push({
+      namespace: 'worker',
+      action: 'deactivated pilot',
+      time: new Date(),
+      data: {
+        updated: pilot.updatedAt,
+      },
+    });
+
+    logger.debug("deactivating pilot", pilot.callsign);
+
+    await pilot.save();
+  }
+}
+
 export async function optimizeBlockAssignments() {}
 
 export default {

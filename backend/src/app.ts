@@ -22,7 +22,10 @@ import cdmService from './services/cdm.service';
   await mongoose.connect(config().mongoUri);
 
   if (config().role == 'WORKER') {
+    logger.info('starting worker...');
+
     setInterval(async () => {
+      logger.debug('running cleanup');
       try {
         await cdmService.cleanupPilots();
       } catch (error) {
@@ -31,12 +34,14 @@ import cdmService from './services/cdm.service';
     }, 10000);
 
     while (true) {
+      await (() => new Promise((res, rej) => setTimeout(res, 10000)))();
+
+      logger.debug('running optimization');
       try {
         await cdmService.optimizeBlockAssignments();
       } catch (error) {
         logger.error('error occurred when optimizing block assignments');
       }
-      await cdmService.cleanupPilots();
     }
 
     // return, do not initialize express app
