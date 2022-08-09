@@ -1,10 +1,10 @@
 import axios from 'axios';
-import userModel from '../models/user.model';
+import userModel, { UserDocument } from '../models/user.model';
 import jwt from 'jsonwebtoken';
 import nestedobjectsUtils from '../utils/nestedobjects.utils';
 import config from '../config';
 
-export async function authUser(code: any) {
+export async function authUser(code: string): Promise<string> {
   let body = {
     grant_type: 'authorization_code',
     client_id: config().clientId,
@@ -75,4 +75,34 @@ export async function authUser(code: any) {
     throw err;
   }
 }
-export default { authUser };
+
+export async function getUserFromToken(token: string): Promise<UserDocument> {
+  try {
+    const tokendata = jwt.verify(token, config().jwtSecret, {});
+
+    if (typeof tokendata == 'string') {
+      console.log('BIG WTF -', tokendata);
+
+      throw new Error('token returned string, wtf');
+    }
+
+    const user = await userModel
+      .findOne({
+        'apidata.cid': tokendata.cid,
+      })
+      .exec();
+
+    if (!user) {
+      throw new Error('no user with that CID found in database');
+    }
+
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export default {
+  authUser,
+  getUserFromToken,
+};

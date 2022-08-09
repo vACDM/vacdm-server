@@ -7,6 +7,7 @@ import airportController from './controllers/airport.controller';
 import metaController from './controllers/meta.controller';
 import requestloggerUtils from './utils/requestlogger.utils';
 import authController from './controllers/auth.controller';
+import authMiddleware from './middleware/auth.middleware';
 
 const router = Router();
 
@@ -22,10 +23,10 @@ router.get('/pilots', pilotController.getAllPilots);
 router.post('/pilots', pilotController.addPilot);
 router.get('/pilots/:callsign', pilotController.getPilot);
 router.delete('/pilots/:callsign', pilotController.deletePilot);
-router.patch('/pilots/:callsign', pilotController.updatePilot)
+router.patch('/pilots/:callsign', pilotController.updatePilot);
 
-router.get('/measures', flowController.getAllMeasures)
-router.get('/legacy-measures', flowController.getLegacyMeasures)
+router.get('/measures', flowController.getAllMeasures);
+router.get('/legacy-measures', flowController.getLegacyMeasures);
 
 router.get('/airports', airportController.getAllAirports);
 router.post('/airports', airportController.addAirport);
@@ -34,6 +35,7 @@ router.delete('/airports/:icao', airportController.deleteAirport);
 router.patch('/airports/:icao', airportController.updateAirport);
 
 router.get('/auth/login', authController.authUser);
+router.get('/auth/profile', authMiddleware, authController.getProfile);
 
 router.use((req: Request, res: Response, next: NextFunction) =>
   next(new APIError('Not Found', null, 404))

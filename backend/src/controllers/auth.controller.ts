@@ -1,6 +1,7 @@
 import config from '../config';
 import { NextFunction, Request, Response } from 'express';
 import authService from '../services/auth.service';
+import { APIError } from '@shared/errors';
 
 export async function authUser(
   req: Request,
@@ -8,7 +9,12 @@ export async function authUser(
   next: NextFunction
 ) {
   try {
-    const response = await authService.authUser(req.query.code);
+    let { code } = req.query;
+    if (Array.isArray(code) || !code) {
+      throw new Error('code must be a string, no array');
+    }
+
+    const response = await authService.authUser(code.toString());
 
     res.cookie('vacdm_token', response, {
       secure: false,
@@ -25,6 +31,15 @@ export async function authUser(
   }
 }
 
+export async function getProfile(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  res.json(req.user ?? {});
+}
+
 export default {
   authUser,
+  getProfile,
 };
