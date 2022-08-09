@@ -8,6 +8,8 @@ import bodyparser from 'body-parser';
 import router from './router';
 import mongoose from 'mongoose';
 
+import cookieParser from "cookie-parser";
+
 import config from './config';
 import cdmService from './services/cdm.service';
 // import session from './utils/session';
@@ -45,6 +47,8 @@ import cdmService from './services/cdm.service';
   const app = express();
 
   app.use(bodyparser.json());
+
+  app.use(cookieParser());
 
   app.use('/api/v1', router);
 
