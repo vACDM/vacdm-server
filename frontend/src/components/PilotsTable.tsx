@@ -26,7 +26,6 @@ const PilotsTable = () => {
   const [departureAirports, setdepartureAirports] = useState<any[]>([]);
   const [arrivalAirports, setarrivalAirports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [filters2, setFilters2] = useState({
     "global": { value: null, matchMode: FilterMatchMode.CONTAINS },
     "flightplan.departure": { value: null, matchMode: FilterMatchMode.IN },
@@ -94,8 +93,7 @@ const PilotsTable = () => {
         itemTemplate={AirportsItemTemplate}
         onChange={(e) => options.filterCallback(e.value)}
         optionLabel="name"
-        placeholder="Any"
-        maxSelectedLabels={1}
+        placeholder="Any"        
       />
     );
   };
@@ -108,8 +106,7 @@ const PilotsTable = () => {
         itemTemplate={AirportsItemTemplate}
         onChange={(e) => options.filterCallback(e.value)}
         optionLabel="name"
-        placeholder="Any"
-        maxSelectedLabels={1}
+        placeholder="Any"        
       />
     );
   };
@@ -186,6 +183,7 @@ const PilotsTable = () => {
             header="Callsign"
             alignHeader="center"
             filter
+            maxConstraints={3}
           />
           <Column
             field="vacdm.tobt"
@@ -215,6 +213,7 @@ const PilotsTable = () => {
           field="clearance.dep_rwy" 
           header="RWY"
           filter 
+          maxConstraints={3}
           />
           <Column field="clearance.sid" header="SID" filter />
           <Column

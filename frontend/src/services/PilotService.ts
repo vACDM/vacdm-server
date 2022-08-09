@@ -25,13 +25,6 @@ async function getPilots(): Promise<Pilot[]> {
     }
   }
 
-/* function pilotAdapter(inVal: Object): Pilot {
-  
-  return {
-    //...
-  }
-} */
-
 
 
 export default {
