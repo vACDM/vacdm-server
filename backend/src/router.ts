@@ -22,6 +22,7 @@ router.get('/datafeed/:callsign', miscController.getDataFeedPilot);
 router.get('/pilots', pilotController.getAllPilots);
 router.post('/pilots', pilotController.addPilot);
 router.get('/pilots/:callsign', pilotController.getPilot);
+router.get('/pilots/:callsign/logs', pilotController.getPilotLogs);
 router.delete('/pilots/:callsign', pilotController.deletePilot);
 router.patch('/pilots/:callsign', pilotController.updatePilot);
 

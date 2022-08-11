@@ -1,9 +1,10 @@
-import Pilot from '@shared/interfaces/pilot.interface';
+import Pilot, { PilotLog } from '@shared/interfaces/pilot.interface';
 import nestedobjectsUtils from '../utils/nestedobjects.utils';
 import pilotModel, { PilotDocument } from '../models/pilot.model';
 import airportService from './airport.service';
 import timeUtils from '../utils/time.utils';
 import cdmService from './cdm.service';
+import pilotLogModel, { PilotLogDocument } from '../models/pilotLog.model';
 
 export async function getAllPilots(filter: { [key: string]: any } = {}) {
   try {
@@ -48,6 +49,9 @@ export async function addPilot(pilot: Pilot): Promise<PilotDocument> {
 export async function deletePilot(callsign: string): Promise<void> {
   try {
     await pilotModel.findOneAndDelete({ callsign }).exec();
+
+    // also get rid of all log entries of pilot
+    await pilotLogModel.deleteMany({ pilot: callsign }).exec();
   } catch (e) {
     throw e;
   }
@@ -133,8 +137,8 @@ async function calculations(pilot: PilotDocument): Promise<PilotDocument> {
 
       pilot.vacdm.block_rwy_designator = runwayDesignator;
 
-      pilot.log.push({
-        time: new Date(),
+      await addLog({
+        pilot: pilot.callsign,
         namespace: 'calculations',
         action: `determined runway ${runwayDesignator}`,
         data: {
@@ -143,8 +147,8 @@ async function calculations(pilot: PilotDocument): Promise<PilotDocument> {
         },
       });
     } catch (error) {
-      pilot.log.push({
-        time: new Date(),
+      await addLog({
+        pilot: pilot.callsign,
         namespace: 'calculations',
         action: 'failed to determine runway',
         data: {
@@ -164,8 +168,8 @@ async function calculations(pilot: PilotDocument): Promise<PilotDocument> {
       pilot.vacdm.exot = taxizone.exot;
       pilot.vacdm.taxizone = taxizone.taxizone;
 
-      pilot.log.push({
-        time: new Date(),
+      await addLog({
+        pilot: pilot.callsign,
         namespace: 'calculations',
         action: `determined taxizone ${taxizone.taxizone}`,
         data: {
@@ -175,8 +179,8 @@ async function calculations(pilot: PilotDocument): Promise<PilotDocument> {
         },
       });
     } catch (error) {
-      pilot.log.push({
-        time: new Date(),
+      await addLog({
+        pilot: pilot.callsign,
         namespace: 'calculations',
         action: 'failed to determine taxizone',
         data: {
@@ -202,15 +206,15 @@ async function calculations(pilot: PilotDocument): Promise<PilotDocument> {
         allPilots
       );
 
-      pilot.log.push({
-        time: new Date(),
+      await addLog({
+        pilot: pilot.callsign,
         namespace: 'calculations',
         action: `determined ttot`,
         data: { initialBlock, initialTtot, finalBlock, finalTtot },
       });
     } catch (error) {
-      pilot.log.push({
-        time: new Date(),
+      await addLog({
+        pilot: pilot.callsign,
         namespace: 'calculations',
         action: `failed to determine ttot`,
         data: { error },
@@ -221,6 +225,32 @@ async function calculations(pilot: PilotDocument): Promise<PilotDocument> {
   return pilot;
 }
 
+export async function addLog(logData: Partial<PilotLog>) {
+  const logEntry = new pilotLogModel(logData);
+
+  try {
+    await logEntry.save();
+  } catch (e) {
+    throw e;
+  }
+
+  return logEntry;
+}
+
+export async function getPilotLogs(
+  callsign: string
+): Promise<PilotLogDocument[]> {
+  try {
+    const logentries: PilotLogDocument[] = await pilotLogModel
+      .find({ pilot: callsign })
+      .exec();
+
+    return logentries;
+  } catch (e) {
+    throw e;
+  }
+}
+
 export default {
   getAllPilots,
   getPilot,
@@ -228,4 +258,6 @@ export default {
   deletePilot,
   doesPilotExist,
   updatePilot,
+  addLog,
+  getPilotLogs,
 };
