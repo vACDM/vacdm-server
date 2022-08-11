@@ -28,7 +28,7 @@ const Vdgs = () => {
 
     async function loadData() {
       try {
-        const data: Pilot = await PilotService.getPilot(callsign, false);
+        const data: Pilot = await PilotService.getPilot(callsign);
 
         setPilot(data);
         setLoading(false);

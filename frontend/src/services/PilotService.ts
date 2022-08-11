@@ -1,4 +1,4 @@
-import Pilot from '@shared/interfaces/pilot.interface';
+import Pilot, {PilotLog} from '@shared/interfaces/pilot.interface';
 import axios from 'axios'
 
 
@@ -12,12 +12,12 @@ async function getPilots(): Promise<Pilot[]> {
     }
   }
 
-  async function getPilot(callsign: string | undefined, debug?: boolean): Promise<Pilot> {
+  async function getPilot(callsign: string | undefined): Promise<Pilot> {
     try {
       if (!callsign || callsign === '') {
         throw new Error ('Callsign must be no empty string!')
       }
-      const response = await axios.get('/api/v1/pilots/' + callsign + (debug ?  '?debug' : ''));
+      const response = await axios.get('/api/v1/pilots/' + callsign);
       return response.data;
     } catch (error) {
       console.error(error);
@@ -26,10 +26,24 @@ async function getPilots(): Promise<Pilot[]> {
   }
 
 
+  async function getPilotLogs(callsign: string | undefined): Promise<PilotLog[]> {
+    try {
+      if (!callsign || callsign === '') {
+        throw new Error ('Callsign must be no empty string!')
+      }
+      const response = await axios.get('/api/v1/pilots/' + callsign + '/logs');
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
 
 export default {
   getPilots,
-  getPilot
+  getPilot,
+  getPilotLogs
 }
 
 

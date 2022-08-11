@@ -4,19 +4,23 @@ import PilotService from "../services/PilotService";
 import { Card } from "primereact/card";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
+import Pilot, { PilotLog } from "@shared/interfaces/pilot.interface";
 
 const Debug = () => {
   const { callsign } = useParams();
-  const [pilot, setPilot] = useState<any>();
+  const [pilot, setPilot] = useState<Pilot>();
+  const [logs, setLogs] = useState<PilotLog[]>();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadData() {
       try {
-        const data = await PilotService.getPilot(callsign, true);
+        const data = await PilotService.getPilot(callsign);
 
         setPilot(data);
         setLoading(false);
+        const logs = await PilotService.getPilotLogs(callsign);
+        setLogs(logs);
       } catch (e) {}
     }
     let intervalId = setInterval(loadData, 5000);
@@ -31,7 +35,8 @@ const Debug = () => {
   };
 
 
-  if (loading) {
+
+  if (loading || !pilot) {
     return <div>Loading</div>
   }
 
@@ -107,7 +112,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">EOBT</div>
                         <div className="text-2xl text-center">
-                          {pilot.vacdm.eobt}
+                          {pilot.vacdm.eobt.toISOString()}
                         </div>
                       </div>
                     </div>
@@ -115,7 +120,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">TOBT</div>
                         <div className="text-2xl text-center">
-                          {pilot.vacdm.tobt}
+                          {pilot.vacdm.tobt.toISOString()}
                         </div>
                       </div>
                     </div>
@@ -123,7 +128,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">TSAT</div>
                         <div className="text-2xl text-center">
-                          {pilot.vacdm.tsat}
+                          {pilot.vacdm.tsat.toISOString()}
                         </div>
                       </div>
                     </div>
@@ -132,7 +137,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">TTOT</div>
                         <div className="text-2xl text-center">
-                          {pilot.vacdm.ttot}
+                          {pilot.vacdm.ttot.toISOString()}
                         </div>
                       </div>
                     </div>
@@ -141,7 +146,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">ASAT</div>
                         <div className="text-2xl text-center">
-                          {pilot.vacdm.asat}
+                          {pilot.vacdm.asat.toISOString()}
                         </div>
                       </div>
                     </div>
@@ -149,7 +154,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">AOBT</div>
                         <div className="text-2xl text-center">
-                          {pilot.vacdm.aobt}
+                          {pilot.vacdm.aobt.toISOString()}
                         </div>
                       </div>
                     </div>
@@ -176,7 +181,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">Created At</div>
                         <div className="text-2xl text-center">
-                        {pilot.createdAt}
+                        {pilot.createdAt.toISOString()}
                         </div>
                       </div>
                     </div>
@@ -184,7 +189,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">Updated At</div>
                         <div className="text-2xl text-center">
-                        {pilot.updatedAt}
+                        {pilot.updatedAt.toISOString()}
                         </div>
                       </div>
                     </div>
@@ -204,7 +209,7 @@ const Debug = () => {
             </Card>
           </div>
           <div className="col">
-            <DataTable value={pilot.log}>
+            <DataTable value={logs}>
               <Column field="time" header="Time" />
               <Column field="job" header="Job" />
               <Column field="data" header="Data" body={logDataTemplate} />
