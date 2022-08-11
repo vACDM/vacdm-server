@@ -8,6 +8,11 @@ interface vacdmConfig {
     allowObsMaster: boolean
   },
 
+  timeframes: {
+    timeSinceLastSeen: number,
+    timeSinceInactive: number
+  }
+
   clientId: string,
   clientSecret: string,
   publicUrl: string,
@@ -25,6 +30,12 @@ export default function config(): vacdmConfig {
       allowSimSession: process.env.ALLOW_SIM == 'true' ?? false,
       allowObsMaster: process.env.ALLOW_OBS_MASTER == 'true' ?? false,
     },
+
+    timeframes: {
+      timeSinceLastSeen: 15 * 60 * 1000,
+      timeSinceInactive: 15 * 60 * 1000
+    },
+
     clientId: process.env.CLIENT_ID ?? "",
     clientSecret: process.env.CLIENT_SECRET ?? "",
     publicUrl: process.env.PUBLIC_URL ?? "",
