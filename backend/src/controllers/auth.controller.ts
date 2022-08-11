@@ -38,10 +38,9 @@ export async function getProfile(
   next: NextFunction
 ) {
   if (req.user) {
-    req.user.access_token = '';
-    req.user.refresh_token = '';
+    req.user.access_token = "";
+    req.user.refresh_token = "";
   }
-
   res.json(req.user ?? {});
 }
 
