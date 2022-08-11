@@ -61,15 +61,6 @@ const pilotSchema = new mongoose.Schema(
       assigned_squawk: { type: String, default: '' },
       current_squawk: { type: String, default: '' },
     },
-
-    log: [
-      {
-        time: { type: Date, default: () => new Date() },
-        namespace: { type: String, default: '' },
-        action: { type: String, default: '' },
-        data: { type: Object, default: {} },
-      },
-    ],
     inactive: { type: Boolean, default: false },
   },
   { timestamps: true }

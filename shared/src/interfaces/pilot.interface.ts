@@ -51,20 +51,21 @@ interface Pilot {
     current_squawk: string;
   };
 
-  log: {
-    time: Date;
-    namespace: string;
-    action: string;
-    data: {
-      [key: string]: any;
-    };
-  }[];
-
   inactive: boolean;
 
   // mongoose fields
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface PilotLog {
+  pilot: string;
+  time: Date;
+  namespace: string;
+  action: string;
+  data: {
+    [key: string]: any;
+  };
 }
 
 export default Pilot;

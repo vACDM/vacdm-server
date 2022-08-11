@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { PilotLogDocument } from '../models/pilotLog.model';
 import { PilotDocument } from '../models/pilot.model';
 import pilotService from '../services/pilot.service';
 
@@ -40,13 +41,6 @@ export async function getAllPilots(
   try {
     let pilots: PilotDocument[] = await pilotService.getAllPilots(filter);
 
-    if (req.query.debug == undefined) {
-      pilots = pilots.map((pilot: PilotDocument) => {
-        pilot.log = [];
-        return pilot;
-      });
-    }
-
     res.json(pilots);
   } catch (error) {
     next(error);
@@ -63,11 +57,30 @@ export async function getPilot(
       req.params.callsign
     );
 
-    if (req.query.debug == undefined) {
-      pilot.log = [];
+    res.json(pilot);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getPilotLogs(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const {callsign} = req.params;
+  try {
+    if (!await pilotService.doesPilotExist(callsign)) {
+      // pilot does not exists, so 404
+      return next();
     }
 
-    res.json(pilot);
+
+    const pilotLogs: PilotLogDocument[] = await pilotService.getPilotLogs(
+      callsign
+    );
+
+    res.json(pilotLogs);
   } catch (error) {
     next(error);
   }
@@ -110,6 +123,7 @@ export default {
   addPilot,
   getAllPilots,
   getPilot,
+  getPilotLogs,
   deletePilot,
   updatePilot,
 };
