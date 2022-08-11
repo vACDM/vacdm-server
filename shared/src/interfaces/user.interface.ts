@@ -21,8 +21,14 @@ interface User {
     subdivision: ShortVatsimDetails;
   };
 
-  access_token: string;
-  refresh_token: string;
+  access_token?: string;
+  refresh_token?: string;
+
+  vacdm: {
+    admin: boolean;
+    atc: boolean;
+    banned: boolean;
+  }
 }
 
 export interface LongVatsimDetails {

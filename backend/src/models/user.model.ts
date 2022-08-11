@@ -46,9 +46,11 @@ const userSchema = new mongoose.Schema(
     refresh_token: { type: String, default: '' },
 
     vacdm: {
+      admin: { type: Boolean, default: false },
+      atc: { type: Boolean, default: false },
+      banned: { type: Boolean, default: false },
       /* 
           irgendwas mit Rechten für vACDM
-          admin: { type: Boolean, default: false }
       */
     },
   },

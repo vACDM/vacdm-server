@@ -1,16 +1,36 @@
-import { createContext, useState, Dispatch, SetStateAction, useEffect } from "react";
+import {
+  createContext,
+  useState,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+} from "react";
+import authService from "services/AuthService";
 
-const AuthContext = createContext<{auth: Object, setAuth: Dispatch<SetStateAction<{}>>}>({auth: {}, setAuth: () => {}});
+import { useNavigate } from "react-router-dom";
 
-export const AuthProvider = ({children}: {children: any}) => {
+const AuthContext = createContext<{
+  auth: Object;
+  setAuth: Dispatch<SetStateAction<{}>>;
+}>({ auth: {}, setAuth: () => {} });
+
+export const AuthProvider = ({ children }: { children: any }) => {
   const [auth, setAuth] = useState({});
 
+  const navigate = useNavigate();
+
   useEffect(() => {
-    
-
-  }, [])
-
-
+    authService
+      .getProfile()
+      .then((data) => {
+        setAuth({ user: data });
+        navigate("/");
+      })
+      .catch((e) => {
+        setAuth({});
+        navigate("/login");
+      });
+  }, []);
 
   return (
     <>

@@ -11,12 +11,15 @@ const Login = () => {
       'redirect_uri=',
       window.location.protocol,
       '//',
-      window.location.host,
+      //window.location.host,
+      'localhost:3000',
       '/api/v1/auth/login',
       '&',
       'response_type=code',
       '&',
       'scope=full_name+vatsim_details+email+country',
+      '&',
+      'approval_prompt=auto'
     ].join('');
     window.location.replace(authUrl);
   };
