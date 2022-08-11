@@ -112,7 +112,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">EOBT</div>
                         <div className="text-2xl text-center">
-                          {pilot.vacdm.eobt.toISOString()}
+                          {new Date(pilot.vacdm.eobt).toISOString()}
                         </div>
                       </div>
                     </div>
@@ -120,7 +120,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">TOBT</div>
                         <div className="text-2xl text-center">
-                          {pilot.vacdm.tobt.toISOString()}
+                          {new Date(pilot.vacdm.tobt).toISOString()}
                         </div>
                       </div>
                     </div>
@@ -128,7 +128,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">TSAT</div>
                         <div className="text-2xl text-center">
-                          {pilot.vacdm.tsat.toISOString()}
+                          {new Date(pilot.vacdm.tsat).toISOString()}
                         </div>
                       </div>
                     </div>
@@ -137,7 +137,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">TTOT</div>
                         <div className="text-2xl text-center">
-                          {pilot.vacdm.ttot.toISOString()}
+                          {new Date(pilot.vacdm.ttot).toISOString()}
                         </div>
                       </div>
                     </div>
@@ -146,7 +146,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">ASAT</div>
                         <div className="text-2xl text-center">
-                          {pilot.vacdm.asat.toISOString()}
+                          {new Date(pilot.vacdm.asat).toISOString()}
                         </div>
                       </div>
                     </div>
@@ -154,7 +154,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">AOBT</div>
                         <div className="text-2xl text-center">
-                          {pilot.vacdm.aobt.toISOString()}
+                          {new Date(pilot.vacdm.aobt).toISOString()}
                         </div>
                       </div>
                     </div>
@@ -181,7 +181,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">Created At</div>
                         <div className="text-2xl text-center">
-                        {pilot.createdAt.toISOString()}
+                        {new Date(pilot.createdAt).toISOString()}
                         </div>
                       </div>
                     </div>
@@ -189,7 +189,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">Updated At</div>
                         <div className="text-2xl text-center">
-                        {pilot.updatedAt.toISOString()}
+                        {new Date(pilot.updatedAt).toISOString()}
                         </div>
                       </div>
                     </div>
