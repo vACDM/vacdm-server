@@ -35,3 +35,6 @@ docker-build:
     - if: $CI_COMMIT_BRANCH
       exists:
         - Dockerfile
+  only:
+    - dev
+    - main
