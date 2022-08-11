@@ -24,7 +24,6 @@ export const AuthProvider = ({ children }: { children: any }) => {
       .getProfile()
       .then((data) => {
         setAuth({ user: data });
-        navigate("/");
       })
       .catch((e) => {
         setAuth({});
