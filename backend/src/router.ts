@@ -26,6 +26,8 @@ router.get('/pilots/:callsign/logs', pilotController.getPilotLogs);
 router.delete('/pilots/:callsign', pilotController.deletePilot);
 router.patch('/pilots/:callsign', pilotController.updatePilot);
 
+router.patch('/vdgs/:callsign', authMiddleware, pilotController.updatePilot);
+
 router.get('/measures', flowController.getAllMeasures);
 router.get('/legacy-measures', flowController.getLegacyMeasures);
 
