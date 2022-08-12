@@ -32,6 +32,7 @@ router.get('/legacy-measures', flowController.getLegacyMeasures);
 router.get('/airports', airportController.getAllAirports);
 router.post('/airports', airportController.addAirport);
 router.get('/airports/:icao', airportController.getAirport);
+router.get('/airports/:icao/blocks', airportController.getAirportBlocks);
 router.delete('/airports/:icao', airportController.deleteAirport);
 router.patch('/airports/:icao', airportController.updateAirport);
 

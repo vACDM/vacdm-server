@@ -68,4 +68,13 @@ export interface PilotLog {
   };
 }
 
+export interface AirportBlocks {
+  icao: string;
+  rwys: {
+    [key: string]: {
+      [key: number]: Pilot[];
+    };
+  };
+}
+
 export default Pilot;
