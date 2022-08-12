@@ -44,7 +44,7 @@ const Vdgs = () => {
   function vdgsColorController(time: Date | undefined) {
     let now = dayjs().second(0);
     let tsat = dayjs(time).second(0);
-    return now.diff(tsat, "minute") > 5 ? 'textColorRed"´' : "";
+    return now.diff(tsat, "minute") > 5 ? 'textColorRed' : "";
   }
 
   async function updateTobt() {
@@ -61,8 +61,14 @@ const Vdgs = () => {
       setwrongFormat("");
       setValidity("");
       setinputTextValue(inputTextValue);
-      await VdgsService.updateTobt(inputTextValue, callsign);
-      setLoadingTobt(false);
+      await VdgsService.updateTobt(inputTextValue, callsign).then(() => {
+        setLoadingTobt(false);
+        setinputTextValue("");
+      }).catch(() => {
+        setwrongFormat("Unauthorized!");
+        setLoadingTobt(false);
+      });
+      
     } else {
       setValidity("p-invalid");
       setwrongFormat("Allowed Format: HHMM");
