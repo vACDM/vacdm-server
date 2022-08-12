@@ -22,7 +22,7 @@ function App() {
   return (
     <>
       <Router>
-          {/* <AuthProvider > */}
+          <AuthProvider >
             <Navbar />
             <div className="mt-2">
               <Suspense fallback={<Loading />}>
@@ -39,7 +39,7 @@ function App() {
                 </Routes>
               </Suspense>
             </div>
-          {/* </AuthProvider> */}
+          </AuthProvider>
       </Router>
     </>
   );
