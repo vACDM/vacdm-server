@@ -6,6 +6,8 @@ import AirportService from "../services/AirportService";
 import { InputTextarea } from "primereact/inputtextarea";
 
 import { Badge } from 'primereact/badge';
+import { Link } from "react-router-dom";
+import { Button } from "primereact/button";
 
 const AirpotsTable = () => {
   const [airports, setAirports] = useState<any[]>([]);
@@ -22,6 +24,15 @@ const AirpotsTable = () => {
   const taxioutTemplate = (rowData: any) => {
     return (rowData.taxiout ? <Badge value="true" severity="success" /> : <Badge value="false" severity="danger" />)
   }
+
+  const editButtonTemplate = (rowData: any) => {
+    return (
+      <Link to={`/airports/${rowData.icao}`}>
+        <Button className="p-button-sm " label="Edit" />{" "}
+      </Link>
+    );
+  };
+
 
   const rowExpansionTemplate = (data: any) => {
     return (
@@ -76,6 +87,7 @@ const AirpotsTable = () => {
             ></Column>
             <Column field="taxizones.length" header="Taxizones"></Column>
             <Column field="capacities.length" header="Capacities"></Column>
+            <Column body={editButtonTemplate} header="Actions"></Column>
           </DataTable>
         </Card>
       </div>

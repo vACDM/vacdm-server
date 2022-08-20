@@ -17,6 +17,7 @@ import Loading from "components/Loading";
 import FlowManagement from "components/FlowManagement";
 import Login from "components/Login";
 import Landingpage from "components/Landingpage";
+import AirportDetails from "components/AirportDetails";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
               <Suspense fallback={<Loading />}>
                 <Routes>
                   <Route path="/airports" element={<AirportsTable />} />
+                  <Route path="/airports/:icao" element={<AirportDetails />} />
                   <Route path="/vdgs/:callsign" element={<Vdgs />} />
                   <Route path="/debug/:callsign" element={<Debug />} />
                   <Route path="/logo" element={<Loading />} />

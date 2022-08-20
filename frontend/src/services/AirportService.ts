@@ -10,20 +10,22 @@ async function getAirports() {
     }
   }
 
-
-
-
-
-
-
-
+  async function getAirport(icao: string) {
+    try {
+      const response = await axios.get('/api/v1/airports/' + icao);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
 
 
 
 
 export default {
-  getAirports
+  getAirports,
+  getAirport
 }
 
 
