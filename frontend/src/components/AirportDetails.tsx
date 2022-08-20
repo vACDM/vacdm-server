@@ -169,7 +169,7 @@ const leftCapacitiesToolbarTemplate = () => {
     <>
     <Toast ref={toast} />
     <div className="grid">
-      <div className="col-6">
+      <div className="lg:col-6 col">
         <Card>
         <Toolbar className="mb-4" left={leftTaxizonesToolbarTemplate}></Toolbar>
         <DataTable ref={dt} value={airport?.taxizones}
@@ -187,7 +187,7 @@ const leftCapacitiesToolbarTemplate = () => {
                 </DataTable>
         </Card>
       </div>
-      <div className="col-6"><Card>
+      <div className="lg:col-6 col"><Card>
       <Toolbar className="mb-4" left={leftCapacitiesToolbarTemplate}></Toolbar>
         <DataTable ref={dt} value={airport?.capacities}
                     dataKey="_id"

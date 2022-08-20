@@ -211,7 +211,8 @@ const Debug = () => {
           <div className="col">
             <DataTable value={logs}>
               <Column field="time" header="Time" />
-              <Column field="job" header="Job" />
+              <Column field="namespace" header="Namespace" />
+              <Column field="action" header="Action" />
               <Column field="data" header="Data" body={logDataTemplate} />
             </DataTable>
           </div>
