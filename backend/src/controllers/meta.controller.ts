@@ -30,11 +30,16 @@ export function getVersion(req: Request, res: Response) {
   res.json(versionResponse);
 }
 
-export function getConfig(req: Request, res: Response) {
+export function getPluginConfig(req: Request, res: Response) {
   res.json(config().pluginSettings);
+}
+
+export function getFrontendConfig(req: Request, res: Response) {
+  res.json(config().frontendSettings);
 }
 
 export default {
   getVersion,
-  getConfig,
+  getPluginConfig,
+  getFrontendConfig,
 };

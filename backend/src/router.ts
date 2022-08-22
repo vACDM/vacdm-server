@@ -14,7 +14,9 @@ const router = Router();
 router.use(requestloggerUtils);
 
 router.get('/version', metaController.getVersion);
-router.get('/config', metaController.getConfig);
+router.get('/config', metaController.getPluginConfig);
+router.get('/config/plugin', metaController.getPluginConfig);
+router.get('/config/frontend', metaController.getFrontendConfig);
 
 router.get('/datafeed', miscController.getDataFeed);
 router.get('/datafeed/:callsign', miscController.getDataFeedPilot);
