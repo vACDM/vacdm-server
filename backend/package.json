@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prerun:dev": "rimraf dist/*",
+    "prerun:dev": "npm install && rimraf dist/*",
     "run:prod": "node -r module-alias/register --inspect=0.0.0.0:9229 dist/backend/src/app.js",
     "run:dev": "tsc-watch --onSuccess \"npm run run:prod\" --onFailure \"echo WHOOPS! Server compilation failed\""
   },
