@@ -12,4 +12,14 @@ export async function getProfile() {
   }
 }
 
-export default { getProfile };
+export async function getConfig() {
+  try {
+    const config = await axios.get("/api/v1/config/frontend", {});
+
+    return config.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export default { getProfile, getConfig };

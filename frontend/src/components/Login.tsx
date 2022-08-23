@@ -1,12 +1,32 @@
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
+import { useEffect, useState } from 'react';
+import authService from "services/AuthService";
+import {FrontendSettings} from '@shared/interfaces/config.interface';
 
 const Login = () => {
+  const [config, setConfig] = useState<FrontendSettings>();
+
+  useEffect(() => {
+    
+    authService
+      .getConfig()
+      .then((data) => {
+        setConfig(data);
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  }, []);
+
+  
   const redirectToVatsimAuth = () => {
     let authUrl = [
-      'https://auth-dev.vatsim.net/oauth/authorize',
+      config?.vatsimAuthUrl,
+      '/oauth/authorize',
       '?',
-      'client_id=424',
+      'client_id=',
+      config?.vatsimAuthClientId,
       '&',
       'redirect_uri=',
       window.location.protocol,
