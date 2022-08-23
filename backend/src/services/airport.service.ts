@@ -69,25 +69,25 @@ export async function updateAirport(
   changes: Partial<Airport>
 ): Promise<AirportDocument> {
   try {
-    const pilotExists: boolean = await doesAirportExist(icao);
+    const airportExists: boolean = await doesAirportExist(icao);
 
-    if (!pilotExists) {
-      throw new Error('pilot does not exist');
+    if (!airportExists) {
+      throw new Error('airport does not exist');
     }
 
     const changesOps =
       nestedobjectsUtils.getValidUpdateOpsFromNestedObject(changes);
 
     // necessary changes
-    const pilot = await airportModel
-      .findOneAndUpdate({ callsign: icao }, { $set: changesOps })
+    const airport = await airportModel
+      .findOneAndUpdate({ icao }, { $set: changesOps })
       .exec();
 
-    if (!pilot) {
+    if (!airport) {
       throw new Error('airport does not exist');
     }
 
-    return pilot;
+    return airport;
   } catch (e) {
     throw e;
   }
