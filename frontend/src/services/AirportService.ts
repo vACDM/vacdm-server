@@ -19,13 +19,36 @@ async function getAirports() {
     }
   }
 
+  async function updateAirport(icao: string, body: object) {
+    try {       
+      await axios.patch('/api/v1/airports/' + icao, body);
+      return;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  async function createAirport(body: object) {
+    try {
+      const response = await axios.post('/api/v1/airports/', body);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+
 
 
 
 
 export default {
   getAirports,
-  getAirport
+  getAirport,
+  updateAirport, 
+  createAirport
 }
 
 

@@ -66,3 +66,15 @@
     transform: rotate(360deg);
   }
 }
+
+
+.datatable .table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+@media screen and (max-width: 960px) {
+  .datatable .table-header {
+      align-items: flex-start;
+  }
+}

@@ -18,6 +18,7 @@ import FlowManagement from "components/FlowManagement";
 import Login from "components/Login";
 import Landingpage from "components/Landingpage";
 import AirportDetails from "components/AirportDetails";
+import AirportDetailsEditor from "components/AirportDetailsEditor";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
                 <Routes>
                   <Route path="/airports" element={<AirportsTable />} />
                   <Route path="/airports/:icao" element={<AirportDetails />} />
+                  <Route path="/airports/:icao/edit" element={<AirportDetailsEditor />} />
                   <Route path="/vdgs/:callsign" element={<Vdgs />} />
                   <Route path="/debug/:callsign" element={<Debug />} />
                   <Route path="/logo" element={<Loading />} />
