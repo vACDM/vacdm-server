@@ -177,6 +177,8 @@ const PilotsTable = () => {
           globalFilterFields={["callsign"]}
           scrollable
           responsiveLayout="scroll"
+          stateStorage="local"
+          stateKey="pilots-table"
         >
           <Column
             field="callsign"
