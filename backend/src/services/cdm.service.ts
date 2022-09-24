@@ -44,7 +44,7 @@ export async function putPilotIntoBlock(
       plt.flightplan.departure == pilot.flightplan.departure &&
       plt.vacdm.block_rwy_designator == pilot.vacdm.block_rwy_designator &&
       plt.vacdm.blockId == pilot.vacdm.blockId &&
-      plt._id != plt._id
+      plt._id != pilot._id
   );
 
   const cap: AirportCapacity = await airportService.getCapacity(
