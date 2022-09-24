@@ -31,4 +31,22 @@ export async function getFlight(
   }
 }
 
-export default { getRawDatafeed, getFlight };
+export async function getFlightByCid(
+  cid: number
+): Promise<VatsimTypes.VatsimPilot> {
+  try {
+    const datafeed = await getRawDatafeed();
+
+    const pilot = datafeed.pilots.find((p) => p.cid == cid);
+
+    if (!pilot) {
+      throw new Error('requested flight not online');
+    }
+
+    return pilot;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export default { getRawDatafeed, getFlight, getFlightByCid };

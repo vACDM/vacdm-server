@@ -6,7 +6,7 @@ export type UserDocument = HydratedDocument<User>;
 const userSchema = new mongoose.Schema(
   {
     apidata: {
-      cid: { type: String, unique: true },
+      cid: { type: Number, unique: true },
       personal: {
         name_first: { type: String, default: '' },
         name_last: { type: String, default: '' },
