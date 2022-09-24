@@ -40,7 +40,7 @@ export async function getFlightByCid(
     const pilot = datafeed.pilots.find((p) => p.cid == cid);
 
     if (!pilot) {
-      throw new Error('requested flight not online');
+      throw new Error('requested Cid not found');
     }
 
     return pilot;

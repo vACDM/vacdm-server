@@ -26,15 +26,26 @@ export async function authUser(
     const user = await authService.getUserFromToken(response);
 
     if (user) {
-      const flight = await datafeedService.getFlightByCid(user.apidata.cid)
-      if (flight) {
-        console.log("Flight found", flight);
+      console.log('User is: ', user);
+
+      try {
+        const flight = await datafeedService.getFlightByCid(user.apidata.cid)
+        if (flight) {
+          console.log("Flight found", flight);
+          
+          return res.redirect('/vdgs/' + flight.callsign)
+        } else {
+          return res.redirect('/');
+        }
+      } catch (error) {
         
-        return res.redirect('/vdgs/' + flight.callsign)
       }
+      
+      
+      
     };
   
-    res.redirect('/');
+    
   } catch (error) {
     if (error.message == "something went wrong with auth") {
       return next();
