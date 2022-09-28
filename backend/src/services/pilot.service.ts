@@ -202,6 +202,9 @@ async function calculations(pilot: PilotDocument): Promise<PilotDocument> {
 
       pilot.vacdm.blockId = initialBlock;
       pilot.vacdm.ttot = initialTtot;
+      
+      // get rid of delay because it fucks with time calculation
+      pilot.vacdm.delay = 0;
 
       const { finalBlock, finalTtot } = await cdmService.putPilotIntoBlock(
         pilot,
