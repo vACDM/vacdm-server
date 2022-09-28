@@ -108,7 +108,7 @@ export async function updatePilot(
     }
 
     // handle runway changes
-    if (changesOps['clearance.dep_rwy'] && changesOps['clearance.dep_rwy'] != pilot.clearance.dep_rwy) {
+    if (changesOps['clearance.dep_rwy'] && (changesOps['clearance.dep_rwy'] != pilot.clearance.dep_rwy)) {
       // runway changed, get rid of TSAT so calculations will run again
       changesOps['vacdm.tsat'] = timeUtils.emptyDate;
     }
