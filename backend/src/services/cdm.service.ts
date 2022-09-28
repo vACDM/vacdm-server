@@ -124,6 +124,9 @@ async function setTime(pilot: PilotDocument): Promise<{
     });
   }
 
+  // save pilot because it might take too long between selecting the block and actually saving
+  await pilot.save();
+
   return { finalBlock: pilot.vacdm.blockId, finalTtot: pilot.vacdm.ttot };
 }
 
