@@ -72,11 +72,12 @@ export async function updatePilot(
   changes: Partial<Pilot>
 ): Promise<PilotDocument> {
   try {
-    const pilotExists: boolean = await doesPilotExist(callsign);
+    const pilot = await getPilot(callsign); 
+    // const pilotExists: boolean = await doesPilotExist(callsign);
 
-    if (!pilotExists) {
-      throw new Error('pilot does not exist');
-    }
+    // if (!pilotExists) {
+    //   throw new Error('pilot does not exist');
+    // }
 
     const changesOps =
       nestedobjectsUtils.getValidUpdateOpsFromNestedObject(changes);
@@ -104,6 +105,12 @@ export async function updatePilot(
           break;
         }
       }
+    }
+
+    // handle runway changes
+    if (changesOps['clearance.dep_rwy'] && changesOps['clearance.dep_rwy'] != pilot.clearance.dep_rwy) {
+      // runway changed, get rid of TSAT so calculations will run again
+      changesOps['vacdm.tsat'] = timeUtils.emptyDate;
     }
 
     // necessary changes
