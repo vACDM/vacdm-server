@@ -73,11 +73,6 @@ export async function updatePilot(
 ): Promise<PilotDocument> {
   try {
     const pilot = await getPilot(callsign); 
-    // const pilotExists: boolean = await doesPilotExist(callsign);
-
-    // if (!pilotExists) {
-    //   throw new Error('pilot does not exist');
-    // }
 
     const changesOps =
       nestedobjectsUtils.getValidUpdateOpsFromNestedObject(changes);
@@ -200,7 +195,7 @@ async function calculations(pilot: PilotDocument): Promise<PilotDocument> {
   }
 
   // put into blocks
-  if (true) {
+  if (timeUtils.isTimeEmpty(pilot.vacdm.tsat)) {
     try {
       const { initialBlock, initialTtot } =
         cdmService.determineInitialBlock(pilot);
