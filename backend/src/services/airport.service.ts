@@ -149,7 +149,7 @@ export async function determineRunway(pilot: PilotDocument): Promise<string> {
 
     let capacityData: AirportCapacity = await getCapacity(
       icao,
-      pilot.vacdm.block_rwy_designator
+      pilot.clearance.dep_rwy
     );
 
     return capacityData.alias != ''
