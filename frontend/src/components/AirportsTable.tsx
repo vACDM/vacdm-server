@@ -33,6 +33,14 @@ const AirpotsTable = () => {
     );
   };
 
+  const blocksButtonTemplate = (rowData: any) => {
+    return (
+      <Link to={`/departure-blocks/${rowData.icao}`}>
+        <Button className="p-button-sm " label="Blocks" />{" "}
+      </Link>
+    );
+  };
+
 
   const rowExpansionTemplate = (data: any) => {
     return (
@@ -88,6 +96,7 @@ const AirpotsTable = () => {
             <Column field="taxizones.length" header="Taxizones"></Column>
             <Column field="capacities.length" header="Capacities"></Column>
             <Column body={editButtonTemplate} header="Actions"></Column>
+            <Column header="Blocks" body={blocksButtonTemplate} />
           </DataTable>
         </Card>
       </div>
