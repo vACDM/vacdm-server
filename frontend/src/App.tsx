@@ -19,6 +19,7 @@ import Login from "components/Login";
 import Landingpage from "components/Landingpage";
 import AirportDetails from "components/AirportDetails";
 import AirportDetailsEditor from "components/AirportDetailsEditor";
+import DepartureBlocks from "components/DepartureBlocks";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
                   <Route path="/airports/:icao/edit" element={<AirportDetailsEditor />} />
                   <Route path="/vdgs/:callsign" element={<Vdgs />} />
                   <Route path="/debug/:callsign" element={<Debug />} />
+                  <Route path="/departure-blocks/:icao" element={<DepartureBlocks />} />
                   <Route path="/logo" element={<Loading />} />
                   <Route path="/flow-management" element={<FlowManagement />} />
                   <Route path="/login" element={<Login />} />
