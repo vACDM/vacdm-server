@@ -165,21 +165,26 @@ async function calculations(pilot: PilotDocument): Promise<PilotDocument> {
   // determine taxi zone
   if (!pilot.inactive && !pilot.vacdm.manual_exot) {
     try {
+      let exotBefore = Number(pilot.vacdm.exot);
+      let taxizoneBefore = String(pilot.vacdm.taxizone);
+
       let taxizone = await airportService.determineTaxizone(pilot);
 
       pilot.vacdm.exot = taxizone.exot;
       pilot.vacdm.taxizone = taxizone.taxizone;
 
-      await addLog({
-        pilot: pilot.callsign,
-        namespace: 'calculations',
-        action: `determined taxizone ${taxizone.taxizone}`,
-        data: {
-          position: pilot.position,
-          taxizone,
-          airport: pilot.flightplan.departure,
-        },
-      });
+      if (exotBefore != pilot.vacdm.exot || taxizoneBefore != pilot.vacdm.taxizone) {
+        await addLog({
+          pilot: pilot.callsign,
+          namespace: 'calculations',
+          action: `determined taxizone ${taxizone.taxizone}`,
+          data: {
+            position: pilot.position,
+            taxizone,
+            airport: pilot.flightplan.departure,
+          },
+        });
+      }
     } catch (error) {
       await addLog({
         pilot: pilot.callsign,
