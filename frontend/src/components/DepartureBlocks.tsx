@@ -2,31 +2,13 @@ import { Chart } from "primereact/chart";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import DepartureBlocksService from "services/DepartureBlocksService";
-import { isLabeledStatement } from "typescript";
 import BlockUtils from "../utils/block";
 import Loading from "./Loading";
 
 const DepartureBlocks = () => {
-  let dummyData = [
-      {
-        label: '',
-        data: [0,0,0]
-      },
-      {
-        label: '',
-        data: [0,0,0]
-      },
-      {
-        label: '',
-        data: [0,0,0]
-      }
-    ]
 
   const { icao } = useParams();
   const [loading, setLoading] = useState(true);
-  //const [labels, setLabels] = useState<number[]>(getBlockNumbers());
-  //const [datasetDepartureBlocks, setDatasetDepartureBlocks] = useState(dummyData);
-  //const [stackedData, setStackedData] = useState();
   const [basicData, setBasicData] = useState({});
 
   let basicOptions = {

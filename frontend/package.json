@@ -11,6 +11,7 @@
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
     "axios": "^0.27.2",
+    "chart.js": "^3.9.1",
     "dayjs": "^1.11.4",
     "highlight.js": "^11.6.0",
     "http-proxy-middleware": "^2.0.6",
