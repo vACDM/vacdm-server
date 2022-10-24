@@ -10,13 +10,14 @@ function Navbar(props: any) {
   const [items, setItems] = useState<any>([]);
   const auth: any = useContext(AuthContext);
 
-  const navItems = [
+  const navItems: {label: string, icon: string, command: Function, permission?: (user: any) => boolean }[] = [
     {
       label: "Delivery",
       icon: "pi pi-fw pi-file",
       command: () => {
         navigate("/");
       },
+      permission: (user) => user && (!user.vacdm.banned && user.vacdm.atc)
     },
     {
       label: "Airports",
@@ -24,6 +25,7 @@ function Navbar(props: any) {
       command: () => {
         navigate("/airports");
       },
+      permission: (user) => user && (!user.vacdm.banned && user.vacdm.admin)
     },
     {
       label: "Flow Management",
@@ -31,6 +33,7 @@ function Navbar(props: any) {
       command: () => {
         navigate("/flow-management");
       },
+      permission: (user) => user && (!user.vacdm.banned && user.vacdm.atc)
     },
     {
       label: "Logout",
@@ -38,17 +41,18 @@ function Navbar(props: any) {
       command: () => {
         logout();
       },
+      permission: (user) => user 
     },
   ];
 
  useEffect(() => {
 
-   if (auth.auth.user !== undefined) {
+  //  if (auth.auth.user !== undefined) {
     console.log('auth is there', auth);
     
     setUser(auth.auth.user)
-    setItems(navItems)
-   }
+    setItems(navItems.filter((item) => (item.permission ? item.permission : () => true)(auth.auth.user)))
+  //  }
  
    return () => {
      
@@ -57,9 +61,9 @@ function Navbar(props: any) {
  
   //const name = auth.auth.user.apidata.personal.name_full;
   
-const logout = () => {
-  
-}
+  const logout = () => {
+    
+  }
   
 
   const start = <img alt="logo" src={logo} height="40" className="mr-2"></img>;
