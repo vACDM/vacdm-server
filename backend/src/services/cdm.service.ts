@@ -100,29 +100,25 @@ async function setTime(pilot: PilotDocument): Promise<{
   finalBlock: number;
   finalTtot: Date;
 }> {
-  if (pilot.vacdm.delay == 0) {
-    pilot.vacdm.tsat = pilot.vacdm.tobt;
-
-    await pilotService.addLog({
-      pilot: pilot.callsign,
-      namespace: 'cdmService',
-      action: 'assigned first block',
-      data: {},
-    });
-  } else {
+  if (pilot.vacdm.tsat > pilot.vacdm.tobt) {
     pilot.vacdm.ttot = blockUtils.getTimeFromBlock(pilot.vacdm.blockId);
     pilot.vacdm.tsat = timeUtils.addMinutes(
       pilot.vacdm.ttot,
       -pilot.vacdm.exot
     );
-
-    await pilotService.addLog({
-      pilot: pilot.callsign,
-      namespace: 'cdmService',
-      action: 'assigned block',
-      data: {},
-    });
   }
+
+  if (pilot.vacdm.tsat <= pilot.vacdm.tobt) {
+    pilot.vacdm.tsat = pilot.vacdm.tobt;
+    pilot.vacdm.ttot = timeUtils.addMinutes(pilot.vacdm.tsat, pilot.vacdm.exot);
+  }
+
+  await pilotService.addLog({
+    pilot: pilot.callsign,
+    namespace: 'cdmService',
+    action: 'assigned block',
+    data: { blockId: pilot.vacdm.blockId },
+  });
 
   // save pilot because it might take too long between selecting the block and actually saving
   await pilot.save();
@@ -187,7 +183,100 @@ export async function cleanupPilots() {
   }
 }
 
-export async function optimizeBlockAssignments() {}
+export async function optimizeBlockAssignments() {
+  let currentBlockId = blockUtils.getBlockFromTime(new Date());
+  let allAirports = await airportService.getAllAirports();
+
+  let allPilots = await pilotService.getAllPilots();
+
+  const nowPlusTen = timeUtils.addMinutes(new Date(), 10);
+
+  for (let airport of allAirports) {
+    let visitedRwyDesignators: String[] = [];
+
+    for (let rwy of airport.capacities) {
+      let thisRunwayDesignator = rwy.alias || rwy.rwy_designator;
+
+      if (visitedRwyDesignators.includes(thisRunwayDesignator)) {
+        continue;
+      }
+
+      visitedRwyDesignators.push(thisRunwayDesignator);
+
+      const pilotsThisRwy = allPilots.filter(
+        (pilot) =>
+          pilot.flightplan.departure === airport.icao &&
+          pilot.vacdm.block_rwy_designator === thisRunwayDesignator
+      );
+
+      const capacityThisRunway: AirportCapacity =
+        await airportService.getCapacity(airport.icao, thisRunwayDesignator);
+
+      // do it
+      for (
+        let firstBlockCounter = 0;
+        firstBlockCounter < 6;
+        firstBlockCounter++
+      ) {
+        let firstBlockId = (currentBlockId + firstBlockCounter) % 144;
+
+        const pilotsInThisBlock = pilotsThisRwy.filter(
+          (pilot) => pilot.vacdm.blockId == firstBlockId
+        ).length;
+
+        // check for available space
+        if (capacityThisRunway.capacity <= pilotsInThisBlock) {
+          // no space avail
+          continue;
+        }
+
+        // TODO: for the future, we need to create a score on the relevance of each pilot in this array
+        const sortedMovablePilots: PilotDocument[] = [];
+
+        // sort pilots for block, prio, delay
+        for (
+          let secondBlockCounter = 1;
+          secondBlockCounter < 7;
+          secondBlockCounter++
+        ) {
+          let otherBlockId = (firstBlockId + secondBlockCounter) % 144;
+
+          const sortedMovablePilotsThisBlock = pilotsThisRwy
+            .filter(
+              (pilot) =>
+                pilot.vacdm.blockId == otherBlockId &&
+                pilot.vacdm.tsat > nowPlusTen &&
+                pilot.vacdm.delay >= secondBlockCounter
+            )
+            .sort(
+              (pilotA, pilotB) =>
+                pilotA.vacdm.prio +
+                pilotA.vacdm.delay -
+                (pilotB.vacdm.prio + pilotB.vacdm.delay)
+            );
+
+          sortedMovablePilots.push(...sortedMovablePilotsThisBlock);
+        }
+
+        const pilotsToMove = sortedMovablePilots.slice(
+          0,
+          capacityThisRunway.capacity - pilotsInThisBlock
+        );
+
+        // move pilots to current block
+
+        for (const pilot of pilotsToMove) {
+          pilot.vacdm.delay -= pilot.vacdm.blockId - currentBlockId;
+          pilot.vacdm.blockId = firstBlockId;
+
+          console.log('==========>> setting pilot times', pilot.callsign);
+
+          await setTime(pilot);
+        }
+      }
+    }
+  }
+}
 
 export default {
   determineInitialBlock,
