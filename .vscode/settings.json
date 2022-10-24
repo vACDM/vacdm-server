@@ -1,1 +1,7 @@
-{ "thunder-client.saveToWorkspace": true }
+{
+  "thunder-client.saveToWorkspace": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}
