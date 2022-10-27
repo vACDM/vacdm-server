@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import DepartureBlocksService from "services/DepartureBlocksService";
 import Loading from "./Loading";
 import blockUtils from "../utils/block.utils";
+import dayjs from "dayjs";
 
 const DepartureBlocks = () => {
   const { icao } = useParams();
@@ -51,6 +52,7 @@ const DepartureBlocks = () => {
 
         setBasicData(chartData);
         setLoading(false);
+        
       } catch (e) {}
     }
 
@@ -62,7 +64,7 @@ const DepartureBlocks = () => {
   }, []);
 
   function getBlockNumbers() {
-    let blockNumberFromTime = blockUtils.getBlockFromTime(new Date());
+    let blockNumberFromTime = blockUtils.getBlockFromTime(new Date());   
     return [
       blockUtils.getTimeFromBlock(blockNumberFromTime),
       blockUtils.getTimeFromBlock(blockNumberFromTime + 1),
@@ -73,7 +75,10 @@ const DepartureBlocks = () => {
   async function departureBlocksToBarFormat(departureBlocks: any) {
     let labels: any = getBlockNumbers();
 
+      
+
     let datasetArray: any = [];
+    let niceLabels: any = [];
 
     for (const key in departureBlocks.rwys) {
       const datasetObject: any = {};
@@ -83,16 +88,24 @@ const DepartureBlocks = () => {
       labels.forEach((entry: any) => {
         console.log("entry", entry);
 
-        datasetObject.data.push(departureBlocks.rwys[key][entry].length);
+        
+
+        datasetObject.data.push(departureBlocks.rwys[key][blockUtils.getBlockFromTime(entry)].length);
       });
+
 
       datasetArray.push(datasetObject);
 
       console.log("dataset", datasetObject);
+      
     }
 
+    labels.forEach((entry: any) => {
+      niceLabels.push(dayjs(entry).utc().format('HH:mmz'))
+    })
+
     return {
-      labels: labels,
+      labels: niceLabels,
       datasets: datasetArray,
     };
   }
