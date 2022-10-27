@@ -2,13 +2,10 @@ import { Chart } from "primereact/chart";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import DepartureBlocksService from "services/DepartureBlocksService";
-import BlockUtils from "@shared/utils/block.utils";
 import Loading from "./Loading";
-import blockUtils from "@shared/utils/block.utils";
-
+import blockUtils from "../utils/block.utils";
 
 const DepartureBlocks = () => {
-
   const { icao } = useParams();
   const [loading, setLoading] = useState(true);
   const [basicData, setBasicData] = useState({});
@@ -17,7 +14,7 @@ const DepartureBlocks = () => {
     animation: false,
     maintainAspectRatio: false,
     aspectRatio: 0.8,
-    
+
     plugins: {
       legend: {
         labels: {
@@ -45,20 +42,15 @@ const DepartureBlocks = () => {
     },
   };
 
-  
-
   useEffect(() => {
     async function loadData() {
       try {
         const data = await DepartureBlocksService.getAirportBlocks(icao);
 
-        
-
         const chartData = await departureBlocksToBarFormat(data);
 
         setBasicData(chartData);
         setLoading(false);
-        
       } catch (e) {}
     }
 
@@ -70,7 +62,7 @@ const DepartureBlocks = () => {
   }, []);
 
   function getBlockNumbers() {
-    let blockNumberFromTime = BlockUtils.getBlockFromTime(new Date());
+    let blockNumberFromTime = blockUtils.getBlockFromTime(new Date());
     return [
       blockUtils.getTimeFromBlock(blockNumberFromTime),
       blockUtils.getTimeFromBlock(blockNumberFromTime + 1),
@@ -79,7 +71,6 @@ const DepartureBlocks = () => {
   }
 
   async function departureBlocksToBarFormat(departureBlocks: any) {
-      
     let labels: any = getBlockNumbers();
 
     let datasetArray: any = [];
@@ -90,8 +81,8 @@ const DepartureBlocks = () => {
       datasetObject.data = [];
 
       labels.forEach((entry: any) => {
-        console.log('entry', entry);
-        
+        console.log("entry", entry);
+
         datasetObject.data.push(departureBlocks.rwys[key][entry].length);
       });
 
@@ -100,11 +91,10 @@ const DepartureBlocks = () => {
       console.log("dataset", datasetObject);
     }
 
-
-    return ({
+    return {
       labels: labels,
-      datasets: datasetArray
-    });
+      datasets: datasetArray,
+    };
   }
 
   if (loading) {
@@ -113,7 +103,7 @@ const DepartureBlocks = () => {
 
   return (
     <>
-      <Chart type="bar" data={basicData} options={basicOptions}  />
+      <Chart type="bar" data={basicData} options={basicOptions} />
     </>
   );
 };
