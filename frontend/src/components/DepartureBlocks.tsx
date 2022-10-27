@@ -2,8 +2,10 @@ import { Chart } from "primereact/chart";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import DepartureBlocksService from "services/DepartureBlocksService";
-import BlockUtils from "../utils/block";
+import BlockUtils from "@shared/utils/block.utils";
 import Loading from "./Loading";
+import blockUtils from "@shared/utils/block.utils";
+
 
 const DepartureBlocks = () => {
 
@@ -70,9 +72,9 @@ const DepartureBlocks = () => {
   function getBlockNumbers() {
     let blockNumberFromTime = BlockUtils.getBlockFromTime(new Date());
     return [
-      blockNumberFromTime,
-      blockNumberFromTime + 1,
-      blockNumberFromTime + 2,
+      blockUtils.getTimeFromBlock(blockNumberFromTime),
+      blockUtils.getTimeFromBlock(blockNumberFromTime + 1),
+      blockUtils.getTimeFromBlock(blockNumberFromTime + 2),
     ];
   }
 
