@@ -42,6 +42,7 @@ function Navbar(props: any) {
       command: () => {
         navigate("/vdgs");
       },
+      permission: (user) => user 
     },
     {
       label: "Logout",
