@@ -62,7 +62,18 @@ export async function getProfile(
   res.json(req.user ?? {});
 }
 
+export async function logoutUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  res.clearCookie('vacdm_token');
+
+  res.redirect("/");
+}
+
 export default {
   authUser,
   getProfile,
+  logoutUser
 };

@@ -2,6 +2,7 @@ import AuthContext from "contexts/AuthProvider";
 import { Menubar } from "primereact/menubar";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import AuthService from "services/AuthService";
 import logo from "../assets/cdm_logo.png";
 
 function Navbar(props: any) {
@@ -47,9 +48,7 @@ function Navbar(props: any) {
 
  useEffect(() => {
 
-  //  if (auth.auth.user !== undefined) {
-    console.log('auth is there', auth);
-    
+  //  if (auth.auth.user !== undefined) {    
     setUser(auth.auth.user)
     setItems(navItems.filter((item) => (item.permission ? item.permission : () => true)(auth.auth.user)))
   //  }
@@ -62,6 +61,8 @@ function Navbar(props: any) {
   //const name = auth.auth.user.apidata.personal.name_full;
   
   const logout = () => {
+
+    AuthService.logout();
     
   }
   

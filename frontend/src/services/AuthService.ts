@@ -22,4 +22,15 @@ export async function getConfig() {
   }
 }
 
-export default { getProfile, getConfig };
+export async function logout() {
+  try {
+    await axios.get("/api/v1/auth/logout", {
+      withCredentials: true
+    });
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+export default { getProfile, getConfig, logout };

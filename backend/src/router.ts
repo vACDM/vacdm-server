@@ -41,6 +41,7 @@ router.delete('/airports/:icao', airportController.deleteAirport);
 router.patch('/airports/:icao', airportController.updateAirport);
 
 router.get('/auth/login', authController.authUser);
+router.get('/auth/logout', authController.logoutUser);
 router.get('/auth/profile', authMiddleware, authController.getProfile);
 
 router.use((req: Request, res: Response, next: NextFunction) =>
