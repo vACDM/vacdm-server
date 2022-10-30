@@ -68,8 +68,6 @@ export async function logoutUser(
   next: NextFunction
 ) {
   res.clearCookie('vacdm_token');
-
-  res.redirect("/login");
 }
 
 export default {

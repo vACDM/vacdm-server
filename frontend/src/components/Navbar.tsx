@@ -63,6 +63,8 @@ function Navbar(props: any) {
   const logout = () => {
 
     AuthService.logout();
+
+    navigate('/login');
     
   }
   

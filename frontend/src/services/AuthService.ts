@@ -27,7 +27,7 @@ export async function logout() {
     await axios.get("/api/v1/auth/logout", {
       withCredentials: true
     });
-
+    
   } catch (error) {
     throw error;
   }
