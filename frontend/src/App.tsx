@@ -12,7 +12,7 @@ import PilotsTable from "./components/PilotsTable";
 import AirportsTable from "./components/AirportsTable";
 import Vdgs from "./components/Vdgs";
 import Debug from "./components/Debug";
-import { Suspense, useContext } from "react";
+import { Suspense } from "react";
 import Loading from "components/Loading";
 import FlowManagement from "components/FlowManagement";
 import Login from "components/Login";
@@ -20,6 +20,7 @@ import Landingpage from "components/Landingpage";
 import AirportDetails from "components/AirportDetails";
 import AirportDetailsEditor from "components/AirportDetailsEditor";
 import DepartureBlocks from "components/DepartureBlocks";
+import Footer from "components/Footer";
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
             </Suspense>
           </div>
         </AuthProvider>
+        <Footer />
       </Router>
     </>
   );
