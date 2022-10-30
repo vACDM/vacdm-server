@@ -39,7 +39,7 @@ export async function getPilotFromCid(
   next: NextFunction
 ) {
   try {
-    const pilot = await datafeedService.getFlightByCid(req.params.cid);
+    const pilot = await datafeedService.getFlightByCid(Number(req.params.cid));
 
     res.json(pilot);
   } catch (error) {
