@@ -41,7 +41,7 @@ export async function getPilotFromCid(
   try {
     const pilot = await datafeedService.getFlightByCid(req.params.cid);
 
-    res.json(flight);
+    res.json(pilot);
   } catch (error) {
     if (error.message == 'requested flight not online') {
       return next();
@@ -55,4 +55,5 @@ export async function getPilotFromCid(
 export default {
   getDataFeed,
   getDataFeedPilot,
+  getPilotFromCid
 };

@@ -32,12 +32,12 @@ export async function getFlight(
 }
 
 export async function getFlightByCid(
-  cid: number
+  cid: string
 ): Promise<VatsimTypes.VatsimPilot> {
   try {
     const datafeed = await getRawDatafeed();
 
-    const pilot = datafeed.pilots.find((p) => p.cid == cid);
+    const pilot = datafeed.pilots.find((p) => p.cid == Number(cid));
 
     if (!pilot) {
       throw new Error('requested Cid not found');
