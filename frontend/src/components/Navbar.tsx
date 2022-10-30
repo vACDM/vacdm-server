@@ -37,6 +37,13 @@ function Navbar(props: any) {
       permission: (user) => user && (!user.vacdm.banned && user.vacdm.atc)
     },
     {
+      label: "VDGS",
+      icon: "pi pi-fw pi-user",
+      command: () => {
+        navigate("/vdgs");
+      },
+    },
+    {
       label: "Logout",
       icon:'pi pi-fw pi-power-off',
       command: () => {

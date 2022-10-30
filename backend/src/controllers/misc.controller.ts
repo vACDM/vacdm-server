@@ -33,6 +33,25 @@ export async function getDataFeedPilot(
   }
 }
 
+export async function getPilotFromCid(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const pilot = await datafeedService.getFlightByCid(req.params.cid);
+
+    res.json(flight);
+  } catch (error) {
+    if (error.message == 'requested flight not online') {
+      return next();
+    }
+    
+    next(error);
+  }
+}
+
+
 export default {
   getDataFeed,
   getDataFeedPilot,

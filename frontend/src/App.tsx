@@ -38,6 +38,7 @@ function App() {
                   element={<AirportDetailsEditor />}
                 />
                 <Route path="/vdgs/:callsign" element={<Vdgs />} />
+                <Route path="/vdgs/" element={<Vdgs />} />
                 <Route path="/debug/:callsign" element={<Debug />} />
                 <Route
                   path="/departure-blocks/:icao"

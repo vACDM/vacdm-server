@@ -20,6 +20,7 @@ router.get('/config/frontend', metaController.getFrontendConfig);
 
 router.get('/datafeed', miscController.getDataFeed);
 router.get('/datafeed/:callsign', miscController.getDataFeedPilot);
+router.get('/datafeed/:cid', miscController.getPilotFromCid);
 
 router.get('/pilots', pilotController.getAllPilots);
 router.post('/pilots', pilotController.addPilot);
@@ -27,6 +28,7 @@ router.get('/pilots/:callsign', pilotController.getPilot);
 router.get('/pilots/:callsign/logs', pilotController.getPilotLogs);
 router.delete('/pilots/:callsign', pilotController.deletePilot);
 router.patch('/pilots/:callsign', pilotController.updatePilot);
+
 
 router.patch('/vdgs/:callsign', authMiddleware, pilotController.updatePilot);
 

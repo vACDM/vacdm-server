@@ -1,32 +1,41 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 
 import PilotService from "../services/PilotService";
 import TimeUtils from "../utils/time";
 import Pilot from "@shared/interfaces/pilot.interface";
+import User from "@shared/interfaces/user.interface";
 import { Card } from "primereact/card";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import VdgsService from "services/VdgsService";
+import AuthService from "services/AuthService";
+import DatafeedService from "services/DatafeedService";
 
 const Vdgs = () => {
+  const navigate = useNavigate();
   const { callsign } = useParams();
+  const [user, setUser] = useState<User>();
   const [pilot, setPilot] = useState<Pilot>();
   const [loading, setLoading] = useState(true);
   const [loadingTobt, setLoadingTobt] = useState(false);
   const [inputTextValue, setinputTextValue] = useState("");
   const [validity, setValidity] = useState("");
   const [wrongFormat, setwrongFormat] = useState("");
+  const [btnDisabled, setBtnDisabled] = useState(false);
 
   useEffect(() => {
     setwrongFormat("");
     setValidity("");
-    if (!callsign || callsign === "") {
-      return;
-    }
-
     async function loadData() {
+
+      if (!callsign || callsign === "") {
+        console.log('here we ware');
+        checkPilot();
+        return;
+      }
+
       try {
         const data: Pilot = await PilotService.getPilot(callsign);
 
@@ -41,10 +50,36 @@ const Vdgs = () => {
     return () => clearInterval(intervalId);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+
+  async function checkPilot() {
+    try {
+      const user: User =  await AuthService.getProfile();
+      setUser(user);
+
+      const pilot: Pilot = await DatafeedService.getPilotFromCid(user.apidata.cid);
+      if(pilot || pilot !== '') {
+        navigate('/vdgs/' + pilot.callsign);
+      }
+      
+      console.log(pilot);
+      
+
+      setLoading(false);
+    } catch (e) {}
+  }
+
   function vdgsColorController(time: Date | undefined) {
     let now = dayjs().second(0);
     let tsat = dayjs(time).second(0);
     return now.diff(tsat, "minute") > 5 ? 'textColorRed' : "";
+  }
+
+  function buttonDisabled(time: Date | undefined) {
+    let now = dayjs().second(0);
+    let tobt = dayjs(time).second(0);
+    console.log(now.diff(tobt, "minute"));
+    
+    return now.diff(tobt, "minute") >= -10 ? true : false;
   }
 
   async function updateTobt() {
@@ -80,9 +115,9 @@ const Vdgs = () => {
       <div className="grid m-2">
         <div className="lg:col"></div>
         <div className="lg:col md:col-6">
-          <div className="vdgs-container">
+          <div className="vdgs-container text-center">
             {loading ? (
-              <div>LOADING ...</div>
+              <div>SEARCHING FOR <br/>CALLSIGN...</div>
             ) : (
               <div className="flex align-items-center justify-content-center">
                 <div className="inline-block m-2">
@@ -128,6 +163,7 @@ const Vdgs = () => {
                 className=""
                 loading={loadingTobt}
                 onClick={updateTobt}
+                disabled={buttonDisabled(pilot?.vacdm?.tobt)}
               ></Button>
             </div>
           </Card>
