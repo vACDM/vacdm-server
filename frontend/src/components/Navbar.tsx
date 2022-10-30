@@ -60,11 +60,12 @@ function Navbar(props: any) {
  
   //const name = auth.auth.user.apidata.personal.name_full;
   
-  const logout = () => {
+  async function logout() {
 
-    AuthService.logout();
+    await AuthService.logout();
 
-    navigate('/login');
+
+    window.location.reload();
     
   }
   

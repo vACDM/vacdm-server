@@ -67,7 +67,9 @@ export async function logoutUser(
   res: Response,
   next: NextFunction
 ) {
+
   res.clearCookie('vacdm_token');
+  res.json({success: true});
 }
 
 export default {
