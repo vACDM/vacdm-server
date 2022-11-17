@@ -1,14 +1,13 @@
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 import { useEffect, useState } from 'react';
-import authService from "services/AuthService";
-import {FrontendSettings} from '@shared/interfaces/config.interface';
+import authService from 'services/AuthService';
+import { FrontendSettings } from '@shared/interfaces/config.interface';
 
 const Login = () => {
   const [config, setConfig] = useState<FrontendSettings>();
 
   useEffect(() => {
-    
     authService
       .getConfig()
       .then((data) => {
@@ -19,7 +18,6 @@ const Login = () => {
       });
   }, []);
 
-  
   const redirectToVatsimAuth = () => {
     let authUrl = [
       config?.vatsimAuthUrl,
@@ -39,12 +37,14 @@ const Login = () => {
       '&',
       'scope=full_name+vatsim_details+email+country',
       '&',
-      'approval_prompt=auto'
+      'required_scopes=full_name+vatsim_details+email+country',
+      '&',
+      'approval_prompt=auto',
     ].join('');
     window.location.replace(authUrl);
   };
 
-  const footer = (
+  const atcFooter = (
     <span>
       <Button
         label='Login with VATSIM SSO'
@@ -56,11 +56,16 @@ const Login = () => {
 
   return (
     <>
-      <Card
-        title='vACDM'
-        className='login-card text-center surface-200'
-        style={{ width: '25rem' }}
-        footer={footer}></Card>
+      <div className='flex justify-content-evenly flex-wrap'>
+        <div className='flex align-items-center justify-content-center'>
+          <Card
+            title='vACDM'
+            className='login-card text-center surface-200'
+            style={{ width: '25rem' }}
+            footer={atcFooter}
+          ></Card>
+        </div>
+      </div>
     </>
   );
 };
