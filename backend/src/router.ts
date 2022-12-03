@@ -20,7 +20,7 @@ router.get('/config/frontend', metaController.getFrontendConfig);
 
 router.get('/datafeed', miscController.getDataFeed);
 router.get('/datafeed/:callsign', miscController.getDataFeedPilot);
-router.get('/datafeed/:cid', miscController.getPilotFromCid);
+router.get('/datafeed/cid/:cid', miscController.getPilotFromCid);
 
 router.get('/pilots', pilotController.getAllPilots);
 router.post('/pilots', pilotController.addPilot);
