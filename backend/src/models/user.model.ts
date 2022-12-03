@@ -11,11 +11,6 @@ const userSchema = new mongoose.Schema(
         name_first: { type: String, default: '' },
         name_last: { type: String, default: '' },
         name_full: { type: String, default: '' },
-        email: { type: String, default: '' },
-        country: {
-          id: { type: String, default: '' },
-          name: { type: String, default: '' },
-        },
       },
       vatsim: {
         rating: {

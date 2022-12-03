@@ -5,11 +5,6 @@ interface User {
       name_first: string;
       name_last: string;
       name_full: string;
-      email: string;
-      country: {
-        id: string;
-        name: string;
-      };
     };
   };
 

@@ -35,9 +35,9 @@ const Login = () => {
       '&',
       'response_type=code',
       '&',
-      'scope=full_name+vatsim_details+email+country',
+      'scope=full_name+vatsim_details',
       '&',
-      'required_scopes=full_name+vatsim_details+email+country',
+      'required_scopes=full_name+vatsim_details',
       '&',
       'approval_prompt=auto',
     ].join('');
