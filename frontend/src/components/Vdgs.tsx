@@ -24,7 +24,6 @@ const Vdgs = () => {
   const [inputTextValue, setinputTextValue] = useState('');
   const [validity, setValidity] = useState('');
   const [wrongFormat, setwrongFormat] = useState('');
-  const [btnDisabled, setBtnDisabled] = useState(false);
   const toast: any = useRef(null);
 
   useEffect(() => {
@@ -32,7 +31,7 @@ const Vdgs = () => {
     setValidity('');
     async function loadData() {
       if (!callsign || callsign === '') {
-        showInfo();
+        //showInfo();
         await checkPilot();
         return;
       }
@@ -44,7 +43,7 @@ const Vdgs = () => {
         setLoading(false);
       } catch (e) {}
     }
-    let intervalId = setInterval(loadData, 30000);
+    let intervalId = setInterval(loadData, 10000);
 
     loadData();
 
@@ -70,7 +69,7 @@ const Vdgs = () => {
     toast.current.show({
       severity: 'info',
       summary: 'No Callsign found',
-      detail: 'Trying again in 30 sec.',
+      detail: 'Trying again in 10 sec.',
       life: 3000,
     });
   };
@@ -175,7 +174,7 @@ const Vdgs = () => {
                 className=''
                 loading={loadingTobt}
                 onClick={updateTobt}
-                disabled={buttonDisabled(pilot?.vacdm?.tobt)}
+                disabled={(!callsign || callsign === '') ? true : false}
               ></Button>
             </div>
           </Card>
