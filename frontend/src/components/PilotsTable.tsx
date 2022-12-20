@@ -114,6 +114,7 @@ const PilotsTable = () => {
     let now = dayjs().second(0);
     let tsat = dayjs(rowData.vacdm.tsat).second(0);
     const tsatClassName = classNames({
+      textColorGrey: dayjs(rowData.vacdm.asat).unix() !== -1, 
       textColorGreen:
         now.diff(tsat, "minutes") >= -5 && now.diff(tsat, "minutes") <= 5,
       textColorOrange: now.diff(tsat, "minute") > 5,
@@ -131,7 +132,7 @@ const PilotsTable = () => {
     let now = dayjs().second(0);
     let tobt = dayjs(rowData.vacdm.tobt).second(0);
     const tobtClassName = classNames({
-      textColorGrey: now.diff(tobt, "minute") > 5,
+      textColorGrey: now.diff(tobt, "minute") > 5 || dayjs(rowData.vacdm.asat).unix() !== -1,
     });
     return (
       <div className={tobtClassName}>
