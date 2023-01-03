@@ -172,6 +172,7 @@ async function calculations(pilot: PilotDocument): Promise<PilotDocument> {
 
       pilot.vacdm.exot = taxizone.exot;
       pilot.vacdm.taxizone = taxizone.taxizone;
+      pilot.vacdm.taxizoneIsTaxiout = taxizone.taxiout;
 
       if (exotBefore != pilot.vacdm.exot || taxizoneBefore != pilot.vacdm.taxizone) {
         await addLog({

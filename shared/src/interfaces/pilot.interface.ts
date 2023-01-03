@@ -30,6 +30,7 @@ interface Pilot {
     txg: Date;
 
     taxizone: string;
+    taxizoneIsTaxiout: boolean;
 
     blockAssignment: Date;
     blockId: number;

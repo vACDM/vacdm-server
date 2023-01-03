@@ -95,7 +95,7 @@ export async function updateAirport(
 
 export async function determineTaxizone(
   pilot: PilotDocument
-): Promise<{ taxizone: string; exot: number }> {
+): Promise<{ taxizone: string; exot: number; taxiout: boolean }> {
   let icao: string = pilot.flightplan.departure;
 
   let airport: AirportDocument | undefined = undefined;
@@ -110,6 +110,7 @@ export async function determineTaxizone(
   let airportDefaultZone = {
     taxizone: 'default taxitime',
     exot: airport.standard_taxitime,
+    taxiout: false,
   };
 
   let pilotPos = [pilot.position.lat, pilot.position.lon];
@@ -140,6 +141,7 @@ export async function determineTaxizone(
   return {
     taxizone: taxizone.label,
     exot: timeDefinition.minutes,
+    taxiout: taxizone.taxiout,
   };
 }
 

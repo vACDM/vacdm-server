@@ -41,6 +41,7 @@ const pilotSchema = new mongoose.Schema(
       txg: { type: Date, default: timeUtils.emptyDate },
 
       taxizone: { type: String, default: '' },
+      taxizoneIsTaxiout: { type: Boolean, default: true },
 
       blockAssignment: { type: Date, default: () => new Date() },
       blockId: { type: Number, default: -1 },
