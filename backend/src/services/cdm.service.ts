@@ -100,7 +100,7 @@ async function setTime(pilot: PilotDocument): Promise<{
   finalBlock: number;
   finalTtot: Date;
 }> {
-  if (pilot.vacdm.tsat > pilot.vacdm.tobt) {
+  if (pilot.vacdm.tsat > pilot.vacdm.tobt || blockUtils.getBlockFromTime(pilot.vacdm.ttot) != pilot.vacdm.blockId) {
     pilot.vacdm.ttot = blockUtils.getTimeFromBlock(pilot.vacdm.blockId);
     pilot.vacdm.tsat = timeUtils.addMinutes(
       pilot.vacdm.ttot,
