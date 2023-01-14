@@ -31,6 +31,7 @@ const pilotSchema = new mongoose.Schema(
       ttot: { type: Date, default: timeUtils.emptyDate },
 
       asrt: { type: Date, default: timeUtils.emptyDate },
+      aort: { type: Date, default: timeUtils.emptyDate },
 
       asat: { type: Date, default: timeUtils.emptyDate },
       aobt: { type: Date, default: timeUtils.emptyDate },
