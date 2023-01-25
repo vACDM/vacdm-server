@@ -16,7 +16,7 @@ docker-build:
   services:
     - docker:latest
   before_script:
-    - docker login -u "$REG_USERNAME" -p "$REG_PASSWORD" $REG_URL
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   # Default branch leaves tag empty (= latest tag)
   # All other branches are tagged with the escaped branch name (commit ref slug)
   script:
@@ -28,8 +28,8 @@ docker-build:
         tag=":$CI_COMMIT_REF_SLUG"
         echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
       fi
-    - docker build --pull -t "$REG_URL/$IMAGE_NAME${tag}" .
-    - docker push "$REG_URL/$IMAGE_NAME${tag}"
+    - docker build --pull -t "$CI_REGISTRY_IMAGE${tag}" .
+    - docker push "$CI_REGISTRY_IMAGE${tag}"
   # Run this job in a branch where a Dockerfile exists
   only:
     - dev
