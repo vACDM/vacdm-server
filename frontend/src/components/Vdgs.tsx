@@ -46,6 +46,8 @@ const Vdgs = () => {
         user.apidata.cid
       );
 
+      console.log('Pilot Object:', pilot);
+
       setPilot(pilot);
       setLoading(false);
     } catch (e) {}
@@ -120,10 +122,10 @@ const Vdgs = () => {
                 <div className="inline-block m-2">
                   <div className="text-center">{pilot?.callsign}</div>
                   <div className="text-center">
-                    TOBT {TimeUtils.formatTime(pilot?.vacdm.tobt)} UTC
+                    TOBT {TimeUtils.formatTime(pilot?.vacdm?.tobt)} UTC
                   </div>
                   <div className="text-center">
-                    TSAT {TimeUtils.formatTime(pilot?.vacdm.tsat)} UTC
+                    TSAT {TimeUtils.formatTime(pilot?.vacdm?.tsat)} UTC
                   </div>
                   <div className="text-center">
                     <span className={vdgsColorController(pilot?.vacdm?.tsat)}>
@@ -160,7 +162,7 @@ const Vdgs = () => {
                 className=""
                 loading={loadingTobt}
                 onClick={updateTobt}
-                disabled={!pilot?.callsign  || pilot.callsign === "" ? true : false}
+                disabled={!pilot?.callsign  || pilot?.callsign === "" ? true : false}
               ></Button>
             </div>
           </Card>
