@@ -16,7 +16,6 @@ import DatafeedService from "services/DatafeedService";
 
 const Vdgs = () => {
   const navigate = useNavigate();
-  const { callsign } = useParams();
 
   const [pilot, setPilot] = useState<Pilot | undefined>(undefined);
   const [loading, setLoading] = useState(true);
@@ -89,7 +88,7 @@ const Vdgs = () => {
       setwrongFormat("");
       setValidity("");
       setinputTextValue(inputTextValue);
-      await VdgsService.updateTobt(inputTextValue, callsign)
+      await VdgsService.updateTobt(inputTextValue, pilot?.callsign)
         .then(() => {
           setLoadingTobt(false);
           setinputTextValue("");
@@ -161,7 +160,7 @@ const Vdgs = () => {
                 className=""
                 loading={loadingTobt}
                 onClick={updateTobt}
-                disabled={!callsign || callsign === "" ? true : false}
+                disabled={!pilot?.callsign  || pilot.callsign === "" ? true : false}
               ></Button>
             </div>
           </Card>
