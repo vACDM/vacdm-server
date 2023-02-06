@@ -82,6 +82,9 @@ const Vdgs = () => {
     let p = pilot;
     if (p) {
       p.vacdm.tobt = dayjs(TimeUtils.formatVdgsTobt(inputTextValue)).toDate();
+      if(dayjs(p.vacdm.tobt).isBefore(dayjs())) {
+        p.vacdm.tobt = dayjs(p.vacdm.tobt).add(1, 'day').toDate();
+      }
       p.vacdm.tsat = dayjs(-1).toDate();
     }
 
@@ -92,15 +95,14 @@ const Vdgs = () => {
       setwrongFormat("");
       setValidity("");
       setinputTextValue(inputTextValue);
-      await VdgsService.updateTobt(inputTextValue, pilot?.callsign)
-        .then(() => {
-          setLoadingTobt(false);
+      VdgsService.updateTobt(inputTextValue, pilot?.callsign)
+        .then(() => {       
           setinputTextValue("");
         })
         .catch(() => {
           setwrongFormat("Unauthorized!");
-          setLoadingTobt(false);
-        });
+        })
+        .finally(() => setLoadingTobt(false));
     } else {
       setValidity("p-invalid");
       setwrongFormat("Allowed Format: HHMM");
