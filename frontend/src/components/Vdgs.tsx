@@ -42,13 +42,15 @@ const Vdgs = () => {
     try {
       const user: User = await AuthService.getProfile();
 
-      const pilot: Pilot = await DatafeedService.getPilotFromCid(
+      const pilot = await DatafeedService.getPilotFromCid(
         user.apidata.cid
       );
 
-      console.log('Pilot Object:', pilot);
+      const vacdmPilot: Pilot = await PilotService.getPilot(pilot.callsign)
 
-      setPilot(pilot);
+      console.log('Pilot Object:', vacdmPilot);
+
+      setPilot(vacdmPilot);
       setLoading(false);
     } catch (e) {}
   }
