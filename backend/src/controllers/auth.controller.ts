@@ -23,20 +23,23 @@ export async function authUser(
       httpOnly: true,
     });
 
-    const user = await authService.getUserFromToken(response);
+    const user: UserDocument = await authService.getUserFromToken(response);
     console.log("User is: ", user);
+
+    if (user.vacdm.atc || user.vacdm.admin) {
+      return res.redirect("/");
+    }
 
     try {
       const flight = await datafeedService.getFlightByCid(user.apidata.cid);
 
       console.log(flight);
       
-      return res.redirect("/vdgs/" + flight.callsign);
+      res.redirect("/vdgs/" + flight.callsign);
     } catch (error) {
-      console.error(error);
+      res.redirect("/vdgs/");
     }
 
-    res.redirect("/");
   } catch (error) {
     if (error.message == "something went wrong with auth") {
       return next();
