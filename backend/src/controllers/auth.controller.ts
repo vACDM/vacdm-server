@@ -29,17 +29,13 @@ export async function authUser(
     try {
       const flight = await datafeedService.getFlightByCid(user.apidata.cid);
 
+      console.log(flight);
+      
       return res.redirect("/vdgs/" + flight.callsign);
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
 
-    /* if (user) {
-      const flight = await datafeedService.getFlightByCid(user.apidata.cid);
-      if (flight) {
-        console.log("Flight found", flight);
-
-        return res.redirect("/vdgs/" + flight.callsign);
-      }
-    } */
     res.redirect("/");
   } catch (error) {
     if (error.message == "something went wrong with auth") {
