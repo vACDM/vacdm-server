@@ -30,17 +30,8 @@ export async function authUser(
       return res.redirect("/");
     }
 
-    try {
-      const flight = await datafeedService.getFlightByCid(user.apidata.cid);
-
-      console.log(flight);
-      
-      res.redirect("/vdgs/" + flight.callsign);
+    res.redirect("/vdgs/");
     } catch (error) {
-      res.redirect("/vdgs/");
-    }
-
-  } catch (error) {
     if (error.message == "something went wrong with auth") {
       return next();
     }
@@ -66,13 +57,12 @@ export async function logoutUser(
   res: Response,
   next: NextFunction
 ) {
-
-  res.clearCookie('vacdm_token');
-  res.json({success: true});
+  res.clearCookie("vacdm_token");
+  res.json({ success: true });
 }
 
 export default {
   authUser,
   getProfile,
-  logoutUser
+  logoutUser,
 };
