@@ -215,7 +215,7 @@ export async function optimizeBlockAssignments() {
       // do it
       for (
         let firstBlockCounter = 0;
-        firstBlockCounter < 6;
+        firstBlockCounter < 60;
         firstBlockCounter++
       ) {
         let firstBlockId = (currentBlockId + firstBlockCounter) % 144;
