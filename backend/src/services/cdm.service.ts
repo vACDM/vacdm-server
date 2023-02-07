@@ -245,7 +245,7 @@ export async function optimizeBlockAssignments() {
             .filter(
               (pilot) =>
                 pilot.vacdm.blockId == otherBlockId &&
-                pilot.vacdm.tsat > nowPlusTen &&
+                // pilot.vacdm.tsat > nowPlusTen && // was removed after short discussion with Phil, will be removed for now
                 pilot.vacdm.delay >= secondBlockCounter
             )
             .sort(
