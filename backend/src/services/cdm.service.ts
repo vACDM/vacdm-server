@@ -218,7 +218,7 @@ export async function optimizeBlockAssignments() {
         firstBlockCounter < 60;
         firstBlockCounter++
       ) {
-        let firstBlockId = (currentBlockId + firstBlockCounter) % 144;
+        const firstBlockId = (currentBlockId + firstBlockCounter) % 144;
 
         const pilotsInThisBlock = pilotsThisRwy.filter(
           (pilot) => pilot.vacdm.blockId == firstBlockId
@@ -266,7 +266,7 @@ export async function optimizeBlockAssignments() {
         // move pilots to current block
 
         for (const pilot of pilotsToMove) {
-          pilot.vacdm.delay -= pilot.vacdm.blockId - currentBlockId;
+          pilot.vacdm.delay -= (144 + pilot.vacdm.blockId - firstBlockId) % 144;
           pilot.vacdm.blockId = firstBlockId;
 
           console.log('==========>> setting pilot times', pilot.callsign);
