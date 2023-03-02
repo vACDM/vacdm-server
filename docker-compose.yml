@@ -1,7 +1,7 @@
 version: '2.4'
 
 services:
-  app:
+  api:
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -20,3 +20,17 @@ services:
       - PUBLIC_URL
       - VATSIM_AUTH_URL
       - JWT_SECRET
+      - ALLOW_SIM=true
+      - ALLOW_OBS_MASTER=true
+  worker:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: development
+    ports:
+      - '9230:9229/tcp'
+    volumes:
+      - .:/opt:delegated
+    environment:
+      - MONGO_URI
+      - ROLE=WORKER
