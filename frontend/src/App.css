@@ -31,9 +31,9 @@
 .vdgs-container {
   font-family: 'digital';
   color: var(--orange-400);
-  font-size: 40px;
   background-color: var(--surface-900);
 }
+
 
 .login-card {
   display: block;

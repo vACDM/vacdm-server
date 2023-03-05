@@ -113,9 +113,9 @@ const Vdgs = () => {
     <>
       <Toast ref={toast} />
       <div className="grid m-2">
-        <div className="lg:col"></div>
-        <div className="lg:col md:col-6">
-          <div className="vdgs-container text-center">
+      <div className="col-12 lg:col-12 xl:col"></div>
+        <div className="col-12 lg:col">
+          <div className="vdgs-container text-center text-3xl lg:text-4xl xl:text-5xl">
             {loading ? (
               <div>
                 SEARCHING FOR <br />
@@ -145,9 +145,10 @@ const Vdgs = () => {
             )}
           </div>
         </div>
-        <div className="lg:col md:col-6">
+        <div className="col-12 lg:col">
           <Card>
-            <h5>Update TOBT (UTC-Time when ready for Pushback)</h5>
+            <h5>Set TOBT (UTC-Time when ready for pushback)</h5>
+            
             <div className="flex flex-wrap gap-2">
               <div className="">
                 <InputText
@@ -169,6 +170,10 @@ const Vdgs = () => {
                 disabled={!pilot?.callsign  || pilot?.callsign === "" ? true : false}
               ></Button>
             </div>
+            <p>Your TOBT (Target Off-Block Time) is the time you are fully ready for pushback.
+              The initial TOBT you see here is the one extracted from your fight plan on VATSIM.
+              Once you "confirm" or "update" your TOBT in the field above, ATC is able to better plan a departure sequence.
+            </p>
           </Card>
         </div>
       </div>
