@@ -55,14 +55,17 @@ const Vdgs = () => {
     } catch (e) {}
   }
 
-  const showInfo = () => {
-    toast.current.show({
-      severity: "info",
-      summary: "No Callsign found",
-      detail: "Trying again in 10 sec.",
-      life: 3000,
-    });
-  };
+  const tobtConfimationText = () => {
+    if (!pilot) {
+      return '';
+    }
+
+    if (pilot?.vacdm.tobt_state !== "CONFIRMED" && pilot?.vacdm.tobt_state !== "NOW") {
+      return <span className="textColorOrange">Your TOBT is not yet confirmed!</span>
+    } else {
+      return <span className="textColorGreen">Your TOBT is confirmed!</span>
+    }
+  }
 
   function vdgsColorController(time: Date | undefined) {
     let now = dayjs().second(0);
@@ -147,6 +150,9 @@ const Vdgs = () => {
         </div>
         <div className="col-12 lg:col">
           <Card>
+
+            {tobtConfimationText()}
+            
             <h5>Set TOBT (UTC-Time when ready for pushback)</h5>
             
             <div className="flex flex-wrap gap-2">
