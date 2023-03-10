@@ -16,7 +16,7 @@ function Navbar(props: any) {
       label: "Delivery",
       icon: "pi pi-fw pi-file",
       command: () => {
-        navigate("/");
+        navigate("/atc");
       },
       permission: (user) => user && (!user.vacdm.banned && user.vacdm.atc)
     },
