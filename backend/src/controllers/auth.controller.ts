@@ -27,7 +27,7 @@ export async function authUser(
     console.log("User is: ", user);
 
     if (user.vacdm.atc || user.vacdm.admin) {
-      return res.redirect("/");
+      return res.redirect("/atc");
     }
 
     res.redirect("/vdgs/");

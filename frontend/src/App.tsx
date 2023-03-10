@@ -31,13 +31,13 @@ function App() {
           <div className="mt-2">
             <Suspense fallback={<Loading />}>
               <Routes>
+              <Route path="/atc" element={<PilotsTable />} />
                 <Route path="/airports" element={<AirportsTable />} />
                 <Route path="/airports/:icao" element={<AirportDetails />} />
                 <Route
                   path="/airports/:icao/edit"
                   element={<AirportDetailsEditor />}
                 />
-                <Route path="/vdgs/:callsign" element={<Vdgs />} />
                 <Route path="/vdgs/" element={<Vdgs />} />
                 <Route path="/debug/:callsign" element={<Debug />} />
                 <Route
@@ -48,7 +48,7 @@ function App() {
                 <Route path="/flow-management" element={<FlowManagement />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/landingpage" element={<Landingpage />} />
-                <Route path="/" element={<PilotsTable />} />
+                <Route path="/" element={<Vdgs />} />
                 <Route path="*" element={<Navigate to="/" />} />
               </Routes>
             </Suspense>

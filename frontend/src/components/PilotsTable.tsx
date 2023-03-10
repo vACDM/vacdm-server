@@ -141,14 +141,6 @@ const PilotsTable = () => {
     );
   };
 
-  const vdgsButtonTemplate = (rowData: any) => {
-    return (
-      <Link to={`/vdgs/${rowData.callsign}`}>
-        <Button className="p-button-sm " label="VDGS" />{" "}
-      </Link>
-    );
-  };
-
   const debugButtonTemplate = (rowData: any) => {
     return (
       <Link to={`/debug/${rowData.callsign}`}>
@@ -234,7 +226,6 @@ const PilotsTable = () => {
             filterElement={arrivalFilterTemplate}
             showFilterMatchModes={false}
           />
-          <Column header="" body={vdgsButtonTemplate} align="center" />
           <Column header="" body={debugButtonTemplate} align="center" />
         </DataTable>
       </Card>
