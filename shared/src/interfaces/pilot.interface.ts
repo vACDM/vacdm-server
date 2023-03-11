@@ -69,6 +69,11 @@ export interface PilotLog {
   };
 }
 
+export interface Archive {
+  pilot: Pilot,
+  logs: PilotLog[]
+}
+
 export interface AirportBlocks {
   icao: string;
   rwys: {

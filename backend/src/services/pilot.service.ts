@@ -5,6 +5,7 @@ import airportService from './airport.service';
 import timeUtils from '../utils/time.utils';
 import cdmService from './cdm.service';
 import pilotLogModel, { PilotLogDocument } from '../models/pilotLog.model';
+import archiveModel, { ArchiveDocument } from '../models/archive.model';
 
 export async function getAllPilots(filter: { [key: string]: any } = {}) {
   try {
@@ -48,6 +49,18 @@ export async function addPilot(pilot: Pilot): Promise<PilotDocument> {
 
 export async function deletePilot(callsign: string): Promise<void> {
   try {
+    const pilot = await pilotModel.findOne({callsign}).exec();
+
+    const logs = await pilotLogModel.find({pilot: callsign}).exec();
+
+    const archiveDocument = new archiveModel({
+      pilot: pilot,
+      logs: logs
+    })
+
+    await archiveDocument.save();
+    
+    
     await pilotModel.findOneAndDelete({ callsign }).exec();
 
     // also get rid of all log entries of pilot

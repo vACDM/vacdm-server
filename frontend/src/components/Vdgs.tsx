@@ -82,18 +82,22 @@ const Vdgs = () => {
   }
 
   async function updateTobt() {
-    let p = pilot;
-    if (p) {
-      p.vacdm.tobt = dayjs(TimeUtils.formatVdgsTobt(inputTextValue)).toDate();
-      if(dayjs(p.vacdm.tobt).isBefore(dayjs())) {
-        p.vacdm.tobt = dayjs(p.vacdm.tobt).add(1, 'day').toDate();
-      }
-      p.vacdm.tsat = dayjs(-1).toDate();
-    }
+    setLoadingTobt(true);
 
     let regex = new RegExp("^(0[0-9]|1[0-9]|2[0-3])[0-5][0-9]$");
-    if (regex.test(inputTextValue)) {
-      setLoadingTobt(true);
+    if (!regex.test(inputTextValue)) {
+      setValidity("p-invalid");
+      setwrongFormat("Allowed Format: HHMM");
+      setLoadingTobt(false);
+    } else {
+      let p = pilot;
+      if (p) {
+        p.vacdm.tobt = dayjs(TimeUtils.formatVdgsTobt(inputTextValue)).toDate();
+        if(dayjs(p.vacdm.tobt).isBefore(dayjs())) {
+          p.vacdm.tobt = dayjs(p.vacdm.tobt).add(1, 'day').toDate();
+        }
+        p.vacdm.tsat = dayjs(-1).toDate();
+      }
       setPilot(p);
       setwrongFormat("");
       setValidity("");
@@ -106,10 +110,9 @@ const Vdgs = () => {
           setwrongFormat("Unauthorized!");
         })
         .finally(() => setLoadingTobt(false));
-    } else {
-      setValidity("p-invalid");
-      setwrongFormat("Allowed Format: HHMM");
+
     }
+  
   }
 
   return (

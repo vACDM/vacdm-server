@@ -4,7 +4,7 @@ import Pilot from '@shared/interfaces/pilot.interface';
 
 export type PilotDocument = HydratedDocument<Pilot>;
 
-const pilotSchema = new mongoose.Schema(
+export const pilotSchema = new mongoose.Schema(
   {
     callsign: { type: String, unique: true },
 

@@ -3,7 +3,7 @@ import { PilotLog } from '@shared/interfaces/pilot.interface';
 
 export type PilotLogDocument = HydratedDocument<PilotLog>;
 
-const pilotLogSchema = new mongoose.Schema(
+export const pilotLogSchema = new mongoose.Schema(
   {
     pilot: String,
     time: {
