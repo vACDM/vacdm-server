@@ -8,6 +8,8 @@ import axios from "axios";
 import pilotService from "./pilot.service";
 import Pilot from "@shared/interfaces/pilot.interface";
 
+import pilotModel, { PilotDocument } from '../models/pilot.model';
+
 const dummyMeasure: EcfmpMeasure[] = [
   {
     id: 10,
@@ -58,8 +60,7 @@ export async function getEcfmpDetails() {
 
     const measures: EcfmpMeasure[] = dummyMeasure.filter(
       (measure) =>
-        measure.measure.type === "minimum_departure_interval" &&
-        measure.withdrawn_at !== null
+        measure.measure.type === "minimum_departure_interval" 
     );
 
     measures.forEach(async (measure: EcfmpMeasure) => {
@@ -82,13 +83,20 @@ export async function getEcfmpDetails() {
 }
 
 export async function allocateMeasuresToPilots() {
-  const pilots: Pilot[] = await pilotService.getAllPilots();
+  const pilots: PilotDocument[] = await pilotService.getAllPilots();
   const measures: EcfmpMeasureDocument[] = await getAllMeasures();
 
-  pilots.forEach((pilot: Pilot) => {
+  pilots.forEach((pilot: PilotDocument) => {
     measures.forEach(async (measure: EcfmpMeasureDocument) => {
       if (await checkFilters(pilot, measure)) {
-        console.log("Measure is valid for Pilot", pilot.callsign);
+        
+        if (!pilot.measures.find((e) => e.ident === measure.ident)) {
+          pilot.measures.push({ident: measure.ident, value: measure.measure.value});
+          
+          await pilot.save();
+        }
+        
+
       }
     });
   });
@@ -130,7 +138,6 @@ async function checkFilters(pilot: Pilot, measure: EcfmpMeasureDocument) {
             adesArray.push(false);
           }
         });
-        console.log("ades", adesArray);
 
         if (adesArray.some(Boolean)) {
           returnArray.push(true);
@@ -146,8 +153,6 @@ async function checkFilters(pilot: Pilot, measure: EcfmpMeasureDocument) {
         break;
     }
   });
-
-  console.log("return", returnArray);
 
   if (returnArray.every(Boolean)) {
     return true;

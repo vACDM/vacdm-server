@@ -65,7 +65,10 @@ export const pilotSchema = new mongoose.Schema(
       assigned_squawk: { type: String, default: '' },
       current_squawk: { type: String, default: '' },
     },
-    measures: [String],
+    measures: [{
+      ident: { type: String, required: true},
+      value: { type: Number, default: -1}
+    }],
     inactive: { type: Boolean, default: false },
   },
   { timestamps: true }
