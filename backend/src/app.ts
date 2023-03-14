@@ -12,6 +12,7 @@ import cookieParser from "cookie-parser";
 
 import config from './config';
 import cdmService from './services/cdm.service';
+import ecfmpService from './services/ecfmp.service';
 // import session from './utils/session';
 
 (async () => {
@@ -35,6 +36,16 @@ import cdmService from './services/cdm.service';
       }
     }, 10000);
 
+    setInterval(async () => {
+      logger.debug('running ECFMP');
+      try {
+        await ecfmpService.getEcfmpDetails();
+        await ecfmpService.allocateMeasuresToPilots();
+      } catch (error) {
+        logger.error('error occurred getting ecfmp details');
+      }
+    }, 10000);
+
     while (true) {
       await (() => new Promise((res, rej) => setTimeout(res, 10000)))();
 
@@ -45,6 +56,7 @@ import cdmService from './services/cdm.service';
         logger.error('error occurred when optimizing block assignments');
       }
     }
+
 
     // return, do not initialize express app
   }

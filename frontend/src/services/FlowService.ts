@@ -4,7 +4,7 @@ import axios from "axios";
 export async function getAllMeasures(): Promise<EcfmpMeasure[]> {
   try {
     const measures = await axios.get<EcfmpMeasure[]>(
-      "https://ecfmp.vatsim.net/api/v1/flow-measure"
+      "/api/v1/measures"
     );
 
     return measures.data;

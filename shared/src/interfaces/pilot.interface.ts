@@ -52,6 +52,7 @@ interface Pilot {
     current_squawk: string;
   };
 
+  measures: string[];
   inactive: boolean;
 
   // mongoose fields
