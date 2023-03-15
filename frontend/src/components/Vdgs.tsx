@@ -102,6 +102,7 @@ const Vdgs = () => {
       setwrongFormat("");
       setValidity("");
       setinputTextValue(inputTextValue);
+      
       VdgsService.updateTobt(inputTextValue, pilot?.callsign)
         .then(() => {       
           setinputTextValue("");

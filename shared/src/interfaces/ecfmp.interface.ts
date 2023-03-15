@@ -9,9 +9,9 @@ export interface EcfmpMeasure {
   ident: string;
   event_id: number;
   reason: string;
-  starttime: string;
-  endtime: string;
-  withdrawn_at: string | null;
+  starttime: Date;
+  endtime: Date;
+  withdrawn_at: Date | null;
   notified_flight_information_regions: number[];
   measure: EcfmpMeasureAction;
   filters: EcfmpFilter[];
