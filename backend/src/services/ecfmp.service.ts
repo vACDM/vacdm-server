@@ -71,9 +71,10 @@ export async function allocateMeasuresToPilots() {
     await removeMeasuresFromPilots();
     const pilots: PilotDocument[] = await pilotService.getAllPilots();
     const measures: EcfmpMeasureDocument[] = await getAllMeasures();
+
     pilots.forEach(async (pilot: PilotDocument) => {
       measures.forEach(async (measure: EcfmpMeasureDocument) => {
-        if (await checkFilters(pilot, measure)) {
+        if (dayjs(measure.starttime).isAfter(new Date(pilot.vacdm.ttot)) && await checkFilters(pilot, measure)) {
           if (!pilot.measures.find((e) => e.ident === measure.ident)) {
             pilot.measures.push({
               ident: measure.ident,
