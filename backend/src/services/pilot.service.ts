@@ -53,12 +53,13 @@ export async function deletePilot(callsign: string): Promise<void> {
 
     const logs = await pilotLogModel.find({pilot: callsign}).exec();
 
-    const archiveDocument = new archiveModel({
-      pilot: pilot,
-      logs: logs
-    })
+    // TODO: this piece of code made deleting not work. must be fixed at some point!
+    // const archiveDocument = new archiveModel({
+    //   pilot: pilot,
+    //   logs: logs
+    // })
 
-    await archiveDocument.save();
+    // await archiveDocument.save();
     
     
     await pilotModel.findOneAndDelete({ callsign }).exec();
