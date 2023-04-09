@@ -74,19 +74,23 @@ export async function allocateMeasuresToPilots() {
 
     pilots.forEach(async (pilot: PilotDocument) => {
       measures.forEach(async (measure: EcfmpMeasureDocument) => {
-        if (dayjs(measure.starttime).isAfter(new Date(pilot.vacdm.ttot)) && await checkFilters(pilot, measure)) {
+        if (
+          dayjs(measure.starttime).isBefore(new Date(pilot.vacdm.ttot)) &&
+          dayjs(measure.endtime).isAfter(new Date(pilot.vacdm.ttot)) &&
+          (await isMeasureValidForPilot(pilot, measure))
+        ) {
           if (!pilot.measures.find((e) => e.ident === measure.ident)) {
             pilot.measures.push({
               ident: measure.ident,
               value: measure.measure.value,
             });
-  
+
             await pilot.save();
-  
+
             await pilotService.addLog({
               pilot: pilot.callsign,
-              namespace: 'ecfmp',
-              action: 'SAM',
+              namespace: "ecfmp",
+              action: "Measure Allocation",
               data: {
                 measure: measure.ident,
               },
@@ -95,49 +99,49 @@ export async function allocateMeasuresToPilots() {
         }
       });
     });
-    
   } catch (error) {
     throw error;
   }
-
 }
 
 export async function removeMeasuresFromPilots() {
   try {
     const pilots: PilotDocument[] = await pilotService.getAllPilots();
     const measures: EcfmpMeasureDocument[] = await getAllMeasures();
-  
-    const measureIdentifiers: string[] = measures.map(m => m.ident);
-  
+
+    const measureIdentifiers: string[] = measures.map((m) => m.ident);
+
     for (const pilot of pilots) {
-      const validMeasures = pilot.measures.filter((pilotMeasure) => measureIdentifiers.includes(pilotMeasure.ident));
-    
+      const validMeasures = pilot.measures.filter((pilotMeasure) =>
+        measureIdentifiers.includes(pilotMeasure.ident)
+      );
+
       pilot.measures = validMeasures;
-  
+
       await pilot.save();
-  
-      /* await pilotService.addLog({
-        pilot: pilot.callsign,
-        namespace: 'ecfmp',
-        action: 'SLC',
-        data: {
-          measure: validMeasures,
-        },
-      }); */
+
+      /* for (const measure of pilot.measures) {
+        if (measureIdentifiers.includes(measure.ident)) {
+          await pilotService.addLog({
+            pilot: pilot.callsign,
+            namespace: "ecfmp",
+            action: "Measure Cancellation",
+            data: {
+              measure: measure.ident,
+            },
+          });
+        }
+      } */
     }
-    
   } catch (error) {
     throw error;
   }
-
-  // pilots.forEach(async (pilot: PilotDocument) => {
-
-    
-          
-  //   });
 }
 
-async function checkFilters(pilot: Pilot, measure: EcfmpMeasureDocument) {
+async function isMeasureValidForPilot(
+  pilot: Pilot,
+  measure: EcfmpMeasureDocument
+) {
   let returnArray: Boolean[] = [];
 
   measure.filters.forEach((filter: EcfmpFilter) => {

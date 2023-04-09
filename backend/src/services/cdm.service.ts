@@ -2,11 +2,12 @@ import { AirportCapacity } from '@shared/interfaces/airport.interface';
 import config from '../config';
 import pilotModel, { PilotDocument } from '../models/pilot.model';
 import blockUtils from '../utils/block.utils';
-import timeUtils from '../utils/time.utils';
+import timeUtils, { emptyDate } from '../utils/time.utils';
 import airportService from './airport.service';
 
 import Logger from '@dotfionn/logger';
 import pilotService from './pilot.service';
+import dayjs from 'dayjs';
 const logger = new Logger('vACDM:services:cdm');
 
 export function determineInitialBlock(pilot: PilotDocument): {
@@ -39,6 +40,7 @@ export async function putPilotIntoBlock(
   allPilots: PilotDocument[]
 ): Promise<{ finalBlock: number; finalTtot: Date }> {
   // count all pilots in block
+  pilot.vacdm.ctot = emptyDate;
   const otherPilotsInBlock = allPilots.filter(
     (plt) =>
       plt.flightplan.departure == pilot.flightplan.departure &&
@@ -54,6 +56,30 @@ export async function putPilotIntoBlock(
 
   if (cap.capacity > otherPilotsInBlock.length) {
     // pilot fits into block
+    // now we have to check if pilots in block have same measures and need a MDI therefore
+
+    pilot.measures.forEach(async (measure) => {
+      const pilotsWithSameMeasures = otherPilotsInBlock.filter(
+        (plt) =>
+          plt.measures.find((e) => e.ident === measure.ident) &&
+          plt.callsign != pilot.callsign
+      );
+      if (pilotsWithSameMeasures.length > 0) {
+        pilotsWithSameMeasures.forEach(async (smp) => {
+          if (
+            dayjs(smp.vacdm.ttot).diff(pilot.vacdm.ttot, 'minute') <
+            Math.floor(measure.value / 60)
+          ) {
+            pilot.vacdm.ctot = timeUtils.addMinutes(
+              pilot.vacdm.ttot,
+              Math.floor(measure.value / 60)
+            );
+          } else {
+          }
+        });
+      }
+    });
+
     return setTime(pilot);
   }
 
@@ -100,7 +126,10 @@ async function setTime(pilot: PilotDocument): Promise<{
   finalBlock: number;
   finalTtot: Date;
 }> {
-  if (pilot.vacdm.tsat > pilot.vacdm.tobt || blockUtils.getBlockFromTime(pilot.vacdm.ttot) != pilot.vacdm.blockId) {
+  if (
+    pilot.vacdm.tsat > pilot.vacdm.tobt ||
+    blockUtils.getBlockFromTime(pilot.vacdm.ttot) != pilot.vacdm.blockId
+  ) {
     pilot.vacdm.ttot = blockUtils.getTimeFromBlock(pilot.vacdm.blockId);
     pilot.vacdm.tsat = timeUtils.addMinutes(
       pilot.vacdm.ttot,
@@ -111,6 +140,15 @@ async function setTime(pilot: PilotDocument): Promise<{
   if (pilot.vacdm.tsat <= pilot.vacdm.tobt) {
     pilot.vacdm.tsat = pilot.vacdm.tobt;
     pilot.vacdm.ttot = timeUtils.addMinutes(pilot.vacdm.tsat, pilot.vacdm.exot);
+  }
+
+  if (!timeUtils.isTimeEmpty(pilot.vacdm.ctot)) {
+    pilot.vacdm.blockId = blockUtils.getBlockFromTime(pilot.vacdm.ctot);
+    pilot.vacdm.ttot = pilot.vacdm.ctot;
+    pilot.vacdm.tsat = timeUtils.addMinutes(
+      pilot.vacdm.ctot,
+      -pilot.vacdm.exot
+    );
   }
 
   await pilotService.addLog({
