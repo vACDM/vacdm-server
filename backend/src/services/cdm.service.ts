@@ -41,13 +41,13 @@ export async function putPilotIntoBlock(
 ): Promise<{ finalBlock: number; finalTtot: Date }> {
   // count all pilots in block
   pilot.vacdm.ctot = emptyDate;
-  const otherPilotsInBlock = allPilots.filter(
+  const otherPilotsOnRunway = allPilots.filter(
     (plt) =>
       plt.flightplan.departure == pilot.flightplan.departure &&
       plt.vacdm.block_rwy_designator == pilot.vacdm.block_rwy_designator &&
-      plt.vacdm.blockId == pilot.vacdm.blockId &&
       plt._id != pilot._id
   );
+  const otherPilotsInBlock = otherPilotsOnRunway.filter(plt => plt.vacdm.blockId == pilot.vacdm.blockId);
 
   const cap: AirportCapacity = await airportService.getCapacity(
     pilot.flightplan.departure,
@@ -58,27 +58,26 @@ export async function putPilotIntoBlock(
     // pilot fits into block
     // now we have to check if pilots in block have same measures and need a MDI therefore
 
-    pilot.measures.forEach(async (measure) => {
-      const pilotsWithSameMeasures = otherPilotsInBlock.filter(
+    for (const measure of pilot.measures) {
+      const pilotsWithSameMeasures = otherPilotsOnRunway.filter(
         (plt) =>
           plt.measures.find((e) => e.ident === measure.ident) &&
           plt.callsign != pilot.callsign
       );
       if (pilotsWithSameMeasures.length > 0) {
-        pilotsWithSameMeasures.forEach(async (smp) => {
+        for (const smp of pilotsWithSameMeasures) {
           if (
             dayjs(smp.vacdm.ttot).diff(pilot.vacdm.ttot, 'minute') <
-            Math.floor(measure.value / 60)
+            Math.ceil(measure.value / 60)
           ) {
             pilot.vacdm.ctot = timeUtils.addMinutes(
-              pilot.vacdm.ttot,
-              Math.floor(measure.value / 60)
+              smp.vacdm.ttot,
+              Math.ceil(measure.value / 60)
             );
-          } else {
           }
-        });
+        }
       }
-    });
+    }
 
     return setTime(pilot);
   }
