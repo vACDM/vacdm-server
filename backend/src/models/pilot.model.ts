@@ -50,6 +50,7 @@ export const pilotSchema = new mongoose.Schema(
       blockId: { type: Number, default: -1 },
       block_rwy_designator: { type: String, default: '' },
     },
+    hasBooking: { type: Boolean, default: false },
 
     flightplan: {
       flight_rules: { type: String, default: '' },
