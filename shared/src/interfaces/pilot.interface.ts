@@ -37,6 +37,8 @@ interface Pilot {
     block_rwy_designator: string;
   };
 
+  hasBooking: boolean;
+
   flightplan: {
     flight_rules: string;
 

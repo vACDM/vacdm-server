@@ -7,6 +7,9 @@ import airportService from './airport.service';
 
 import Logger from '@dotfionn/logger';
 import pilotService from './pilot.service';
+
+import bookingsService from './bookings.service';
+import datafeedService from './datafeed.service';
 import dayjs from 'dayjs';
 const logger = new Logger('vACDM:services:cdm');
 
@@ -225,6 +228,28 @@ export async function optimizeBlockAssignments() {
   let allAirports = await airportService.getAllAirports();
 
   let allPilots = await pilotService.getAllPilots();
+
+  const datafeedData = await datafeedService.getRawDatafeed();
+
+  for (let pilot of allPilots) {
+    if (pilot.hasBooking) {
+      continue;
+    }
+
+    const datafeedPilot = await datafeedService.getFlight(pilot.callsign, datafeedData);
+
+    if (datafeedPilot) {
+      const pilotHasBooking = await bookingsService.pilotHasBooking(datafeedPilot.cid);
+      
+      if (pilotHasBooking) {
+        pilot.hasBooking = true;
+        
+        pilot.vacdm.prio += 50;
+      }
+    } 
+
+
+  }
 
   const nowPlusTen = timeUtils.addMinutes(new Date(), 10);
 
