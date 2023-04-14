@@ -244,7 +244,7 @@ export async function optimizeBlockAssignments() {
       if (pilotHasBooking) {
         pilot.hasBooking = true;
         
-        pilot.vacdm.prio += 50;
+        pilot.vacdm.prio += config().eventPrio;
       }
     } 
 

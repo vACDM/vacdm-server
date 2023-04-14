@@ -1,16 +1,16 @@
 import axios from 'axios';
+import config from '../config';
 import dayjs from 'dayjs';
 
 export async function getAllBookings() {
   try {
     const events = await axios.get(
-      'https://slots.vatsim-germany.org/api/events/'
+      config().eventUrl
     );
 
-    const relevantEvents = events.data.data.filter(
-      (e) => e.id === 5
-      //dayjs(new Date()) >= dayjs(e.startEvent) &&
-      //dayjs(new Date()) <= dayjs(e.endEvent)
+    const relevantEvents = events.data.data.filter((e) =>
+      dayjs(new Date()) >= dayjs(e.startEvent) &&
+      dayjs(new Date()) <= dayjs(e.endEvent)
     );
 
     const relevantBookings: any[] = [];
