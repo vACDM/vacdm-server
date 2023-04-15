@@ -14,10 +14,13 @@ export async function getRawDatafeed(): Promise<VatsimTypes.VatsimDatafeed> {
 }
 
 export async function getFlight(
-  callsign: string
+  callsign: string,
+  datafeed: VatsimTypes.VatsimDatafeed | undefined = undefined
 ): Promise<VatsimTypes.VatsimPilot> {
   try {
-    const datafeed = await getRawDatafeed();
+    if (!datafeed) {
+      datafeed = await getRawDatafeed();
+    }
 
     const pilot = datafeed.pilots.find((p) => p.callsign == callsign);
 

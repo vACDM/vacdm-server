@@ -109,10 +109,14 @@ export async function updatePilot(
           changesOps['vacdm.prio'] = 3;
           break;
         }
-        case 'CONFIRMED': {
-          changesOps['vacdm.prio'] = 3;
-          break;
-        }
+        // case 'CONFIRMED': {
+        //   changesOps['vacdm.prio'] = 3;
+        //   break;
+        // }
+      }
+
+      if (pilot.hasBooking) {
+        changesOps['vacdm.prio'] += 50;
       }
     }
 
