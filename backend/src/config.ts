@@ -16,6 +16,9 @@ interface vacdmConfig {
     timeSinceInactive: number;
   };
 
+  eventUrl: string;
+  eventPrio: number;
+
   clientId: string;
   clientSecret: string;
   publicUrl: string;
@@ -51,6 +54,9 @@ export default function config(): vacdmConfig {
       timeSinceLastSeen: Number(process.env.TIME_LAST_SEEN) * 60 * 1000 ?? 15 * 60 * 1000,
       timeSinceInactive: Number(process.env.TIME_INACTIVE) * 60 * 1000 ?? 15 * 60 * 1000,
     },
+
+    eventUrl: process.env.EVENT_URL || 'https://slots.vatsim-germany.org/api/events/',
+    eventPrio: Number(process.env.EVENT_PRIO) || 5,
 
     vatsimAuthUrl: options.vatsimAuthUrl,
     clientId: options.vatsimAuthClientId,
