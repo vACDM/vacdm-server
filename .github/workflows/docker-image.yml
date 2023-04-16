@@ -15,4 +15,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --pull --tag $GITHUB_REPOSITORY:dev
+      run: docker build . --pull --tag vacdm/vacdm:dev
