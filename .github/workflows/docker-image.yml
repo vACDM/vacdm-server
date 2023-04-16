@@ -29,8 +29,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: true
-          tags: vacdm/vacdm:dev
+        run: |
+          docker build --pull -t ${{ env.REGISTRY }}/vacdm/vacdm:dev .
+          docker push ${{ env.REGISTRY }}/vacdm/vacdm:dev
+        
