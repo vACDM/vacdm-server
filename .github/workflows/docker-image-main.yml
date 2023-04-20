@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "main" ]
 
 env:
   REGISTRY: ghcr.io
@@ -28,5 +28,5 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build --pull -t ${{ env.REGISTRY }}/vacdm/vacdm:dev .
-          docker push ${{ env.REGISTRY }}/vacdm/vacdm:dev
+          docker build --pull -t ${{ env.REGISTRY }}/vacdm/vacdm:latest .
+          docker push ${{ env.REGISTRY }}/vacdm/vacdm:latest
