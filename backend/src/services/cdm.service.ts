@@ -2,11 +2,15 @@ import { AirportCapacity } from '@shared/interfaces/airport.interface';
 import config from '../config';
 import pilotModel, { PilotDocument } from '../models/pilot.model';
 import blockUtils from '../utils/block.utils';
-import timeUtils from '../utils/time.utils';
+import timeUtils, { emptyDate } from '../utils/time.utils';
 import airportService from './airport.service';
 
 import Logger from '@dotfionn/logger';
 import pilotService from './pilot.service';
+
+import bookingsService from './bookings.service';
+import datafeedService from './datafeed.service';
+import dayjs from 'dayjs';
 const logger = new Logger('vACDM:services:cdm');
 
 export function determineInitialBlock(pilot: PilotDocument): {
@@ -39,13 +43,14 @@ export async function putPilotIntoBlock(
   allPilots: PilotDocument[]
 ): Promise<{ finalBlock: number; finalTtot: Date }> {
   // count all pilots in block
-  const otherPilotsInBlock = allPilots.filter(
+  pilot.vacdm.ctot = emptyDate;
+  const otherPilotsOnRunway = allPilots.filter(
     (plt) =>
       plt.flightplan.departure == pilot.flightplan.departure &&
       plt.vacdm.block_rwy_designator == pilot.vacdm.block_rwy_designator &&
-      plt.vacdm.blockId == pilot.vacdm.blockId &&
       plt._id != pilot._id
   );
+  const otherPilotsInBlock = otherPilotsOnRunway.filter(plt => plt.vacdm.blockId == pilot.vacdm.blockId);
 
   const cap: AirportCapacity = await airportService.getCapacity(
     pilot.flightplan.departure,
@@ -54,6 +59,29 @@ export async function putPilotIntoBlock(
 
   if (cap.capacity > otherPilotsInBlock.length) {
     // pilot fits into block
+    // now we have to check if pilots in block have same measures and need a MDI therefore
+
+    for (const measure of pilot.measures) {
+      const pilotsWithSameMeasures = otherPilotsOnRunway.filter(
+        (plt) =>
+          plt.measures.find((e) => e.ident === measure.ident) &&
+          plt.callsign != pilot.callsign
+      );
+      if (pilotsWithSameMeasures.length > 0) {
+        for (const smp of pilotsWithSameMeasures) {
+          if (
+            dayjs(smp.vacdm.ttot).diff(pilot.vacdm.ttot, 'minute') <
+            Math.ceil(measure.value / 60)
+          ) {
+            pilot.vacdm.ctot = timeUtils.addMinutes(
+              smp.vacdm.ttot,
+              Math.ceil(measure.value / 60)
+            );
+          }
+        }
+      }
+    }
+
     return setTime(pilot);
   }
 
@@ -100,7 +128,10 @@ async function setTime(pilot: PilotDocument): Promise<{
   finalBlock: number;
   finalTtot: Date;
 }> {
-  if (pilot.vacdm.tsat > pilot.vacdm.tobt || blockUtils.getBlockFromTime(pilot.vacdm.ttot) != pilot.vacdm.blockId) {
+  if (
+    pilot.vacdm.tsat > pilot.vacdm.tobt ||
+    blockUtils.getBlockFromTime(pilot.vacdm.ttot) != pilot.vacdm.blockId
+  ) {
     pilot.vacdm.ttot = blockUtils.getTimeFromBlock(pilot.vacdm.blockId);
     pilot.vacdm.tsat = timeUtils.addMinutes(
       pilot.vacdm.ttot,
@@ -111,6 +142,15 @@ async function setTime(pilot: PilotDocument): Promise<{
   if (pilot.vacdm.tsat <= pilot.vacdm.tobt) {
     pilot.vacdm.tsat = pilot.vacdm.tobt;
     pilot.vacdm.ttot = timeUtils.addMinutes(pilot.vacdm.tsat, pilot.vacdm.exot);
+  }
+
+  if (!timeUtils.isTimeEmpty(pilot.vacdm.ctot)) {
+    pilot.vacdm.blockId = blockUtils.getBlockFromTime(pilot.vacdm.ctot);
+    pilot.vacdm.ttot = pilot.vacdm.ctot;
+    pilot.vacdm.tsat = timeUtils.addMinutes(
+      pilot.vacdm.ctot,
+      -pilot.vacdm.exot
+    );
   }
 
   await pilotService.addLog({
@@ -188,6 +228,28 @@ export async function optimizeBlockAssignments() {
   let allAirports = await airportService.getAllAirports();
 
   let allPilots = await pilotService.getAllPilots();
+
+  const datafeedData = await datafeedService.getRawDatafeed();
+
+  for (let pilot of allPilots) {
+    if (pilot.hasBooking) {
+      continue;
+    }
+
+    const datafeedPilot = await datafeedService.getFlight(pilot.callsign, datafeedData);
+
+    if (datafeedPilot) {
+      const pilotHasBooking = await bookingsService.pilotHasBooking(datafeedPilot.cid);
+      
+      if (pilotHasBooking) {
+        pilot.hasBooking = true;
+        
+        pilot.vacdm.prio += config().eventPrio;
+      }
+    } 
+
+
+  }
 
   const nowPlusTen = timeUtils.addMinutes(new Date(), 10);
 

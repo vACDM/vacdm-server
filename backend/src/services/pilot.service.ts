@@ -6,6 +6,7 @@ import timeUtils from '../utils/time.utils';
 import cdmService from './cdm.service';
 import pilotLogModel, { PilotLogDocument } from '../models/pilotLog.model';
 import archiveModel, { ArchiveDocument } from '../models/archive.model';
+import config from '../config';
 
 export async function getAllPilots(filter: { [key: string]: any } = {}) {
   try {
@@ -109,10 +110,14 @@ export async function updatePilot(
           changesOps['vacdm.prio'] = 3;
           break;
         }
-        case 'CONFIRMED': {
-          changesOps['vacdm.prio'] = 3;
-          break;
-        }
+        // case 'CONFIRMED': {
+        //   changesOps['vacdm.prio'] = 3;
+        //   break;
+        // }
+      }
+
+      if (pilot.hasBooking) {
+        changesOps['vacdm.prio'] += config().eventPrio;
       }
     }
 

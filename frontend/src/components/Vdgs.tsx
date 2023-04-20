@@ -60,10 +60,10 @@ const Vdgs = () => {
       return '';
     }
 
-    if (pilot?.vacdm.tobt_state !== "CONFIRMED" && pilot?.vacdm.tobt_state !== "NOW") {
-      return <span className="textColorOrange">Your TOBT is not yet confirmed!</span>
+    if (isTobtConfirmed(pilot?.vacdm.tobt_state)) {
+      return <span className="textColorGreen">Your TOBT is confirmed!<br />Set your TOBT to get your TSAT.</span>
     } else {
-      return <span className="textColorGreen">Your TOBT is confirmed!</span>
+      return <span className="textColorOrange">Your TOBT is not yet confirmed!</span>
     }
   }
 
@@ -73,12 +73,8 @@ const Vdgs = () => {
     return now.diff(tsat, "minute") > 5 ? "textColorRed" : "";
   }
 
-  function buttonDisabled(time: Date | undefined) {
-    let now = dayjs().second(0);
-    let tobt = dayjs(time).second(0);
-    console.log(now.diff(tobt, "minute"));
-
-    return now.diff(tobt, "minute") >= -10 ? true : false;
+  function isTobtConfirmed(tobtState: string | undefined) {
+    return tobtState === "CONFIRMED" || tobtState === "NOW"
   }
 
   async function updateTobt() {
@@ -133,14 +129,14 @@ const Vdgs = () => {
                 <div className="inline-block m-2">
                   <div className="text-center">{pilot?.callsign}</div>
                   <div className="text-center">
-                    TOBT {TimeUtils.formatTime(pilot?.vacdm?.tobt)} UTC
+                     {isTobtConfirmed(pilot?.vacdm?.tobt_state) ? 'TOBT ' + TimeUtils.formatTime(pilot?.vacdm?.tobt) + ' UTC' : 'NO TOBT' } 
                   </div>
                   <div className="text-center">
-                    TSAT {TimeUtils.formatTime(pilot?.vacdm?.tsat)} UTC
+                     {isTobtConfirmed(pilot?.vacdm?.tobt_state) ? 'TSAT ' + TimeUtils.formatTime(pilot?.vacdm?.tsat) + ' UTC' : '-'}
                   </div>
                   <div className="text-center">
                     <span className={vdgsColorController(pilot?.vacdm?.tsat)}>
-                      {TimeUtils.calculateVdgsDiff(pilot?.vacdm?.tsat)}
+                      {isTobtConfirmed(pilot?.vacdm?.tobt_state) ? TimeUtils.calculateVdgsDiff(pilot?.vacdm?.tsat) : '-'}
                     </span>
                   </div>
                   <div className="text-center">
@@ -180,7 +176,7 @@ const Vdgs = () => {
                 disabled={!pilot?.callsign  || pilot?.callsign === "" ? true : false}
               ></Button>
             </div>
-            <p>Your TOBT (Target Off-Block Time) is the time you are fully ready for pushback.
+            <p><b>Info:</b> Your TOBT (Target Off-Block Time) is the time you are fully ready for pushback.
               The initial TOBT you see here is the one extracted from your fight plan on VATSIM.
               Once you "confirm" or "update" your TOBT in the field above, ATC is able to better plan a departure sequence.
             </p>
