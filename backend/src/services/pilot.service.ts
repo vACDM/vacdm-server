@@ -100,6 +100,10 @@ export async function updatePilot(
       changesOps['vacdm.tobt_state'] = 'CONFIRMED';
     }
 
+    if (new Date(changesOps['vacdm.tobt']) <= pilot.vacdm.tobt) {
+      changesOps['vacdm.tsat'] = timeUtils.emptyDate;
+    }
+
     if (changes.vacdm?.tobt_state) {
       switch (changes.vacdm?.tobt_state) {
         case 'FLIGHTPLAN': {
