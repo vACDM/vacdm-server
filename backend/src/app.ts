@@ -32,7 +32,7 @@ import ecfmpService from './services/ecfmp.service';
       try {
         await cdmService.cleanupPilots();
       } catch (error) {
-        logger.error('error occurred when cleaning up pilots');
+        logger.error('error occurred when cleaning up pilots', error);
       }
     }, 10000);
 
@@ -53,7 +53,7 @@ import ecfmpService from './services/ecfmp.service';
       try {
         await cdmService.optimizeBlockAssignments();
       } catch (error) {
-        logger.error('error occurred when optimizing block assignments');
+        logger.error('error occurred when optimizing block assignments', error);
       }
     }
 

@@ -51,8 +51,8 @@ export default function config(): vacdmConfig {
     },
 
     timeframes: {
-      timeSinceLastSeen: Number(process.env.TIME_LAST_SEEN) * 60 * 1000 ?? 15 * 60 * 1000,
-      timeSinceInactive: Number(process.env.TIME_INACTIVE) * 60 * 1000 ?? 15 * 60 * 1000,
+      timeSinceLastSeen: Number(process.env.TIME_LAST_SEEN || 5) * 60 * 1000,
+      timeSinceInactive: Number(process.env.TIME_INACTIVE || 5) * 60 * 1000
     },
 
     eventUrl: process.env.EVENT_URL || 'https://slots.vatsim-germany.org/api/events/',
