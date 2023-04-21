@@ -16,7 +16,7 @@ export async function getRawDatafeed(): Promise<VatsimTypes.VatsimDatafeed> {
 export async function getFlight(
   callsign: string,
   datafeed: VatsimTypes.VatsimDatafeed | undefined = undefined
-): Promise<VatsimTypes.VatsimPilot> {
+): Promise<VatsimTypes.VatsimPilot | undefined> {
   try {
     if (!datafeed) {
       datafeed = await getRawDatafeed();
@@ -24,9 +24,6 @@ export async function getFlight(
 
     const pilot = datafeed.pilots.find((p) => p.callsign == callsign);
 
-    if (!pilot) {
-      throw new Error('requested flight not online');
-    }
 
     return pilot;
   } catch (error) {
@@ -36,15 +33,12 @@ export async function getFlight(
 
 export async function getFlightByCid(
   cid: number
-): Promise<VatsimTypes.VatsimPilot> {
+): Promise<VatsimTypes.VatsimPilot | undefined> {
   try {
     const datafeed = await getRawDatafeed();
 
     const pilot = datafeed.pilots.find((p) => p.cid == cid);
 
-    if (!pilot) {
-      throw new Error('requested Cid not found');
-    }
 
     return pilot;
   } catch (error) {

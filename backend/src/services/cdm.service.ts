@@ -232,6 +232,8 @@ export async function optimizeBlockAssignments() {
   const datafeedData = await datafeedService.getRawDatafeed();
 
   for (let pilot of allPilots) {
+    console.log(pilot.callsign);
+    
     if (pilot.hasBooking) {
       continue;
     }
@@ -251,6 +253,8 @@ export async function optimizeBlockAssignments() {
 
   }
 
+  console.log('done');
+  
   const nowPlusTen = timeUtils.addMinutes(new Date(), 10);
 
   for (let airport of allAirports) {
