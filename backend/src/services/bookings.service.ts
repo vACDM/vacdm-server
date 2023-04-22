@@ -16,7 +16,10 @@ export async function getAllBookings() {
     const relevantBookings: any[] = [];
 
     for (let event of relevantEvents) {
-      const bookings = await axios.get(event.links.bookings);
+
+      const updatedURL = event.links.bookings.replace(/^https:\/\//i, 'http://');
+
+      const bookings = await axios.get(updatedURL);
 
       for (let booking of bookings.data.data) {
         relevantBookings.push(booking);
