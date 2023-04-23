@@ -18,6 +18,7 @@ interface vacdmConfig {
 
   eventUrl: string;
   eventPrio: number;
+  eventPullInterval: number;
 
   clientId: string;
   clientSecret: string;
@@ -57,6 +58,7 @@ export default function config(): vacdmConfig {
 
     eventUrl: process.env.EVENT_URL || 'https://slots.vatsim-germany.org/api/events/',
     eventPrio: Number(process.env.EVENT_PRIO) || 5,
+    eventPullInterval: Number(process.env.EVENT_PULL_INTERVAL || 5),
 
     vatsimAuthUrl: options.vatsimAuthUrl,
     clientId: options.vatsimAuthClientId,

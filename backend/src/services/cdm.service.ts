@@ -38,6 +38,7 @@ export function determineInitialBlock(pilot: PilotDocument): {
   };
 }
 
+
 export async function putPilotIntoBlock(
   pilot: PilotDocument,
   allPilots: PilotDocument[]
@@ -179,11 +180,6 @@ export async function cleanupPilots() {
     })
     .exec();
 
-  logger.debug(
-    new Date(Date.now() - config().timeframes.timeSinceInactive),
-    new Date()
-  );
-
   logger.debug('pilotsToBeDeleted', pilotsToBeDeleted);
 
   for (let pilot of pilotsToBeDeleted) {
@@ -231,9 +227,7 @@ export async function optimizeBlockAssignments() {
 
   const datafeedData = await datafeedService.getRawDatafeed();
 
-  for (let pilot of allPilots) {
-    console.log(pilot.callsign);
-    
+  for (let pilot of allPilots) {   
     if (pilot.hasBooking) {
       continue;
     }
@@ -252,8 +246,6 @@ export async function optimizeBlockAssignments() {
 
 
   }
-
-  console.log('done');
   
   const nowPlusTen = timeUtils.addMinutes(new Date(), 10);
 
