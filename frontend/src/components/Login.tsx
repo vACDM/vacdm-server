@@ -46,24 +46,25 @@ const Login = () => {
 
   const atcFooter = (
     <span>
-      <Button
-        label='Login with VATSIM SSO'
-        className='p-button p-button-success'
-        onClick={redirectToVatsimAuth}
-      />
+      <Button label="Login with VATSIM SSO" className="p-button p-button-success" onClick={redirectToVatsimAuth} />
     </span>
   );
 
   return (
     <>
-      <div className='flex justify-content-evenly flex-wrap'>
-        <div className='flex align-items-center justify-content-center'>
+      <div className="flex justify-content-evenly flex-wrap">
+        <div className="flex flex-column gap-3 align-items-center justify-content-center">
           <Card
-            title='vACDM'
-            className='login-card text-center surface-200'
+            title="vACDM"
+            className="login-card text-center surface-200"
             style={{ width: '25rem' }}
             footer={atcFooter}
-          ></Card>
+          />
+          {config?.vaccImprintUrl && (
+            <a className="text-gray-500" href={config?.vaccImprintUrl}>
+              Imprint
+            </a>
+          )}
         </div>
       </div>
     </>
