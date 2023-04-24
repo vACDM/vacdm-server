@@ -44,7 +44,7 @@ const Vdgs = () => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   function utcTime() {
-    return setClock(dayjs().utc(true).format('HH:mm:ss'));
+    return setClock(dayjs().utc().format('HH:mm:ss'));
   }
 
   async function checkPilot() {
