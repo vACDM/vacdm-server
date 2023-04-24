@@ -14,10 +14,7 @@ export async function authUser(code: string): Promise<string> {
   };
 
   try {
-    const tokenResponse = await axios.post(
-      config().vatsimAuthUrl + '/oauth/token',
-      body
-    );
+    const tokenResponse = await axios.post(config().vatsimAuthUrl + '/oauth/token', body);
 
     const userResponse = await axios.get(config().vatsimAuthUrl + '/api/user', {
       headers: {
@@ -36,7 +33,27 @@ export async function authUser(code: string): Promise<string> {
       apidata: userFromApi,
       access_token: tokenResponse.data.access_token,
       refresh_token: tokenResponse?.data?.refresh_token ?? null,
+      vacdm: {},
     };
+
+    // Auth user from VACC Auth URL
+    if (config().vaccAuthUrl !== undefined && config().vaccAuthToken !== undefined) {
+      try {
+        const vaccAuthResponse = await axios.get(config().vaccAuthUrl, {
+          headers: {
+            Authorization: 'Bearer ' + config().vaccAuthToken,
+          },
+          params: {
+            vatsimid: userFromApi.cid,
+          },
+        });
+
+        if (vaccAuthResponse.status == 200) updateOps.vacdm.atc = true;
+        else updateOps.vacdm.atc = false;
+      } catch (err) {
+        updateOps.vacdm.atc = false;
+      }
+    }
 
     if (userFromApi.oauth.token_valid != 'true') {
       // do not save tokens if :wow: they aren't valid
