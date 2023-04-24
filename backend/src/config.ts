@@ -1,7 +1,4 @@
-import {
-  FrontendSettings,
-  PluginSettings,
-} from '@shared/interfaces/config.interface';
+import { FrontendSettings, PluginSettings } from '@shared/interfaces/config.interface';
 
 interface vacdmConfig {
   mongoUri: string;
@@ -32,6 +29,8 @@ export default function config(): vacdmConfig {
     serverName: process.env.SERVER_NAME ?? 'vACDM Server',
     vatsimAuthUrl: process.env.VATSIM_AUTH_URL ?? 'https://auth.vatsim.net',
     vatsimAuthClientId: process.env.CLIENT_ID ?? '',
+    vaccLogoUrl: process.env.VACC_LOGO_URL ?? '',
+    vaccImprintUrl: process.env.VACC_IMPRINT_URL ?? '',
   };
 
   return {
@@ -49,11 +48,13 @@ export default function config(): vacdmConfig {
       serverName: options.serverName,
       vatsimAuthUrl: options.vatsimAuthUrl,
       vatsimAuthClientId: options.vatsimAuthClientId,
+      vaccLogoUrl: options.vaccLogoUrl,
+      vaccImprintUrl: options.vaccImprintUrl,
     },
 
     timeframes: {
       timeSinceLastSeen: Number(process.env.TIME_LAST_SEEN || 5) * 60 * 1000,
-      timeSinceInactive: Number(process.env.TIME_INACTIVE || 5) * 60 * 1000
+      timeSinceInactive: Number(process.env.TIME_INACTIVE || 5) * 60 * 1000,
     },
 
     eventUrl: process.env.EVENT_URL || 'https://slots.vatsim-germany.org/api/events/',
