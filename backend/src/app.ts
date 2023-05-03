@@ -44,7 +44,7 @@ import ecfmpService from './services/ecfmp.service';
       } catch (error) {
         logger.error('error occurred getting ecfmp details');
       }
-    }, 10000);
+    }, 60000);
 
     while (true) {
       await (() => new Promise((res, rej) => setTimeout(res, 10000)))();
