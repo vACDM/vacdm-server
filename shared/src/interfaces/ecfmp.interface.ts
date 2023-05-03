@@ -8,6 +8,7 @@ export interface EcfmpMeasure {
   id: number;
   ident: string;
   event_id: number;
+  enabled: boolean;
   reason: string;
   starttime: Date;
   endtime: Date;
