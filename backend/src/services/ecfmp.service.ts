@@ -77,7 +77,8 @@ export async function allocateMeasuresToPilots() {
         if (
           dayjs(measure.starttime).isBefore(new Date(pilot.vacdm.ttot)) &&
           dayjs(measure.endtime).isAfter(new Date(pilot.vacdm.ttot)) &&
-          (await isMeasureValidForPilot(pilot, measure))
+          (await isMeasureValidForPilot(pilot, measure)) &&
+          measure.enabled
         ) {
           if (!pilot.measures.find((e) => e.ident === measure.ident)) {
             pilot.measures.push({
@@ -210,4 +211,20 @@ export async function doesMeasureExist(ident: string): Promise<boolean> {
   }
 }
 
-export default { getAllMeasures, getEcfmpDetails, allocateMeasuresToPilots };
+export async function setMeasureEnable(measureId: string, enabled: boolean) {
+  try {
+    const measure: EcfmpMeasureDocument | null = await ecfmpModel.findOne({ id: measureId }).exec();
+
+    if (measure) {
+      measure.enabled = enabled;
+
+      await measure.save();
+    }
+
+    return await ecfmpModel.find().exec();
+  } catch (e) {
+    throw e;
+  }
+}
+
+export default { getAllMeasures, getEcfmpDetails, allocateMeasuresToPilots, setMeasureEnable };
