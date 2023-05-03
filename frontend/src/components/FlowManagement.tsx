@@ -1,6 +1,7 @@
 import { EcfmpMeasure } from "@shared/interfaces/ecfmp.interface";
 import { Card } from "primereact/card";
 import { Column } from "primereact/column";
+import { Checkbox } from "primereact/checkbox";
 import { DataTable } from "primereact/datatable";
 import { useEffect, useState } from "react";
 import FlowService from "services/FlowService";
@@ -45,6 +46,24 @@ const FlowManagement = () => {
     );
   };
 
+  const enabledColumnTemplate = (rowData: EcfmpMeasure) => {
+    let checked = rowData.enabled;
+    return (
+      <Checkbox
+        checked={checked}
+        onChange={(e) => {
+          setMeasureEnabled(rowData, e.checked);
+          checked = e.checked;
+        }}
+      />
+    );
+  };
+
+  const setMeasureEnabled = async (measure: EcfmpMeasure, checked: boolean) => {
+    const measures = await FlowService.setMeasureEnable(measure.id, checked);
+    setMeasures(measures);
+  };
+
   return (
     <Card>
       <DataTable
@@ -54,6 +73,11 @@ const FlowManagement = () => {
         loading={loading}
         dataKey="id"
       >
+        <Column
+          field="enabled"
+          header="Enabled"
+          body={enabledColumnTemplate}
+        />
         <Column field="ident" header="Measure ID" />
         <Column
           field="starttime"
