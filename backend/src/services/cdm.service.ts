@@ -11,6 +11,7 @@ import pilotService from './pilot.service';
 import bookingsService from './bookings.service';
 import datafeedService from './datafeed.service';
 import dayjs from 'dayjs';
+import userModel from '../models/user.model';
 const logger = new Logger('vACDM:services:cdm');
 
 export function determineInitialBlock(pilot: PilotDocument): {
@@ -336,9 +337,27 @@ export async function optimizeBlockAssignments() {
   }
 }
 
+export async function cleanupUsers() {
+  const usersToBeDeleted = await userModel
+    .find({
+      vacdm: {
+        admin: false,
+        atc: false,
+        banned: false,
+      },
+      updatedAt: {
+        $lte: new Date(Date.now() - config().timeframes.timeSinceLastLogin).getTime(),
+      },
+    })
+    .exec();
+
+  for (let user of usersToBeDeleted) await user.delete();
+}
+
 export default {
   determineInitialBlock,
   putPilotIntoBlock,
   cleanupPilots,
   optimizeBlockAssignments,
+  cleanupUsers,
 };

@@ -11,6 +11,7 @@ interface vacdmConfig {
   timeframes: {
     timeSinceLastSeen: number;
     timeSinceInactive: number;
+    timeSinceLastLogin: number;
   };
 
   eventUrl: string;
@@ -55,6 +56,7 @@ export default function config(): vacdmConfig {
     timeframes: {
       timeSinceLastSeen: Number(process.env.TIME_LAST_SEEN || 5) * 60 * 1000,
       timeSinceInactive: Number(process.env.TIME_INACTIVE || 5) * 60 * 1000,
+      timeSinceLastLogin: Number(process.env.TIME_LAST_LOGIN || 48) * 60 * 60 * 1000,
     },
 
     eventUrl: process.env.EVENT_URL || 'https://slots.vatsim-germany.org/api/events/',
