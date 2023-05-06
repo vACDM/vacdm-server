@@ -8,11 +8,12 @@ import bodyparser from 'body-parser';
 import router from './router';
 import mongoose from 'mongoose';
 
-import cookieParser from "cookie-parser";
+import cookieParser from 'cookie-parser';
 
 import config from './config';
 import cdmService from './services/cdm.service';
 import ecfmpService from './services/ecfmp.service';
+import natsService from './services/nats.service';
 // import session from './utils/session';
 
 (async () => {
@@ -22,10 +23,25 @@ import ecfmpService from './services/ecfmp.service';
     throw new Error('MONGO_URI has to be set!');
   }
 
+  if (!config().natsHosts.length) {
+    throw new Error(
+      'NATS_HOSTS has to be set and a comma separated list of hostnames!'
+    );
+  }
+
+  natsService.getConnection();
+
   await mongoose.connect(config().mongoUri);
 
   if (config().role == 'WORKER') {
     logger.info('starting worker...');
+
+    natsService.subscribe({
+      topic: 'aaa',
+      callback(message) {
+        console.log(message);
+      },
+    });
 
     setInterval(async () => {
       logger.debug('running cleanup');
@@ -56,7 +72,6 @@ import ecfmpService from './services/ecfmp.service';
         logger.error('error occurred when optimizing block assignments', error);
       }
     }
-
 
     // return, do not initialize express app
   }

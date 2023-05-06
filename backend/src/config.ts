@@ -22,6 +22,9 @@ interface vacdmConfig {
   publicUrl: string;
   vatsimAuthUrl: string;
   jwtSecret: string;
+
+  natsHosts: string[];
+  natsPrefix: string;
 }
 
 export default function config(): vacdmConfig {
@@ -67,5 +70,8 @@ export default function config(): vacdmConfig {
 
     publicUrl: process.env.PUBLIC_URL ?? '',
     jwtSecret: process.env.JWT_SECRET ?? 'super-secret-secret!',
+
+    natsHosts: (process.env.NATS_HOSTS ?? '').split(',').map(str => str.trim()).filter(Boolean),
+    natsPrefix: process.env.NATS_PREFIX ?? '',
   };
 }

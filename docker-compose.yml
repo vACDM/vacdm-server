@@ -24,6 +24,8 @@ services:
       - JWT_SECRET
       - ALLOW_SIM=true
       - ALLOW_OBS_MASTER=true
+      - NATS_HOSTS=nats
+      - NATS_PREFIX=vacdm-dev
   worker:
     build:
       context: .
@@ -36,3 +38,7 @@ services:
     environment:
       - MONGO_URI
       - ROLE=WORKER
+      - NATS_HOSTS=nats
+      - NATS_PREFIX=vacdm-dev
+  nats:
+    image: nats:alpine

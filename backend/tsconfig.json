@@ -13,6 +13,7 @@
     "removeComments": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "paths": {
       "@shared/*": ["../../shared/src/*"]
     }
