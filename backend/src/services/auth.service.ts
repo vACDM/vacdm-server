@@ -3,6 +3,7 @@ import userModel, { UserDocument } from '../models/user.model';
 import jwt from 'jsonwebtoken';
 import nestedobjectsUtils from '../utils/nestedobjects.utils';
 import config from '../config';
+import vaccAuth_URL from './vacc.service';
 
 export async function authUser(code: string): Promise<string> {
   let body = {
@@ -37,22 +38,8 @@ export async function authUser(code: string): Promise<string> {
     };
 
     // Auth user from VACC Auth URL
-    if (config().vaccAuthUrl !== undefined && config().vaccAuthToken !== undefined) {
-      try {
-        const vaccAuthResponse = await axios.get(config().vaccAuthUrl, {
-          headers: {
-            Authorization: 'Bearer ' + config().vaccAuthToken,
-          },
-          params: {
-            vatsimid: userFromApi.cid,
-          },
-        });
-
-        if (vaccAuthResponse.status == 200) updateOps.vacdm.atc = true;
-        else updateOps.vacdm.atc = false;
-      } catch (err) {
-        updateOps.vacdm.atc = false;
-      }
+    if (config().vaccAuthType !== undefined) {
+      updateOps.vacdm.atc = await vaccAuth(userFromApi.cid);
     }
 
     if (userFromApi.oauth.token_valid != 'true') {
@@ -116,6 +103,15 @@ export async function getUserFromToken(token: string): Promise<UserDocument> {
     return user;
   } catch (error) {
     throw error;
+  }
+}
+
+async function vaccAuth(cid: string): Promise<boolean> {
+  switch (config().vaccAuthType) {
+    case 'URL':
+      return await vaccAuth_URL(cid);
+    default:
+      return false;
   }
 }
 
