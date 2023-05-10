@@ -68,11 +68,11 @@ export async function getLegacyMeasures(
   }
 }
 
-export async function setMeasureEnable(req: Request, res: Response, next: NextFunction) {
+export async function editMeasure(req: Request, res: Response, next: NextFunction) {
   try {
-    const measures = await ecfmpService.setMeasureEnable(req.params.id, req.body.enabled);
+    const measure = await ecfmpService.editMeasure(req.body);
 
-    res.json(measures);
+    res.json(measure);
   } catch (error) {
     next(error);
   }
@@ -81,5 +81,5 @@ export async function setMeasureEnable(req: Request, res: Response, next: NextFu
 export default {
   getAllMeasures,
   getLegacyMeasures,
-  setMeasureEnable,
+  editMeasure,
 };

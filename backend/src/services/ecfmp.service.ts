@@ -211,20 +211,15 @@ export async function doesMeasureExist(ident: string): Promise<boolean> {
   }
 }
 
-export async function setMeasureEnable(measureId: string, enabled: boolean) {
+export async function editMeasure(measure: EcfmpMeasureDocument) {
   try {
-    const measure: EcfmpMeasureDocument | null = await ecfmpModel.findOne({ id: measureId }).exec();
-
-    if (measure) {
-      measure.enabled = enabled;
-
-      await measure.save();
-    }
-
-    return await ecfmpModel.find().exec();
+    const updatedMeasure = await ecfmpModel.findOneAndUpdate({ id: measure.id }, { enabled: measure.enabled }, {new: true}).exec();
+    console.log(updatedMeasure);
+    return updatedMeasure;
   } catch (e) {
+    console.log('test');
     throw e;
   }
 }
 
-export default { getAllMeasures, getEcfmpDetails, allocateMeasuresToPilots, setMeasureEnable };
+export default { getAllMeasures, getEcfmpDetails, allocateMeasuresToPilots, editMeasure };

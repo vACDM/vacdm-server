@@ -13,16 +13,14 @@ export async function getAllMeasures(): Promise<EcfmpMeasure[]> {
   }
 }
 
-export async function setMeasureEnable(measureId: number, enabled: boolean): Promise<EcfmpMeasure[]> {
+export async function setMeasureEnable(measureId: number, enabled: boolean): Promise<EcfmpMeasure> {
   try {
-    const measures = await axios.patch<EcfmpMeasure[]>(
-      `/api/v1/measures/${measureId}`,
-      {
-        enabled: enabled,
-      }
-    );
+    const measure = await axios.patch<EcfmpMeasure>(`/api/v1/measures/${measureId}`, {
+      id: measureId,
+      enabled: enabled,
+    });
 
-    return measures.data;
+    return measure.data;
   } catch (error) {
     throw error;
   }
