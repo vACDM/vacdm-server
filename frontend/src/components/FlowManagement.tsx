@@ -61,7 +61,6 @@ const FlowManagement = () => {
 
   const setMeasureEnabled = async (measure: EcfmpMeasure, checked: boolean) => {
     const updatedMeasure = await FlowService.setMeasureEnable(measure.id, checked);
-    console.log([...measures.filter((_measure) => _measure.id !== measure.id), updatedMeasure]);
     setMeasures((measures) => [...measures.filter((_measure) => _measure.id !== measure.id), updatedMeasure]);    
   };
 

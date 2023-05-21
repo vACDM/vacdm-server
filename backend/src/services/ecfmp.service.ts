@@ -11,6 +11,7 @@ import Pilot from "@shared/interfaces/pilot.interface";
 import pilotModel, { PilotDocument } from "../models/pilot.model";
 
 import dayjs from "dayjs";
+import { measureMemory } from "vm";
 
 export async function getAllMeasures() {
   try {
@@ -211,13 +212,11 @@ export async function doesMeasureExist(ident: string): Promise<boolean> {
   }
 }
 
-export async function editMeasure(measure: EcfmpMeasureDocument) {
+export async function editMeasure(measureId: number, measure: EcfmpMeasureDocument) {
   try {
-    const updatedMeasure = await ecfmpModel.findOneAndUpdate({ id: measure.id }, { enabled: measure.enabled }, {new: true}).exec();
-    console.log(updatedMeasure);
+    const updatedMeasure = await ecfmpModel.findOneAndUpdate({ id: measureId }, { enabled: measure.enabled }, {new: true}).exec();
     return updatedMeasure;
   } catch (e) {
-    console.log('test');
     throw e;
   }
 }
