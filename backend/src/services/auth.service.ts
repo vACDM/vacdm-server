@@ -3,7 +3,7 @@ import userModel, { UserDocument } from '../models/user.model';
 import jwt from 'jsonwebtoken';
 import nestedobjectsUtils from '../utils/nestedobjects.utils';
 import config from '../config';
-import vaccAuth_URL from './vacc.service';
+import { vaccAuth } from './vacc.service';
 
 export async function authUser(code: string): Promise<string> {
   let body = {
@@ -103,15 +103,6 @@ export async function getUserFromToken(token: string): Promise<UserDocument> {
     return user;
   } catch (error) {
     throw error;
-  }
-}
-
-async function vaccAuth(cid: string): Promise<boolean> {
-  switch (config().vaccAuthType) {
-    case 'URL':
-      return await vaccAuth_URL(cid);
-    default:
-      return false;
   }
 }
 
