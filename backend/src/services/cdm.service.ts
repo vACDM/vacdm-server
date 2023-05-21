@@ -351,7 +351,7 @@ export async function cleanupUsers() {
     })
     .exec();
 
-  for (let user of usersToBeDeleted) await user.delete();
+  await Promise.allSettled(usersToBeDeleted.map(user => user.delete()));
 }
 
 export default {
