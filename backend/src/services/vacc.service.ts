@@ -1,10 +1,14 @@
 import axios from 'axios';
 import config from '../config';
 
-export async function vaccAuth(cid: string): Promise<boolean> {
+type VaccAuthData = {
+  cid: string;
+}
+
+export async function vaccAuth(authData: VaccAuthData): Promise<boolean> {
   switch (config().vaccAuthType) {
     case 'URL':
-      return await vaccAuth_URL(cid);
+      return await vaccAuth_URL(authData.cid);
     default:
       return false;
   }
@@ -20,11 +24,7 @@ export async function vaccAuth_URL(cid: string): Promise<boolean> {
         vatsimid: cid,
       },
     });
-    if (vaccAuthResponse.status == 200) {
-      return true;
-    } else {
-      return false;
-    }
+    return vaccAuthResponse.status == 200;
   } catch (err) {
     return false;
   }
