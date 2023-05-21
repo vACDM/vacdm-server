@@ -11,7 +11,6 @@ import Pilot from "@shared/interfaces/pilot.interface";
 import pilotModel, { PilotDocument } from "../models/pilot.model";
 
 import dayjs from "dayjs";
-import { measureMemory } from "vm";
 
 export async function getAllMeasures() {
   try {
