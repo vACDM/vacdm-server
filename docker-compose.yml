@@ -19,6 +19,10 @@ services:
       - CLIENT_SECRET
       - PUBLIC_URL
       - VATSIM_AUTH_URL
+      - VACC_AUTH_URL
+      - VACC_AUTH_TOKEN
+      - VACC_LOGO_URL
+      - VACC_IMPRINT_URL
       - JWT_SECRET
       - ALLOW_SIM=true
       - ALLOW_OBS_MASTER=true

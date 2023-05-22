@@ -4,11 +4,11 @@
     "colId": "f8df80ce-c3f6-43a5-b6f1-21a085c481ee",
     "containerId": "2db3e1bc-2bdc-42c6-a979-85c6ad999ee7",
     "name": "get all pilots",
-    "url": "http://localhost:3030/api/v1/pilots/aaa/logs",
+    "url": "http://localhost:3030/api/v1/pilots/",
     "method": "GET",
     "sortNum": 10000,
     "created": "2022-08-07T13:53:56.655Z",
-    "modified": "2022-08-11T18:10:42.398Z",
+    "modified": "2023-04-17T07:35:20.025Z",
     "headers": [],
     "params": [],
     "tests": []

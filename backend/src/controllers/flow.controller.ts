@@ -68,7 +68,18 @@ export async function getLegacyMeasures(
   }
 }
 
+export async function editMeasure(req: Request, res: Response, next: NextFunction) {
+  try {
+    const measure = await ecfmpService.editMeasure(req.body);
+
+    res.json(measure);
+  } catch (error) {
+    next(error);
+  }
+}
+
 export default {
   getAllMeasures,
-  getLegacyMeasures
+  getLegacyMeasures,
+  editMeasure,
 };
