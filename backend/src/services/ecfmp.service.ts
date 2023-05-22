@@ -213,7 +213,12 @@ export async function doesMeasureExist(ident: string): Promise<boolean> {
 
 export async function editMeasure(measureId: number, measure: EcfmpMeasureDocument) {
   try {
-    const updatedMeasure = await ecfmpModel.findOneAndUpdate({ id: measureId }, { enabled: measure.enabled }, {new: true}).exec();
+    const updatedMeasure = await ecfmpModel.findOneAndUpdate(
+      { id: measureId },
+      { enabled: measure.enabled },
+      { new: true }
+    ).exec();
+
     return updatedMeasure;
   } catch (e) {
     throw e;

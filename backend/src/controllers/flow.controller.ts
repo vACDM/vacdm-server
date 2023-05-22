@@ -1,6 +1,9 @@
-import { RogerPlugin, RogerPluginMeasure } from '@shared/interfaces/rogerPlugin.interface';
-import { NextFunction, Request, Response } from "express";
-import ecfmpService from "../services/ecfmp.service";
+import {
+  RogerPlugin,
+  RogerPluginMeasure,
+} from '@shared/interfaces/rogerPlugin.interface';
+import { NextFunction, Request, Response } from 'express';
+import ecfmpService from '../services/ecfmp.service';
 import { EcfmpMeasure } from '@shared/interfaces/ecfmp.interface';
 import { APIError } from '@shared/errors';
 
@@ -9,7 +12,6 @@ export async function getAllMeasures(
   res: Response,
   next: NextFunction
 ) {
-
   try {
     const measures = await ecfmpService.getAllMeasures();
 
@@ -27,23 +29,29 @@ export async function getLegacyMeasures(
   let aerodromes = req.query.aerodromes;
 
   if (aerodromes == null) {
-    return next(new APIError("aerodromes is a required query parameter", null, 400));
+    return next(
+      new APIError('aerodromes is a required query parameter', null, 400)
+    );
   }
 
   if (Array.isArray(aerodromes)) {
-    return next(new APIError("aerodromes must be a comma-separated string of ICAO-codes", null, 400));
+    return next(
+      new APIError(
+        'aerodromes must be a comma-separated string of ICAO-codes',
+        null,
+        400
+      )
+    );
   }
 
-  let relevantAerodromes = aerodromes.toString().split(",");
+  let relevantAerodromes = aerodromes.toString().split(',');
 
   try {
     const measures = await ecfmpService.getAllMeasures();
 
-    const legacyMeasures: RogerPlugin = {MDI: []};
+    const legacyMeasures: RogerPlugin = { MDI: [] };
 
-
-
-/*     measures.forEach((element: EcfmpMeasure) => {
+    /*     measures.forEach((element: EcfmpMeasure) => {
       if (element.measure.type != "minimum_departure_interval") {return;}
 
       let thisMeasure: RogerPluginMeasure = {
@@ -68,9 +76,21 @@ export async function getLegacyMeasures(
   }
 }
 
-export async function editMeasure(req: Request, res: Response, next: NextFunction) {
+export async function editMeasure(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    const measure = await ecfmpService.editMeasure(req.body);
+    const { id } = req.params;
+
+    const numId = Number(id);
+
+    if (Number.isNaN(numId)) {
+      return res.status(400).json({ msg: 'id must be numeric' });
+    }
+
+    const measure = await ecfmpService.editMeasure(numId, req.body);
 
     res.json(measure);
   } catch (error) {
