@@ -20,6 +20,9 @@ interface vacdmConfig {
 
   clientId: string;
   clientSecret: string;
+  vaccAuthType: string;
+  vaccAuthUrl: string;
+  vaccAuthToken: string;
   publicUrl: string;
   vatsimAuthUrl: string;
   jwtSecret: string;
@@ -66,6 +69,9 @@ export default function config(): vacdmConfig {
     vatsimAuthUrl: options.vatsimAuthUrl,
     clientId: options.vatsimAuthClientId,
     clientSecret: process.env.CLIENT_SECRET ?? '',
+    vaccAuthType: process.env.VACC_AUTH_TYPE ?? '',
+    vaccAuthUrl: process.env.VACC_AUTH_URL ?? '',
+    vaccAuthToken: process.env.VACC_AUTH_TOKEN ?? '',
 
     publicUrl: process.env.PUBLIC_URL ?? '',
     jwtSecret: process.env.JWT_SECRET ?? 'super-secret-secret!',
