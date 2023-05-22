@@ -28,7 +28,7 @@ import ecfmpService from './services/ecfmp.service';
     logger.info('starting worker...');
 
     setInterval(async () => {
-      logger.debug('running cleanup');
+      logger.debug('running pilot cleanup');
       try {
         await cdmService.cleanupPilots();
       } catch (error) {
@@ -44,7 +44,17 @@ import ecfmpService from './services/ecfmp.service';
       } catch (error) {
         logger.error('error occurred getting ecfmp details');
       }
-    }, 10000);
+    }, 60000);
+
+    setInterval(async () => {
+      logger.debug('running user cleanup');
+      try {
+        await cdmService.cleanupUsers();
+      } catch (error) {
+        logger.error('error occurred when cleaning up users', error);
+      }
+    }, 6 * 60 * 60 * 1000); /* 6h */
+    console.log(6 * 60 * 60 * 1000);
 
     while (true) {
       await (() => new Promise((res, rej) => setTimeout(res, 10000)))();

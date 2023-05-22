@@ -33,6 +33,7 @@ router.patch('/pilots/:callsign', pilotController.updatePilot);
 router.patch('/vdgs/:callsign', authMiddleware, pilotController.updatePilot);
 
 router.get('/measures', flowController.getAllMeasures);
+router.patch('/measures/:id', flowController.editMeasure);
 router.get('/legacy-measures', flowController.getLegacyMeasures);
 
 router.get('/airports', airportController.getAllAirports);

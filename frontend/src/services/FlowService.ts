@@ -13,4 +13,17 @@ export async function getAllMeasures(): Promise<EcfmpMeasure[]> {
   }
 }
 
-export default { getAllMeasures };
+export async function setMeasureEnable(measureId: number, enabled: boolean): Promise<EcfmpMeasure> {
+  try {
+    const measure = await axios.patch<EcfmpMeasure>(`/api/v1/measures/${measureId}`, {
+      id: measureId,
+      enabled: enabled,
+    });
+
+    return measure.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export default { getAllMeasures, setMeasureEnable };
