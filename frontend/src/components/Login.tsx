@@ -1,7 +1,7 @@
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 import { useEffect, useState } from 'react';
-import authService from 'services/AuthService';
+import authService from '../services/AuthService';
 import { FrontendSettings } from '@shared/interfaces/config.interface';
 
 const Login = () => {

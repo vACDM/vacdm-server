@@ -1,8 +1,8 @@
-import AuthContext from 'contexts/AuthProvider';
+import AuthContext from '../contexts/AuthProvider';
 import { Menubar } from 'primereact/menubar';
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AuthService from 'services/AuthService';
+import AuthService from '../services/AuthService';
 import logo from '../assets/cdm_logo.png';
 import { FrontendSettings } from '@shared/interfaces/config.interface';
 

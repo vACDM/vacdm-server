@@ -4,7 +4,7 @@ import { Column } from "primereact/column";
 import { Checkbox } from "primereact/checkbox";
 import { DataTable } from "primereact/datatable";
 import { useEffect, useState } from "react";
-import FlowService from "services/FlowService";
+import FlowService from "../services/FlowService";
 import timeUtils from "../utils/time";
 
 const FlowManagement = () => {

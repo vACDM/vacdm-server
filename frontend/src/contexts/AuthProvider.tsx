@@ -5,7 +5,7 @@ import {
   SetStateAction,
   useEffect,
 } from "react";
-import authService from "services/AuthService";
+import authService from "../services/AuthService";
 
 import { useNavigate } from "react-router-dom";
 

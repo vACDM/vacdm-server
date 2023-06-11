@@ -1,7 +1,7 @@
 import { Chart } from "primereact/chart";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import DepartureBlocksService from "services/DepartureBlocksService";
+import DepartureBlocksService from "../services/DepartureBlocksService";
 import Loading from "./Loading";
 import blockUtils from "../utils/block.utils";
 import dayjs from "dayjs";

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import MetaService from "services/MetaService";
+import MetaService from "../services/MetaService";
 
 const Footer = () => {
   const [version, setVersion] = useState<any>([]);
@@ -12,8 +12,8 @@ const Footer = () => {
 
   return (
     <>
-      <div className="footer">
-        VATSIM Airport Collaboration Decision Making Version {version.version}
+      <div className="footer bg-zinc-800">
+        virtual Airport Collaboration Decision Making Version {version.version}
       </div>
     </>
   );

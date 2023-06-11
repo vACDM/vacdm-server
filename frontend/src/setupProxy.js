@@ -5,7 +5,7 @@ module.exports = function(app) {
     '/api',
     createProxyMiddleware({
       // target: 'http://localhost:3030',
-      target: 'http://vacdm.dotfionn.de',
+      target: 'https://vacdm.vatsim-germany.org',
       changeOrigin: true,
     })
   );

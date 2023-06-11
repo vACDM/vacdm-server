@@ -4,12 +4,6 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-
-import "primereact/resources/themes/lara-light-blue/theme.css";  //theme
-import "primereact/resources/primereact.min.css";                  //core css
-import "primeicons/primeicons.css";                                //icons
-import "primeflex/primeflex.css" 
-
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );

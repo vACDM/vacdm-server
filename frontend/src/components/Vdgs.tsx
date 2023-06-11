@@ -10,9 +10,9 @@ import User from "@shared/interfaces/user.interface";
 import { Card } from "primereact/card";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import VdgsService from "services/VdgsService";
-import AuthService from "services/AuthService";
-import DatafeedService from "services/DatafeedService";
+import VdgsService from "../services/VdgsService";
+import AuthService from "../services/AuthService";
+import DatafeedService from "../services/DatafeedService";
 import utc from "dayjs/plugin/utc";
 
 dayjs.extend(utc);
