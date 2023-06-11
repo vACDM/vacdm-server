@@ -13,6 +13,7 @@ import AuthContext from '../contexts/AuthProvider';
 import AuthService from '../services/AuthService';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import Button from './ui/Button/Button';
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ');
@@ -128,15 +129,16 @@ export default function NavbarWithDropdown(props: any) {
                 </div>
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                <button
+                {/* <button
                   type="button"
                   className="rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                 >
                   <span className="sr-only">View notifications</span>
-                  {/* <BellIcon className="h-6 w-6" aria-hidden="true" /> */}
-                </button>
+                   <BellIcon className="h-6 w-6" aria-hidden="true" />
+                </button> */}
 
                 {/* Profile dropdown */}
+                <Button>Login</Button>
                 <Menu as="div" className="relative ml-3">
                   <div>
                     <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
@@ -145,7 +147,7 @@ export default function NavbarWithDropdown(props: any) {
                         className="h-8 w-8 rounded-full"
                         src="https://ui-avatars.com/api/?name=M+F&color=FFFFFF&background=18181B"
                         alt="##"
-                      />
+                        />
                     </Menu.Button>
                   </div>
                   <Transition
