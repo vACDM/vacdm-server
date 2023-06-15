@@ -12,8 +12,8 @@ const Footer = () => {
 
   return (
     <>
-      <div className="footer bg-zinc-800">
-        virtual Airport Collaboration Decision Making Version {version.version}
+      <div className="footer bg-zinc-800 px-2">
+        virtual Airport Collaboration Decision Making - Version {version.version}
       </div>
     </>
   );

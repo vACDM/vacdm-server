@@ -23,6 +23,7 @@
     "primeicons": "^5.0.0",
     "primereact": "^8.3.0",
     "react": "^18.2.0",
+    "react-data-table-component": "^7.5.3",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0",
     "react-simple-code-editor": "^0.13.0",

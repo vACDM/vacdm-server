@@ -10,7 +10,7 @@ import { Fragment, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FrontendSettings } from '@shared/interfaces/config.interface';
 import AuthContext from '../contexts/AuthProvider';
-import AuthService from '../services/AuthService';
+import AuthService, { logout } from '../services/AuthService';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Button from './ui/Button/Button';
@@ -18,6 +18,9 @@ import Button from './ui/Button/Button';
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ');
 }
+
+
+
 
 export default function NavbarWithDropdown(props: any) {
   const [config, setConfig] = useState<FrontendSettings>();
@@ -58,8 +61,33 @@ export default function NavbarWithDropdown(props: any) {
     },
   ];
 
+  const redirectToVatsimAuth = () => {
+    let authUrl = [
+      config?.vatsimAuthUrl,
+      '/oauth/authorize',
+      '?',
+      'client_id=',
+      config?.vatsimAuthClientId,
+      '&',
+      'redirect_uri=',
+      window.location.protocol,
+      '//',
+      window.location.host,
+      //'localhost:3000',
+      '/api/v1/auth/login',
+      '&',
+      'response_type=code',
+      '&',
+      'scope=full_name+vatsim_details',
+      '&',
+      'required_scopes=full_name+vatsim_details',
+      '&',
+      'approval_prompt=auto',
+    ].join('');
+    window.location.replace(authUrl);
+  };
+
   useEffect(() => {
-    console.log(location.pathname);
     //  if (auth.auth.user !== undefined) {
     setUser(auth.auth.user);
     setItems(
@@ -116,8 +144,8 @@ export default function NavbarWithDropdown(props: any) {
                         onClick={() => navigate(item.href)}
                         className={classNames(
                           location.pathname === item.href
-                            ? 'bg-gray-900 text-white'
-                            : 'text-white hover:bg-gray-700',
+                            ? 'bg-zinc-900 text-white'
+                            : 'text-white hover:bg-zinc-900',
                           'rounded-md px-3 py-2 text-sm font-medium cursor-pointer'
                         )}
                         aria-current={item.current ? 'page' : undefined}
@@ -137,8 +165,13 @@ export default function NavbarWithDropdown(props: any) {
                    <BellIcon className="h-6 w-6" aria-hidden="true" />
                 </button> */}
 
+                <div className={!auth.auth.user ? 'hidden' : ''}>
+                <Button onClick={() => redirectToVatsimAuth()}>Login</Button>
+                </div>
+                
+                
                 {/* Profile dropdown */}
-                <Button>Login</Button>
+              
                 <Menu as="div" className="relative ml-3">
                   <div>
                     <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
@@ -147,7 +180,7 @@ export default function NavbarWithDropdown(props: any) {
                         className="h-8 w-8 rounded-full"
                         src="https://ui-avatars.com/api/?name=M+F&color=FFFFFF&background=18181B"
                         alt="##"
-                        />
+                      />
                     </Menu.Button>
                   </div>
                   <Transition
@@ -160,7 +193,7 @@ export default function NavbarWithDropdown(props: any) {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <Menu.Item>
+                      {/* <Menu.Item>
                         {({ active }) => (
                           <a
                             href="#"
@@ -185,18 +218,18 @@ export default function NavbarWithDropdown(props: any) {
                             Settings
                           </a>
                         )}
-                      </Menu.Item>
+                      </Menu.Item> */}
                       <Menu.Item>
                         {({ active }) => (
-                          <a
-                            href="#"
+                          <span
+                            onClick={() => logout()}
                             className={classNames(
                               active ? 'bg-gray-100' : '',
-                              'block px-4 py-2 text-sm text-gray-700'
+                              'block px-4 py-2 text-sm text-gray-700 cursor-pointer'
                             )}
                           >
                             Sign out
-                          </a>
+                          </span>
                         )}
                       </Menu.Item>
                     </Menu.Items>

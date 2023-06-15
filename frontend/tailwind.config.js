@@ -1,17 +1,8 @@
-
-const defaultTheme = require('tailwindcss/defaultTheme')
+const defaultTheme = require('tailwindcss/defaultTheme');
 
 module.exports = {
-  content: ['./index.html',
-  './src/**/*.{js,ts,jsx,tsx}'],
-  presets: [],
-  darkMode: 'media', // or 'class'
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    extend: {
-      fontFamily: {
-        sans: ['Inter var', ...defaultTheme.fontFamily.sans]
-      }
-    },
     accentColor: ({ theme }) => ({
       ...theme('colors'),
       auto: 'auto',
@@ -1007,6 +998,16 @@ module.exports = {
       40: '40',
       50: '50',
     },
+    extend: {
+      fontFamily: {
+        sans: [
+          'Inter',
+          ...defaultTheme.fontFamily.sans,
+        ]
+      }
+    },
   },
+  darkMode: 'media',
   plugins: [],
-}
+  safelist: []
+};

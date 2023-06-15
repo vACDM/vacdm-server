@@ -10,25 +10,25 @@ import { AuthProvider } from "./contexts/AuthProvider";
 
 import PilotsTable from "./components/PilotsTable";
 import AirportsTable from "./components/AirportsTable";
-import Vdgs from "./components/Vdgs";
+import Vdgs from "./pages/VdgsNew";
 import Debug from "./components/Debug";
 import { Suspense } from "react";
 import Loading from "./components/Loading";
 import FlowManagement from "./components/FlowManagement";
-import Login from "./components/Login";
+import Login from "./pages/Login";
 import Landingpage from "./pages/Landingpage";
 import AirportDetails from "./components/AirportDetails";
 import AirportDetailsEditor from "./components/AirportDetailsEditor";
 import DepartureBlocks from "./components/DepartureBlocks";
 import Footer from "./components/Footer";
-import Delivery from "./components/Delivery";
+import Delivery from "./pages/Delivery";
 import NavbarNew from "./components/NavbarNew";
 
 function App() {
   return (
     <>
       <Router>
-        {/* <AuthProvider> */}
+        <AuthProvider>
           <NavbarNew />
           <div className="mt-2">
             <Suspense fallback={<Loading />}>
@@ -40,7 +40,7 @@ function App() {
                   path="/airports/:icao/edit"
                   element={<AirportDetailsEditor />}
                 />
-                <Route path="/vdgs/" element={<Vdgs />} />
+                <Route path="/vdgs" element={<Vdgs />} />
                 <Route path="/debug/:callsign" element={<Debug />} />
                 <Route
                   path="/departure-blocks/:icao"
@@ -51,13 +51,12 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/landingpage" element={<Landingpage />} />
                 <Route path="/delivery" element={<Delivery />} />
-                <Route path="/" element={<Vdgs />} />
+                <Route path="/" element={<Landingpage />} />
                 <Route path="*" element={<Navigate to="/" />} />
               </Routes>
             </Suspense>
           </div>
-        {/* </AuthProvider> */}
-        <Footer />
+        </AuthProvider>
       </Router>
     </>
   );

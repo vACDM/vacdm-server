@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }: { children: any }) => {
       })
       .catch((e) => {
         setAuth({});
-        navigate("/login");
+        navigate("/");
       });
   }, []);
 

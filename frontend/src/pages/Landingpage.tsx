@@ -27,7 +27,10 @@ const Landingpage = () => {
     <>
       <div>
         <Container className="w-full mx-auto text-center flex flex-col justify-center">
-          <h1 className="md:text-7xl sm:text-6xl text-xl font-bold md:py-6">
+          <h1 className="md:text-8xl sm:text-6xl text-xl font-bold md:py-6">
+            vACDM
+          </h1>
+          <h1 className="md:text-6xl sm:text-6xl text-xl font-bold md:py-6">
             virtual Airport Collaborative Decision Making
           </h1>
           <div className='md:flex justify-center items-center pb-6'>
@@ -42,7 +45,7 @@ const Landingpage = () => {
           </div>
         </Container>
         {/* mx-auto flex flex-wrap justify-evenly */}
-        <Container className="w-full grid sm:grid-cols-1 lg:grid-cols-3 gap-x-4 gap-y-6">
+        <Container className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-6 pt-6">
           <FeatureBox
             headline="Including ECFMP Measures"
             icon={
