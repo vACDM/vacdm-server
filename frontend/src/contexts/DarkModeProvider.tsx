@@ -23,8 +23,6 @@ function getDarkModeState(): boolean {
     window.matchMedia &&
     window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-  console.log('initial', lsDarkMode === 'true', osDarkMode);
-
   if (lsDarkMode != null) {
     return lsDarkMode === 'true';
   }
@@ -51,8 +49,7 @@ export const DarkModeProvider = ({ children }: { children: any }) => {
   }, []);
 
   function changeDarkMode() {
-    console.log('change mode');
-    
+     
     setDarkMode(!darkMode);
 
     const html = document.getElementById('dark-mode-selector');

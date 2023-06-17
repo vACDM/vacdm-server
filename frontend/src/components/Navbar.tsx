@@ -42,13 +42,13 @@ export default function NavbarWithDropdown(props: any) {
     {
       label: 'Flow Management',
       href: '/flow-management',
-      permission: (user) => user && !user.vacdm.banned && user.vacdm.admin,
+      permission: (user) => user && !user.vacdm.banned && (user.vacdm.admin || user.vacdm.atc),
       current: false,
     },
     {
       label: 'AVDGS',
       href: '/vdgs',
-      permission: (user) => user && !user.vacdm.banned && user.vacdm.admin,
+      permission: (user) => user && !user.vacdm.banned,
       current: false,
     },
   ];
@@ -80,14 +80,14 @@ export default function NavbarWithDropdown(props: any) {
   };
 
   useEffect(() => {
-    //  if (auth.auth.user !== undefined) {
+    if (auth.auth.user !== undefined) {
     setUser(auth.auth.user);
     setItems(
       navItems.filter((item) =>
         (item.permission ? item.permission : () => true)(auth.auth.user)
       )
     );
-    //  }
+    }
     AuthService.getConfig()
       .then((data) => {
         setConfig(data);
@@ -190,7 +190,7 @@ export default function NavbarWithDropdown(props: any) {
                   )}
                 </button>
 
-                <div className={!auth.auth.user ? 'hidden' : ''}>
+                <div className={auth.auth.user ? 'hidden' : ''}>
                   <Button onClick={() => redirectToVatsimAuth()}>Login</Button>
                 </div>
 
