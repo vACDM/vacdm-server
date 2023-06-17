@@ -190,14 +190,14 @@ export default function NavbarWithDropdown(props: any) {
                   )}
                 </button>
 
-                <div className={auth.auth.user ? 'hidden' : ''}>
+                <div className={`${auth.auth.user ? 'hidden' : ''} ml-2`}>
                   <Button onClick={() => redirectToVatsimAuth()}>Login</Button>
                 </div>
 
                 {/* Profile dropdown */}
 
                 <Menu as="div" className="relative ml-3">
-                  <div>
+                  <div className={!auth.auth.user ? 'hidden' : ''}>
                     <Menu.Button className="flex rounded-full bg-zinc-900  text-white hover:text-white">
                       <span className="sr-only">Open user menu</span>
                       <img
