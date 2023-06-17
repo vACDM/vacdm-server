@@ -1,19 +1,79 @@
-import React, { createContext, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  createContext,
+  useEffect,
+  useState,
+} from 'react';
 
-const DarkModeContext = createContext({});
+type DarkModeContextProps = {
+  darkMode: boolean;
+  changeDarkMode: () => void;
+};
 
-const DarkModeProvider = (children: any) => {
-  const [darkMode, setDarkMode] = useState(false);
-  const toggleDarkMode = () => {
+const DarkModeContext = createContext<DarkModeContextProps>(
+  {} as DarkModeContextProps
+);
+
+function getDarkModeState(): boolean {
+  // Local Storage
+  const lsDarkMode = window.localStorage.getItem('dark-mode');
+  // OS
+  const osDarkMode =
+    window.matchMedia &&
+    window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  console.log('initial', lsDarkMode === 'true', osDarkMode);
+
+  if (lsDarkMode != null) {
+    return lsDarkMode === 'true';
+  }
+
+  return osDarkMode;
+}
+
+export const DarkModeProvider = ({ children }: { children: any }) => {
+  const [darkMode, setDarkMode] = useState<boolean>(getDarkModeState());
+  
+  useEffect(() => {
     setDarkMode(!darkMode);
-  };
+    
+    const html = document.getElementById('dark-mode-selector');
+    if (html == null) return;
+
+    if (darkMode) {
+      html.setAttribute('data-mode', 'dark');
+      window.localStorage.setItem('dark-mode', 'true');
+    } else {
+      html.removeAttribute('data-mode');
+      window.localStorage.setItem('dark-mode', 'false');
+    }
+  }, []);
+
+  function changeDarkMode() {
+    console.log('change mode');
+    
+    setDarkMode(!darkMode);
+
+    const html = document.getElementById('dark-mode-selector');
+    if (html == null) return;
+
+    if (darkMode) {
+      html.setAttribute('data-mode', 'dark');
+      window.localStorage.setItem('dark-mode', 'true');
+    } else {
+      html.removeAttribute('data-mode');
+      window.localStorage.setItem('dark-mode', 'false');
+    }
+  }
 
   return (
     <>
-      <DarkModeContext.Provider value={{ darkMode, toggleDarkMode }}>
+      <DarkModeContext.Provider value={{ darkMode, changeDarkMode }}>
         {children}
       </DarkModeContext.Provider>
     </>
   );
 };
-export  {DarkModeContext, DarkModeProvider};
+
+export default DarkModeContext;

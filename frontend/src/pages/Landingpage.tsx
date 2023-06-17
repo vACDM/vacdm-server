@@ -5,14 +5,16 @@ import Container from '../components/Container';
 import FeatureBox from '../components/FeatureBox';
 import React, { useEffect } from 'react';
 import Typed from 'typed.js';
+import Footer from '../components/Footer';
 
 const Landingpage = () => {
   const el = React.useRef(null);
 
   useEffect(() => {
     const typed = new Typed(el.current, {
-      strings: ['good departure flow', 'considering departure intervals from ECFMP', 'event and booking slot adherence'],
+      strings: ['unlocking departure potential', 'maximizing airport effincency', 'event and booking slot adherence'],
       typeSpeed: 50,
+      backDelay: 1000,
       loop: true
     });
 
@@ -33,7 +35,7 @@ const Landingpage = () => {
           <h1 className="md:text-6xl sm:text-6xl text-xl font-bold md:py-6">
             virtual Airport Collaborative Decision Making
           </h1>
-          <div className='md:flex justify-center items-center pb-6'>
+          <div className='md:flex justify-center items-center pb-8'>
             <p className='md:text-xl'>
             A VATSIM Tool for
             </p> 
@@ -45,7 +47,7 @@ const Landingpage = () => {
           </div>
         </Container>
         {/* mx-auto flex flex-wrap justify-evenly */}
-        <Container className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-6 pt-6">
+        <Container className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-6 pt-8">
           <FeatureBox
             headline="Including ECFMP Measures"
             icon={
@@ -111,7 +113,7 @@ const Landingpage = () => {
             vACDM supports MDI measures from ECFMP and calculates CTOT's
             accordingly
           </FeatureBox>
-          <FeatureBox
+          {/* <FeatureBox
             headline="Customizable for your vACC"
             icon={
               <svg
@@ -176,9 +178,10 @@ const Landingpage = () => {
           >
             vACDM supports MDI measures from ECFMP and calculates CTOT's
             accordingly
-          </FeatureBox>
+          </FeatureBox> */}
         </Container>
         <Container>
+          {/* <Footer /> */}
 
         </Container>
       </div>

@@ -16,64 +16,12 @@ import DatafeedService from "../services/DatafeedService";
 import utc from "dayjs/plugin/utc";
 import Container from "../components/Container";
 
-const dummy: any =
-  {
-    "position": {
-        "lat": 50.87802,
-        "lon": 7.1242399999999995
-    },
-    "vacdm": {
-        "eobt": "2023-06-14T16:09:00.000Z",
-        "tobt": "2023-06-14T16:09:00.000Z",
-        "tobt_state": "NOW",
-        "exot": 3,
-        "manual_exot": false,
-        "tsat": "2023-06-14T16:09:00.000Z",
-        "ctot": "1969-12-31T23:59:59.999Z",
-        "ttot": "2023-06-14T16:12:00.000Z",
-        "asrt": "1969-12-31T23:59:59.999Z",
-        "aort": "1969-12-31T23:59:59.999Z",
-        "asat": "1969-12-31T23:59:59.999Z",
-        "aobt": "1969-12-31T23:59:59.999Z",
-        "delay": 0,
-        "prio": 0,
-        "sug": "1969-12-31T23:59:59.999Z",
-        "pbg": "1969-12-31T23:59:59.999Z",
-        "txg": "1969-12-31T23:59:59.999Z",
-        "taxizone": "B10 - B18",
-        "taxizoneIsTaxiout": false,
-        "blockAssignment": "2023-06-14T15:45:26.471Z",
-        "blockId": 97,
-        "block_rwy_designator": "14L"
-    },
-    "flightplan": {
-        "flight_rules": "I",
-        "departure": "EDDK",
-        "arrival": "GCLP"
-    },
-    "clearance": {
-        "dep_rwy": "14L",
-        "sid": "NVO1Q",
-        "initial_climb": "5000",
-        "assigned_squawk": "2003",
-        "current_squawk": "2003"
-    },
-    "_id": "6489e096e55c2cc6320a411b",
-    "callsign": "RYR2QZ",
-    "hasBooking": false,
-    "inactive": false,
-    "measures": [],
-    "createdAt": "2023-06-14T15:45:26.925Z",
-    "updatedAt": "2023-06-14T16:15:44.052Z",
-    "__v": 0
-}
-
 dayjs.extend(utc);
 
 const Vdgs = () => {
   const navigate = useNavigate();
 
-  const [pilot, setPilot] = useState<Pilot | undefined>(dummy);
+  const [pilot, setPilot] = useState<Pilot | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [loadingTobt, setLoadingTobt] = useState(false);
   const [inputTextValue, setinputTextValue] = useState("");
@@ -216,7 +164,7 @@ const Vdgs = () => {
         </Card>
         </div>
         <div className="col-span-4">
-          <Card>
+          <Card className="p-3">
             <div className="flex">
             <h1 className="text-3xl min-w-[130px]">{clock}</h1>
             <h1 className="text-3xl">UTC</h1>

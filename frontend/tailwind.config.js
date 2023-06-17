@@ -1007,7 +1007,7 @@ module.exports = {
       }
     },
   },
-  darkMode: 'media',
+  darkMode: ["class", '[data-mode="dark"]'],
   plugins: [],
   safelist: []
 };
