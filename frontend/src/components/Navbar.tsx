@@ -36,7 +36,7 @@ export default function NavbarWithDropdown(props: any) {
     {
       label: 'Delivery',
       href: '/delivery',
-      permission: (user) => user && !user.vacdm.banned && user.vacdm.atc,
+      permission: (user) => user && !user.vacdm.banned && (user.vacdm.admin || user.vacdm.atc),
       current: true,
     },
     {
