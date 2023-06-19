@@ -3,7 +3,7 @@ import { Fragment, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FrontendSettings } from '@shared/interfaces/config.interface';
 import AuthContext from '../contexts/AuthProvider';
-import AuthService, { logout } from '../services/AuthService';
+import AuthService from '../services/AuthService';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Button from './ui/Button/Button';
@@ -20,6 +20,12 @@ export default function NavbarWithDropdown(props: any) {
   const [items, setItems] = useState<any>([]);
   const auth: any = useContext(AuthContext);
   const { darkMode, changeDarkMode } = useContext(DarkModeContext);
+
+  async function logout() {
+    await AuthService.logout();
+
+    window.location.reload();
+  }
 
   const navItems: {
     label: string;
