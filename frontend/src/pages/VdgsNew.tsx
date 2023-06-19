@@ -129,10 +129,10 @@ const Vdgs = () => {
       <Toast ref={toast} />
     
       <div className="grid grid-cols-12 gap-2 px-2">
-      <div className="col-span-3"></div>
-        <div className="col-span-5">
+      <div className="col-span-12 lg:col-span-2"></div>
+        <div className="col-span-12 sm:col-span-6 lg:col-span-6">
       <Card className='bg-zinc-800'>
-          <div className="vdgs-font  text-3xl lg:text-4xl xl:text-5xl  text-center">
+          <div className="vdgs-font text-xl md:text-3xl lg:text-4xl xl:text-5xl  text-center">
             {loading ? (
               <>
                 <p>SEARCHING FOR CALLSIGN...</p>
@@ -163,8 +163,8 @@ const Vdgs = () => {
           </div>
         </Card>
         </div>
-        <div className="col-span-4">
-          <Card className="p-3">
+        <div className="col-span-12 sm:col-span-6 lg:col-span-4">
+          <Card className="text-sm md:text-base p-3">
             <div className="flex">
             <h1 className="text-3xl min-w-[130px]">{clock}</h1>
             <h1 className="text-3xl">UTC</h1>
@@ -194,7 +194,7 @@ const Vdgs = () => {
                 >Set TOBT</Button>
                 </div>
             </div>
-            <p className="mt-4"><b>Info:</b> Your TOBT (Target Off-Block Time) is the time you are fully ready for pushback.
+            <p className=" mt-4"><b>Info:</b> Your TOBT (Target Off-Block Time) is the time you are fully ready for pushback.
               The initial TOBT you see here is the one extracted from your fight plan on VATSIM.
               Once you "confirm" or "update" your TOBT in the field above, ATC is able to better plan a departure sequence.
             </p>

@@ -117,7 +117,7 @@ export default function NavbarWithDropdown(props: any) {
               </div>
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                 <button onClick={() => navigate('/')}>
-                <div className="flex flex-shrink-0 items-center">
+                <div className="flex flex-shrink-0 items-center ">
                   <img
                     className="block h-8 w-auto lg:hidden"
                     src={logo}
@@ -151,7 +151,7 @@ export default function NavbarWithDropdown(props: any) {
                 </div>
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-              {config?.vaccLogoUrl && <img alt="vacc-logo" src={config?.vaccLogoUrl} className='max-h-[40px] mr-3' />}
+              {config?.vaccLogoUrl && <img alt="vacc-logo" src={config?.vaccLogoUrl} className='hidden md:block  max-h-[40px] mr-3' />}
                 <button
                   onClick={changeDarkMode}
                   type="button"
