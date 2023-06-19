@@ -86,14 +86,14 @@ export default function NavbarWithDropdown(props: any) {
   };
 
   useEffect(() => {
-    if (auth.auth.user !== undefined) {
+    // if (auth.auth.user !== undefined) {
     setUser(auth.auth.user);
     setItems(
       navItems.filter((item) =>
         (item.permission ? item.permission : () => true)(auth.auth.user)
       )
     );
-    }
+    // }
     AuthService.getConfig()
       .then((data) => {
         setConfig(data);
@@ -138,7 +138,7 @@ export default function NavbarWithDropdown(props: any) {
                 </button>
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
-                    {navItems.map((item) => (
+                    {items.map((item: any) => (
                       <a
                         key={item.label}
                         onClick={() => navigate(item.href)}
