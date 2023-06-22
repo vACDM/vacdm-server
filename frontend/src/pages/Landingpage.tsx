@@ -1,6 +1,7 @@
-import { Button } from 'primereact/button';
+import Button from '../components/ui/Button/Button';
 import logo from '../assets/cdm_logo.png';
 import cdm1 from '../assets/cdm1.png';
+import githubLogo from '../assets/github-mark-white.png';
 import Container from '../components/Container';
 import FeatureBox from '../components/FeatureBox';
 import React, { useEffect } from 'react';
@@ -12,10 +13,14 @@ const Landingpage = () => {
 
   useEffect(() => {
     const typed = new Typed(el.current, {
-      strings: ['unlocking departure potential', 'maximizing airport effincency', 'event and booking slot adherence'],
+      strings: [
+        'unlocking departure potential',
+        'maximizing airport effincency',
+        'event and booking slot adherence',
+      ],
       typeSpeed: 50,
       backDelay: 1000,
-      loop: true
+      loop: true,
     });
 
     return () => {
@@ -24,7 +29,6 @@ const Landingpage = () => {
     };
   }, []);
 
-  
   return (
     <>
       <div>
@@ -35,21 +39,53 @@ const Landingpage = () => {
           <h1 className="md:text-6xl sm:text-6xl text-xl font-bold md:py-6">
             virtual Airport Collaborative Decision Making
           </h1>
-          <div className='md:flex justify-center items-center pb-8'>
-            <p className='md:text-xl'>
-            A VATSIM Tool for
-            </p> 
-           <span className='md:text-xl pl-2 font-bold' ref={el}> </span>
+          <div className="md:flex justify-center items-center pb-8">
+            <p className="md:text-xl">A VATSIM Tool for</p>
+            <span className="md:text-xl pl-2 font-bold" ref={el}>
+              {' '}
+            </span>
           </div>
 
           <div>
             <img className="mx-auto" src={cdm1} alt="" />
           </div>
         </Container>
+        <Container className="flex flex-row pt-6">
+          <div className=" mx-auto">
+            <a href="https://github.com/vACDM" target="blank">
+              <Button className="inline-flex text-center items-center text-lg">
+                <img className="h-8 pr-4" src={githubLogo} alt="github logo" />
+                vACDM on Github
+              </Button>
+            </a>
+          </div>
+        </Container>
         {/* mx-auto flex flex-wrap justify-evenly */}
         <Container className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-6 pt-8">
           <FeatureBox
-            headline="Including ECFMP Measures"
+            headline="Open Source"
+            icon={
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-6 h-6 mx-auto"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"
+                />
+              </svg>
+            }
+          >
+            vACDM is completely open source. We appreciate any support and
+            feedback.
+          </FeatureBox>
+          <FeatureBox
+            headline="ECFMP Measures"
             icon={
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -89,7 +125,8 @@ const Landingpage = () => {
               </svg>
             }
           >
-            vACDM woks with geographic taxi zones that let you set taxi times individually depending on parking position and runway.
+            vACDM woks with geographic taxi zones that let you set taxi times
+            individually depending on parking position and runway.
           </FeatureBox>
           <FeatureBox
             headline="Customizable for your vACC"
@@ -110,8 +147,7 @@ const Landingpage = () => {
               </svg>
             }
           >
-            vACDM supports MDI measures from ECFMP and calculates CTOT's
-            accordingly
+            vACDM is tatally customizable for your vACC needs.
           </FeatureBox>
           {/* <FeatureBox
             headline="Customizable for your vACC"
@@ -180,10 +216,7 @@ const Landingpage = () => {
             accordingly
           </FeatureBox> */}
         </Container>
-        <Container>
-          {/* <Footer /> */}
-
-        </Container>
+        <Container>{/* <Footer /> */}</Container>
       </div>
     </>
   );

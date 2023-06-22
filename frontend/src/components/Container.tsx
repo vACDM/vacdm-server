@@ -1,7 +1,7 @@
 const Container = (props: any) => {
   return (
     <div
-      className={`mx-auto ${
+      className={`container mx-auto ${
         props.className ? props.className : ''
       }`}
     >
