@@ -78,7 +78,7 @@ const logger = new Logger('vACDM:app');
 
   app.use('/api/v1', router);
 
-  const frontendRoot = '/opt/frontend/build';
+  const frontendRoot = '/opt/dist/frontend';
   app.use(express.static(frontendRoot));
   app.use((req, res) => res.sendFile(`${frontendRoot}/index.html`));
 
