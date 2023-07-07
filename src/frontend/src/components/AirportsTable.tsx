@@ -1,13 +1,14 @@
-import { useState, useEffect } from "react";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import { Card } from "primereact/card";
-import AirportService from "../services/AirportService";
-import { InputTextarea } from "primereact/inputtextarea";
-
 import { Badge } from 'primereact/badge';
-import { Link } from "react-router-dom";
-import { Button } from "primereact/button";
+import { Button } from 'primereact/button';
+import { Card } from 'primereact/card';
+import { Column } from 'primereact/column';
+import { DataTable } from 'primereact/datatable';
+import { InputTextarea } from 'primereact/inputtextarea';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+
+import AirportService from '../services/AirportService';
+
 
 const AirpotsTable = () => {
   const [airports, setAirports] = useState<any[]>([]);
@@ -19,16 +20,16 @@ const AirpotsTable = () => {
       setAirports(data);
       setLoading(false);
     });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const taxioutTemplate = (rowData: any) => {
-    return (rowData.taxiout ? <Badge value="true" severity="success" /> : <Badge value="false" severity="danger" />)
-  }
+    return (rowData.taxiout ? <Badge value="true" severity="success" /> : <Badge value="false" severity="danger" />);
+  };
 
   const editButtonTemplate = (rowData: any) => {
     return (
       <Link to={`/airports/${rowData.icao}`}>
-        <Button className="p-button-sm " label="Edit" />{" "}
+        <Button className="p-button-sm " label="Edit" />{' '}
       </Link>
     );
   };
@@ -36,7 +37,7 @@ const AirpotsTable = () => {
   const blocksButtonTemplate = (rowData: any) => {
     return (
       <Link to={`/departure-blocks/${rowData.icao}`}>
-        <Button className="p-button-sm " label="Blocks" />{" "}
+        <Button className="p-button-sm " label="Blocks" />{' '}
       </Link>
     );
   };
@@ -87,7 +88,7 @@ const AirpotsTable = () => {
             dataKey="icao"
             expandedRows={expandedRows}
           >
-            <Column expander style={{ width: "3em" }} />
+            <Column expander style={{ width: '3em' }} />
             <Column field="icao" header="ICAO"></Column>
             <Column
               field="standard_taxitime"

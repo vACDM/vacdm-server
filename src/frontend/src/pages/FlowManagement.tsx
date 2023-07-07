@@ -1,13 +1,13 @@
-import { EcfmpMeasure } from '@shared/interfaces/ecfmp.interface';
-
-import { useContext, useEffect, useState } from 'react';
-import FlowService from '../services/FlowService';
-import timeUtils from '../utils/time';
-import DataTable, { TableColumn } from 'react-data-table-component';
 import dayjs from 'dayjs';
+import { useContext, useEffect, useState } from 'react';
+import DataTable, { TableColumn } from 'react-data-table-component';
+
 import Card from '../components/ui/Card/Card';
-import DarkModeContext from '../contexts/DarkModeProvider';
 import { Checkbox } from '../components/ui/Checkbox/Checkbox';
+import DarkModeContext from '../contexts/DarkModeProvider';
+import FlowService from '../services/FlowService';
+
+import { EcfmpMeasure } from '@/shared/interfaces/ecfmp.interface';
 
 const FlowManagement = () => {
   const [measures, setMeasures] = useState<EcfmpMeasure[]>([]);
@@ -17,22 +17,65 @@ const FlowManagement = () => {
   useEffect(() => {
     async function loadData() {
       try {
-        const measures: EcfmpMeasure[] = await FlowService.getAllMeasures();
+        const newMeasures: EcfmpMeasure[] = await FlowService.getAllMeasures();
 
-        setMeasures(measures);
+        setMeasures(newMeasures);
         setLoading(false);
       } catch (e) {
-        setLoading(false)
+        setLoading(false);
       }
     }
-    let intervalId = setInterval(loadData, 60000);
+    const intervalId = setInterval(loadData, 60000);
 
     loadData();
 
     return () => clearInterval(intervalId);
   }, []);
 
+  const setMeasureEnabled = async (measure: EcfmpMeasure, checked: boolean) => {
+    const updatedMeasure = await FlowService.setMeasureEnable(
+      measure.id,
+      checked,
+    );
+    setMeasures((currentMeasures) => [
+      ...currentMeasures.filter((_measure) => _measure.id !== measure.id),
+      updatedMeasure,
+    ]);
+  };
 
+  const enabledColumnTemplate = (rowData: EcfmpMeasure) => {
+    let checked = rowData.enabled;
+    return (
+      <Checkbox
+        checked={checked}
+        onChange={(e) => {
+          setMeasureEnabled(rowData, e);
+          checked = e;          
+        }}
+      />
+    );
+  };
+
+  const filterColumns: TableColumn<any>[] = [
+    {
+      name: 'Type',
+      selector: (row) => row.type,
+    },
+    {
+      name: 'Value',
+      selector: (row) => row.value,
+    },
+  ];
+
+  const contraintsTemplate = (rowData: any) => {
+    return (
+      <DataTable
+        data={rowData.filters}
+        columns={filterColumns}
+        theme={!darkMode ? 'dark' : 'default'}
+      />
+    );
+  };
 
   const columns: TableColumn<EcfmpMeasure>[] = [
     {
@@ -68,51 +111,6 @@ const FlowManagement = () => {
       cell: (row) => contraintsTemplate(row),
     },
   ];
-
-  const filterColumns: TableColumn<any>[] = [
-    {
-      name: 'Type',
-      selector: (row) => row.type,
-    },
-    {
-      name: 'Value',
-      selector: (row) => row.value,
-    },
-  ];
-
-  const contraintsTemplate = (rowData: any) => {
-    return (
-      <DataTable
-        data={rowData.filters}
-        columns={filterColumns}
-        theme={!darkMode ? 'dark' : 'default'}
-      />
-    );
-  };
-
-  const enabledColumnTemplate = (rowData: EcfmpMeasure) => {
-    let checked = rowData.enabled;
-    return (
-      <Checkbox
-        checked={checked}
-        onChange={(e) => {
-          setMeasureEnabled(rowData, e);
-          checked = e;          
-        }}
-      />
-    );
-  };
-
-  const setMeasureEnabled = async (measure: EcfmpMeasure, checked: boolean) => {
-    const updatedMeasure = await FlowService.setMeasureEnable(
-      measure.id,
-      checked
-    );
-    setMeasures((measures) => [
-      ...measures.filter((_measure) => _measure.id !== measure.id),
-      updatedMeasure,
-    ]);
-  };
 
   return (
     <Card>

@@ -1,20 +1,20 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
-import dayjs from "dayjs";
-import { Toast } from "primereact/toast";
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import { Toast } from 'primereact/toast';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import PilotService from "../services/PilotService";
-import TimeUtils from "../utils/time";
-import Pilot from "@shared/interfaces/pilot.interface";
-import User from "@shared/interfaces/user.interface";
-import  Card from "../components/ui/Card/Card";
-import {Input} from "../components/ui/Input/Input";
-import  Button  from "../components/ui/Button/Button";
-import VdgsService from "../services/VdgsService";
-import AuthService from "../services/AuthService";
-import DatafeedService from "../services/DatafeedService";
-import utc from "dayjs/plugin/utc";
-import Container from "../components/Container";
+import  Button  from '../components/ui/Button/Button';
+import  Card from '../components/ui/Card/Card';
+import { Input } from '../components/ui/Input/Input';
+import AuthService from '../services/AuthService';
+import DatafeedService from '../services/DatafeedService';
+import PilotService from '../services/PilotService';
+import VdgsService from '../services/VdgsService';
+import TimeUtils from '../utils/time';
+
+import Pilot from '@/shared/interfaces/pilot.interface';
+import User from '@/shared/interfaces/user.interface';
 
 dayjs.extend(utc);
 
@@ -24,28 +24,11 @@ const Vdgs = () => {
   const [pilot, setPilot] = useState<Pilot | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [loadingTobt, setLoadingTobt] = useState(false);
-  const [inputTextValue, setinputTextValue] = useState("");
+  const [inputTextValue, setinputTextValue] = useState('');
   const [validity, setValidity] = useState(false);
-  const [wrongFormat, setwrongFormat] = useState("");
+  const [wrongFormat, setWrongFormat] = useState('');
   const [clock, setClock] = useState(dayjs(new Date()).utc().format('HH:mm:ss'));
   const toast: any = useRef(null);
-
-  useEffect(() => {
-    setwrongFormat("");
-    setValidity(false);
-    async function loadData() {
-      await checkPilot();
-    }
-
-    loadData();
-    let intervalId = setInterval(loadData, 10000);
-    let clockInterval = setInterval(utcTime, 1000)
-
-    return () => {
-      clearInterval(intervalId);
-      clearInterval(clockInterval);
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   function utcTime() {
     return setClock(dayjs(new Date()).utc().format('HH:mm:ss'));
@@ -55,16 +38,39 @@ const Vdgs = () => {
     try {
       const user: User = await AuthService.getProfile();
 
-      const pilot = await DatafeedService.getPilotFromCid(
-        user.apidata.cid
+      const datafeedPilot = await DatafeedService.getPilotFromCid(
+        user.apidata.cid,
       );
 
-      const vacdmPilot: Pilot = await PilotService.getPilot(pilot.callsign)
+      const vacdmPilot: Pilot = await PilotService.getPilot(datafeedPilot.callsign);
 
 
       setPilot(vacdmPilot);
       setLoading(false);
-    } catch (e) {}
+    } catch (e) {
+      // disregard
+    }
+  }
+
+  useEffect(() => {
+    setWrongFormat('');
+    setValidity(false);
+    async function loadData() {
+      await checkPilot();
+    }
+
+    loadData();
+    const intervalId = setInterval(loadData, 10000);
+    const clockInterval = setInterval(utcTime, 1000);
+
+    return () => {
+      clearInterval(intervalId);
+      clearInterval(clockInterval);
+    };
+  }, []);
+
+  function isTobtConfirmed(tobtState: string | undefined) {
+    return tobtState === 'CONFIRMED' || tobtState === 'NOW';
   }
 
   const tobtConfimationText = () => {
@@ -73,50 +79,46 @@ const Vdgs = () => {
     }
 
     if (isTobtConfirmed(pilot?.vacdm.tobt_state)) {
-      return <span className="text-green-500">Your TOBT is confirmed!<br />Set your TOBT to get your TSAT.</span>
+      return <span className="text-green-500">Your TOBT is confirmed!<br />Set your TOBT to get your TSAT.</span>;
     } else {
-      return <span className="text-amber-500">Your TOBT is not yet confirmed!</span>
+      return <span className="text-amber-500">Your TOBT is not yet confirmed!</span>;
     }
-  }
+  };
 
   function vdgsColorController(time: Date | undefined) {
-    let now = dayjs().second(0);
-    let tsat = dayjs(time).second(0);
-    return now.diff(tsat, "minute") > 5 ? "text-red-500" : "";
-  }
-
-  function isTobtConfirmed(tobtState: string | undefined) {
-    return tobtState === "CONFIRMED" || tobtState === "NOW"
+    const now = dayjs().second(0);
+    const tsat = dayjs(time).second(0);
+    return now.diff(tsat, 'minute') > 5 ? 'text-red-500' : '';
   }
 
   async function updateTobt() {
     setLoadingTobt(true);
 
-    let regex = new RegExp("^(0[0-9]|1[0-9]|2[0-3])[0-5][0-9]$");
+    const regex = new RegExp('^(0[0-9]|1[0-9]|2[0-3])[0-5][0-9]$');
     if (!regex.test(inputTextValue)) {
       setValidity(true);
-      setwrongFormat("Allowed Format: HHMM");
+      setWrongFormat('Allowed Format: HHMM');
       setLoadingTobt(false);
     } else {
-      let p = pilot;
+      const p = pilot;
       if (p) {
         p.vacdm.tobt = dayjs(TimeUtils.formatVdgsTobt(inputTextValue)).toDate();
-        if(dayjs(p.vacdm.tobt).isBefore(dayjs())) {
+        if (dayjs(p.vacdm.tobt).isBefore(dayjs())) {
           p.vacdm.tobt = dayjs(p.vacdm.tobt).add(1, 'day').toDate();
         }
         p.vacdm.tsat = dayjs(-1).toDate();
       }
       setPilot(p);
-      setwrongFormat("");
+      setWrongFormat('');
       setValidity(false);
       setinputTextValue(inputTextValue);
       
       VdgsService.updateTobt(inputTextValue, pilot?.callsign)
         .then(() => {       
-          setinputTextValue("");
+          setinputTextValue('');
         })
         .catch(() => {
-          setwrongFormat("Unauthorized!");
+          setWrongFormat('Unauthorized!');
         })
         .finally(() => setLoadingTobt(false));
 
@@ -190,7 +192,7 @@ const Vdgs = () => {
               className="mb-auto"
                 loading={loadingTobt}
                 onClick={updateTobt}
-                disabled={!pilot?.callsign  || pilot?.callsign === "" ? true : false}
+                disabled={!pilot?.callsign  || pilot?.callsign === '' ? true : false}
                 >Set TOBT</Button>
                 </div>
             </div>

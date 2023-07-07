@@ -1,14 +1,16 @@
-import { EcfmpMeasure } from "@shared/interfaces/ecfmp.interface";
-import axios from "axios";
+import axios from 'axios';
+
+import { EcfmpMeasure } from '@/shared/interfaces/ecfmp.interface';
 
 export async function getAllMeasures(): Promise<EcfmpMeasure[]> {
   try {
     const measures = await axios.get<EcfmpMeasure[]>(
-      "/api/v1/measures"
+      '/api/v1/measures',
     );
 
     return measures.data;
   } catch (error) {
+    console.error(error);
     throw error;
   }
 }
@@ -22,8 +24,12 @@ export async function setMeasureEnable(measureId: number, enabled: boolean): Pro
 
     return measure.data;
   } catch (error) {
+    console.error(error);
     throw error;
   }
 }
 
-export default { getAllMeasures, setMeasureEnable };
+export default {
+  getAllMeasures,
+  setMeasureEnable,
+};

@@ -1,16 +1,16 @@
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import utc from 'dayjs/plugin/utc';
 import { useState, useEffect, useContext } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
+import { useNavigate } from 'react-router-dom';
 
 import Button from '../components/ui/Button/Button';
-import PilotService from '../services/PilotService';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import relativeTime from 'dayjs/plugin/relativeTime';
 import Card from '../components/ui/Card/Card';
-import { useNavigate } from 'react-router-dom';
-import Pilot from '@shared/interfaces/pilot.interface';
-import Loading from '../components/Loading';
 import DarkModeContext from '../contexts/DarkModeProvider';
+import PilotService from '../services/PilotService';
+
+import Pilot from '@/shared/interfaces/pilot.interface';
 
 dayjs.extend(utc);
 dayjs.extend(relativeTime);
@@ -118,20 +118,21 @@ const Delivery = () => {
     async function loadData() {
       try {
         const data: Pilot[] = await PilotService.getPilots();
-        let filteredPilots: Pilot[] = [];
+        const filteredPilots: Pilot[] = [];
 
         data.forEach((element: Pilot) => {
           if (!element.inactive) {
             filteredPilots.push(element);
             const adep = element.flightplan.departure;
             const ades = element.flightplan.arrival;
-            departureAirports.findIndex(
-              (aerodrome) => aerodrome.name === adep
-            ) === -1 && departureAirports.push({ name: adep, value: adep });
 
-            arrivalAirports.findIndex(
-              (aerodrome) => aerodrome.name === ades
-            ) === -1 && arrivalAirports.push({ name: ades, value: ades });
+            if (departureAirports.findIndex((aerodrome) => aerodrome.name === adep) === -1) {
+              departureAirports.push({ name: adep, value: adep });
+            }
+
+            if (arrivalAirports.findIndex((aerodrome) => aerodrome.name === ades) === -1) {
+              arrivalAirports.push({ name: ades, value: ades });
+            }
           }
         });
 
@@ -144,12 +145,12 @@ const Delivery = () => {
       }
     }
 
-    let intervalId = setInterval(loadData, 5000);
+    const intervalId = setInterval(loadData, 5000);
 
     loadData();
 
     return () => clearInterval(intervalId);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div>

@@ -1,26 +1,27 @@
 import './App.css';
+
+import { Suspense } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
 } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthProvider';
 
-import Vdgs from './pages/VdgsNew';
-import Debug from './components/Debug';
-import { Suspense } from 'react';
-import Loading from './components/Loading';
-import FlowManagement from './pages/FlowManagement';
-import Login from './pages/Login';
-import Landingpage from './pages/Landingpage';
 import AirportDetails from './components/AirportDetails';
 import AirportDetailsEditor from './components/AirportDetailsEditor';
+import Debug from './components/Debug';
 import DepartureBlocks from './components/DepartureBlocks';
-import Delivery from './pages/Delivery';
+import Loading from './components/Loading';
 import Navbar from './components/Navbar';
+import { AuthProvider } from './contexts/AuthProvider';
 import { DarkModeProvider } from './contexts/DarkModeProvider';
 import Airports from './pages/Airports';
+import Delivery from './pages/Delivery';
+import FlowManagement from './pages/FlowManagement';
+import Landingpage from './pages/Landingpage';
+import Login from './pages/Login';
+import Vdgs from './pages/VdgsNew';
 
 function App() {
   return (

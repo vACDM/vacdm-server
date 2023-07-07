@@ -1,25 +1,24 @@
-import React, { useState, useEffect, useRef } from "react";
-import AirportService from "../services/AirportService";
 
-import Airport from "@shared/interfaces/airport.interface";
+import hljs from 'highlight.js/lib/core';
+import json from 'highlight.js/lib/languages/json';
+import { Button } from 'primereact/button';
+import { Card } from 'primereact/card';
+import { Toast } from 'primereact/toast';
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
+import Editor from 'react-simple-code-editor';
 
-import { useParams } from "react-router-dom";
-import { Button } from "primereact/button";
+import AirportService from '../services/AirportService';
 
-import Editor from "react-simple-code-editor";
+import Airport from '@/shared/interfaces/airport.interface';
 
-import hljs from "highlight.js/lib/core";
-import json from "highlight.js/lib/languages/json";
-import { Toast } from "primereact/toast";
-import { Card } from "primereact/card";
-
-hljs.registerLanguage("json", json);
+hljs.registerLanguage('json', json);
 
 const AirportDetailsEditor = () => {
   const { icao } = useParams();
   const toast = useRef<Toast>(null);
   const [airport, setAirport] = useState<Airport>();
-  const [airportJson, setAirportJson] = useState<string>("");
+  const [airportJson, setAirportJson] = useState<string>('');
 
   const [loading, setLoading] = useState(false);
 
@@ -59,22 +58,22 @@ const AirportDetailsEditor = () => {
         })
         .catch(() => {
           toast?.current?.show({
-            severity: "error",
-            summary: "Error",
-            detail: "Airport is not defined. Please create one!",
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Airport is not defined. Please create one!',
             sticky: true,
           });
         });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const saveAirport = () => {
     try {
       JSON.parse(airportJson);
     } catch (e) {
       toast?.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Upsi! No valid JSON",
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Upsi! No valid JSON',
         life: 3000,
       });
       throw e;
@@ -85,18 +84,18 @@ const AirportDetailsEditor = () => {
         AirportService.updateAirport(icao, JSON.parse(airportJson))
           .then(() => {
             toast?.current?.show({
-              severity: "success",
-              summary: "Successful",
-              detail: "Airport Updated",
+              severity: 'success',
+              summary: 'Successful',
+              detail: 'Airport Updated',
               life: 3000,
             });
             setLoading(false);
           })
           .catch(() => {
             toast?.current?.show({
-              severity: "error",
-              summary: "Error",
-              detail: "Upsi",
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Upsi',
               life: 3000,
             });
             setLoading(false);
@@ -105,18 +104,18 @@ const AirportDetailsEditor = () => {
       AirportService.createAirport(JSON.parse(airportJson))
         .then(() => {
           toast?.current?.show({
-            severity: "success",
-            summary: "Successful",
-            detail: "Airport created",
+            severity: 'success',
+            summary: 'Successful',
+            detail: 'Airport created',
             life: 3000,
           });
           setLoading(false);
         })
         .catch(() => {
           toast?.current?.show({
-            severity: "error",
-            summary: "Error",
-            detail: "Upsi",
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Upsi',
             life: 3000,
           });
           setLoading(false);
@@ -132,7 +131,7 @@ const AirportDetailsEditor = () => {
         <Editor
           value={airportJson}
           onValueChange={(code) => setAirportJson(code)}
-          highlight={(code) => hljs.highlight(code, { language: "json" }).value}
+          highlight={(code) => hljs.highlight(code, { language: 'json' }).value}
           padding={10}
           style={{
             fontFamily: '"Fira code", "Fira Mono", monospace',

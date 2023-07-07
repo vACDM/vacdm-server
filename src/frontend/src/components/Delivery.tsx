@@ -5,7 +5,7 @@ export default function Delivery() {
     <div>
       <Button>Click me</Button>
     </div>
-  )
+  );
 }
 
 

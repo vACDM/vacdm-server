@@ -1,12 +1,11 @@
-import Button from '../components/ui/Button/Button';
-import logo from '../assets/cdm_logo.png';
+import React, { useEffect } from 'react';
+import Typed from 'typed.js';
+
 import cdm1 from '../assets/cdm1.png';
 import githubLogo from '../assets/github-mark-white.png';
 import Container from '../components/Container';
 import FeatureBox from '../components/FeatureBox';
-import React, { useEffect } from 'react';
-import Typed from 'typed.js';
-import Footer from '../components/Footer';
+import Button from '../components/ui/Button/Button';
 
 const Landingpage = () => {
   const el = React.useRef(null);

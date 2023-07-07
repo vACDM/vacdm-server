@@ -1,6 +1,4 @@
 import {
-  Dispatch,
-  SetStateAction,
   createContext,
   useEffect,
   useState,
@@ -12,7 +10,7 @@ type DarkModeContextProps = {
 };
 
 const DarkModeContext = createContext<DarkModeContextProps>(
-  {} as DarkModeContextProps
+  {} as DarkModeContextProps,
 );
 
 function getDarkModeState(): boolean {

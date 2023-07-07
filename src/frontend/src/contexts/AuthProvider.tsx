@@ -4,14 +4,14 @@ import {
   Dispatch,
   SetStateAction,
   useEffect,
-} from "react";
-import authService from "../services/AuthService";
+} from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { useNavigate } from "react-router-dom";
+import authService from '../services/AuthService';
 
 const AuthContext = createContext<{
-  auth: Object;
-  setAuth: Dispatch<SetStateAction<{}>>;
+  auth: object;
+  setAuth: Dispatch<SetStateAction<object>>;
 }>({ auth: {}, setAuth: () => {} });
 
 export const AuthProvider = ({ children }: { children: any }) => {
@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }: { children: any }) => {
       })
       .catch((e) => {
         setAuth({});
-        navigate("/");
+        navigate('/');
       });
   }, []);
 

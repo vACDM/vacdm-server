@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
-import PilotService from "../services/PilotService";
-import { Card } from "primereact/card";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import Pilot, { PilotLog } from "@shared/interfaces/pilot.interface";
+import { Card } from 'primereact/card';
+import { Column } from 'primereact/column';
+import { DataTable } from 'primereact/datatable';
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
+
+import PilotService from '../services/PilotService';
+
+import Pilot, { PilotLog } from '@/shared/interfaces/pilot.interface';
 
 const Debug = () => {
   const { callsign } = useParams();
@@ -19,16 +21,18 @@ const Debug = () => {
 
         setPilot(data);
         setLoading(false);
-        const logs = await PilotService.getPilotLogs(callsign);
-        setLogs(logs);
-      } catch (e) {}
+        const newLogs = await PilotService.getPilotLogs(callsign);
+        setLogs(newLogs);
+      } catch (e) {
+        // disregard :)
+      }
     }
-    let intervalId = setInterval(loadData, 5000);
+    const intervalId = setInterval(loadData, 5000);
 
     loadData();
 
     return () => clearInterval(intervalId);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const logDataTemplate = (rowData: any) => {
     return <pre>{JSON.stringify(rowData.data, null, 2)}</pre>;
@@ -37,7 +41,7 @@ const Debug = () => {
 
 
   if (loading || !pilot) {
-    return <div>Loading</div>
+    return <div>Loading</div>;
   }
 
   return (
@@ -197,7 +201,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">Insactive</div>
                         <div className="text-2xl text-center">
-                        {pilot.inactive ? "true" : "false"}
+                        {pilot.inactive ? 'true' : 'false'}
                         </div>
                       </div>
                     </div>

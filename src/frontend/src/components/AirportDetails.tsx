@@ -1,26 +1,27 @@
-import React, { useState, useEffect, useRef } from "react";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import { Card } from "primereact/card";
-import AirportService from "../services/AirportService";
-import { InputTextarea } from "primereact/inputtextarea";
 
-import Airport, { AirportTaxizone } from "@shared/interfaces/airport.interface";
+import { Badge } from 'primereact/badge';
+import { Button } from 'primereact/button';
+import { Card } from 'primereact/card';
+import { Column } from 'primereact/column';
+import { DataTable } from 'primereact/datatable';
+import { Dialog } from 'primereact/dialog';
+import { Dropdown } from 'primereact/dropdown';
+import { InputText } from 'primereact/inputtext';
+import { InputTextarea } from 'primereact/inputtextarea';
+import { RadioButton } from 'primereact/radiobutton';
+import { Toast } from 'primereact/toast';
+import { Toolbar } from 'primereact/toolbar';
+import { classNames } from 'primereact/utils';
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 
-import { Badge } from "primereact/badge";
-import { useParams } from "react-router-dom";
-import { Button } from "primereact/button";
-import { Dialog } from "primereact/dialog";
-import { InputText } from "primereact/inputtext";
-import { RadioButton } from "primereact/radiobutton";
-import { classNames } from "primereact/utils";
-import { Toast } from "primereact/toast";
-import { Toolbar } from "primereact/toolbar";
-import { Dropdown } from "primereact/dropdown";
+import AirportService from '../services/AirportService';
+
+import Airport, { AirportTaxizone } from '@/shared/interfaces/airport.interface';
 
 const AirportDetails = () => {
-  let emptyZone = {
-    label: "",
+  const emptyZone = {
+    label: '',
     polygon: [],
     taxiout: null,
   };
@@ -36,7 +37,7 @@ const AirportDetails = () => {
   const [selectedZones, setSelectedZones] = useState(null);
   const [deleteZoneDialog, setDeleteZoneDialog] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState('');
   const [globalFilter, setGlobalFilter] = useState(null);
   //const [expandedRows, setExpandedRows] = useState<any>(null);
 
@@ -47,7 +48,7 @@ const AirportDetails = () => {
         setZones(data.taxizones);
         setLoading(false);
       });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const taxioutTemplate = (rowData: any) => {
     return rowData.taxiout ? (
@@ -82,8 +83,8 @@ const AirportDetails = () => {
     }; */
   };
 
-  const editZone = (zone: any) => {
-    setZone({ ...zone });
+  const editZone = (relevantZone: any) => {
+    setZone({ ...relevantZone });
     setZoneDialog(true);
   };
 
@@ -95,8 +96,8 @@ const AirportDetails = () => {
     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 }); */
   };
 
-  const confirmDeleteZone = (zone: any) => {
-    setZone(zone);
+  const confirmDeleteZone = (relevantZone: any) => {
+    setZone(relevantZone);
     setDeleteZoneDialog(true);
   };
   const actionBodyTemplate = (rowData: AirportTaxizone) => {
@@ -125,30 +126,30 @@ const AirportDetails = () => {
     setDeleteZoneDialog(false);
   };
 
-  const onLabelInputChange = (e: any) => {
-    let _zone = { ...zone };
-    _zone.label = e.value;
+  const onLabelInputChange = (e) => {
+    const relevantZone = { ...zone };
+    relevantZone.label = e.value;
 
-    setZone(_zone);
+    setZone(relevantZone);
   };
 
-  const onPolygonInputChange = (e: any) => {
-    let _zone = { ...zone };
-    _zone["polygon"] = e.value;
+  const onPolygonInputChange = (e) => {
+    const relevantZone = { ...zone };
+    relevantZone.polygon = e.value;
 
-    setZone(_zone);
-    console.log(_zone);
+    setZone(relevantZone);
+    console.log(relevantZone);
   };
 
-  const onCategoryChange = (e: any) => {
-    let _zone = { ...zone };
-    _zone["taxiout"] = e.value;
-    setZone(_zone);
+  const onCategoryChange = (e) => {
+    const relevantZone = { ...zone };
+    relevantZone.taxiout = e.value;
+    setZone(relevantZone);
   };
 
   const polygonFormatter = (polygon: string) => {
-    let _nicePolygon: any = polygon.split(",");
-    return _nicePolygon;
+    const formattedPolygon = polygon.split(',');
+    return formattedPolygon;
   };
 
   const zoneDialogFooter = (
@@ -212,7 +213,7 @@ const AirportDetails = () => {
   };
 
   const polygonTemplate = (rowData: AirportTaxizone) => {
-    let niceText = rowData.polygon.join("\n");
+    const niceText = rowData.polygon.join('\n');
     return (
       <InputTextarea value={niceText} cols={22} rows={5} autoResize disabled />
     );
@@ -240,13 +241,18 @@ const AirportDetails = () => {
   };
 
   const onRowEditComplete = (e: any) => {
-    let _zones: AirportTaxizone[] = [...zones];
-    let { newData, index } = e;
+    const relevantZones: AirportTaxizone[] = [...zones];
+    const { newData, index } = e;
 
-    _zones[index] = newData;
+    relevantZones[index] = newData;
 
-    setZones(_zones);
+    setZones(relevantZones);
   };
+
+  const statuses = [
+    { label: 'True', value: true },
+    { label: 'False', value: false },
+  ];
 
   const taxioutEditor = (options: any) => {
     return (
@@ -269,11 +275,6 @@ const AirportDetails = () => {
       />
     );
   };
-
-  const statuses = [
-    { label: "True", value: true },
-    { label: "False", value: false },
-  ];
 
   const header = (
     <div className="table-header">
@@ -312,7 +313,7 @@ const AirportDetails = () => {
               >
                 <Column
                   selectionMode="multiple"
-                  headerStyle={{ width: "3rem" }}
+                  headerStyle={{ width: '3rem' }}
                   exportable={false}
                 ></Column>
                 <Column field="label" header="Zonename" />
@@ -329,7 +330,7 @@ const AirportDetails = () => {
                 <Column
                   body={actionBodyTemplate}
                   exportable={false}
-                  style={{ minWidth: "8rem" }}
+                  style={{ minWidth: '8rem' }}
                 ></Column>
               </DataTable>
             </Card>
@@ -353,8 +354,8 @@ const AirportDetails = () => {
                 <Column field="alias" header="Alias" />
                 <Column
                   rowEditor
-                  headerStyle={{ width: "10%", minWidth: "8rem" }}
-                  bodyStyle={{ textAlign: "center" }}
+                  headerStyle={{ width: '10%', minWidth: '8rem' }}
+                  bodyStyle={{ textAlign: 'center' }}
                 />
               </DataTable>
             </Card>
@@ -364,7 +365,7 @@ const AirportDetails = () => {
 
       <Dialog
         visible={zoneDialog}
-        style={{ width: "450px" }}
+        style={{ width: '450px' }}
         header="Zone Details"
         modal
         className="p-fluid"
@@ -379,7 +380,7 @@ const AirportDetails = () => {
             onChange={(e) => onLabelInputChange(e)}
             required
             autoFocus
-            className={classNames({ "p-invalid": submitted && !zone?.label })}
+            className={classNames({ 'p-invalid': submitted && !zone?.label })}
           />
           {submitted && !zone?.label && (
             <small className="p-error">Label is required.</small>
@@ -426,7 +427,7 @@ const AirportDetails = () => {
 
       <Dialog
         visible={deleteZoneDialog}
-        style={{ width: "450px" }}
+        style={{ width: '450px' }}
         header="Confirm"
         modal
         footer={deleteZoneDialogFooter}
@@ -435,7 +436,7 @@ const AirportDetails = () => {
         <div className="confirmation-content">
           <i
             className="pi pi-exclamation-triangle mr-3"
-            style={{ fontSize: "2rem" }}
+            style={{ fontSize: '2rem' }}
           />
           {zone && (
             <span>

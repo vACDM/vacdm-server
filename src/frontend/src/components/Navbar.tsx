@@ -1,13 +1,16 @@
-import logo from '../assets/cdm_logo.png';
+import { Disclosure, Menu, Transition } from '@headlessui/react';
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Fragment, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FrontendSettings } from '@shared/interfaces/config.interface';
+
+import logo from '../assets/cdm_logo.png';
 import AuthContext from '../contexts/AuthProvider';
-import AuthService from '../services/AuthService';
-import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import Button from './ui/Button/Button';
 import DarkModeContext from '../contexts/DarkModeProvider';
+import AuthService from '../services/AuthService';
+
+import Button from './ui/Button/Button';
+
+import { FrontendSettings } from '@/shared/interfaces/config.interface';
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ');
@@ -36,31 +39,31 @@ export default function NavbarWithDropdown(props: any) {
     {
       label: 'Delivery',
       href: '/delivery',
-      permission: (user) => user && !user.vacdm.banned && (user.vacdm.admin || user.vacdm.atc),
+      permission: (relevantUser) => relevantUser && !relevantUser.vacdm.banned && (relevantUser.vacdm.admin || relevantUser.vacdm.atc),
       current: true,
     },
     {
       label: 'Airports',
       href: '/airports',
-      permission: (user) => user && !user.vacdm.banned && user.vacdm.admin,
+      permission: (relevantUser) => relevantUser && !relevantUser.vacdm.banned && relevantUser.vacdm.admin,
       current: false,
     },
     {
       label: 'Flow Management',
       href: '/flow-management',
-      permission: (user) => user && !user.vacdm.banned && (user.vacdm.admin || user.vacdm.atc),
+      permission: (relevantUser) => relevantUser && !relevantUser.vacdm.banned && (relevantUser.vacdm.admin || relevantUser.vacdm.atc),
       current: false,
     },
     {
       label: 'AVDGS',
       href: '/vdgs',
-      permission: (user) => user && !user.vacdm.banned,
+      permission: (relevantUser) => relevantUser && !relevantUser.vacdm.banned,
       current: false,
     },
   ];
 
   const redirectToVatsimAuth = () => {
-    let authUrl = [
+    const authUrl = [
       config?.vatsimAuthUrl,
       '/oauth/authorize',
       '?',
@@ -90,8 +93,8 @@ export default function NavbarWithDropdown(props: any) {
     setUser(auth.auth.user);
     setItems(
       navItems.filter((item) =>
-        (item.permission ? item.permission : () => true)(auth.auth.user)
-      )
+        (item.permission ? item.permission : () => true)(auth.auth.user),
+      ),
     );
     // }
     AuthService.getConfig()
@@ -146,7 +149,7 @@ export default function NavbarWithDropdown(props: any) {
                           location.pathname === item.href
                             ? 'bg-zinc-900 text-white'
                             : 'text-white hover:bg-zinc-900',
-                          'rounded-md px-3 py-2 text-sm font-medium cursor-pointer'
+                          'rounded-md px-3 py-2 text-sm font-medium cursor-pointer',
                         )}
                         aria-current={item.current ? 'page' : undefined}
                       >
@@ -255,7 +258,7 @@ export default function NavbarWithDropdown(props: any) {
                             onClick={() => logout()}
                             className={classNames(
                               active ? 'bg-gray-100' : '',
-                              'block px-4 py-2 text-sm text-gray-700 cursor-pointer'
+                              'block px-4 py-2 text-sm text-gray-700 cursor-pointer',
                             )}
                           >
                             Sign out
@@ -280,7 +283,7 @@ export default function NavbarWithDropdown(props: any) {
                     location.pathname === item.href
                       ? 'bg-gray-900 text-white'
                       : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                    'block rounded-md px-3 py-2 text-base font-medium'
+                    'block rounded-md px-3 py-2 text-base font-medium',
                   )}
                   aria-current={item.current ? 'page' : undefined}
                 >

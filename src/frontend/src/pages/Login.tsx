@@ -1,8 +1,10 @@
+import { useEffect, useState } from 'react';
+
 import Button from '../components/ui/Button/Button';
 import Card from '../components/ui/Card/Card';
-import { useEffect, useState } from 'react';
 import authService from '../services/AuthService';
-import { FrontendSettings } from '@shared/interfaces/config.interface';
+
+import { FrontendSettings } from '@/shared/interfaces/config.interface';
 
 const Login = () => {
   const [config, setConfig] = useState<FrontendSettings>();
@@ -19,7 +21,7 @@ const Login = () => {
   }, []);
 
   const redirectToVatsimAuth = () => {
-    let authUrl = [
+    const authUrl = [
       config?.vatsimAuthUrl,
       '/oauth/authorize',
       '?',

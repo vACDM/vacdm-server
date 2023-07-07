@@ -1,11 +1,13 @@
 import { useState, useEffect, useContext } from 'react';
-import Card from '../components/ui/Card/Card';
-import AirportService from '../services/AirportService';
-import { useNavigate } from 'react-router-dom';
-import Button from '../components/ui/Button/Button';
-import DarkModeContext from '../contexts/DarkModeProvider';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import Airport from '../../../shared/src/interfaces/airport.interface';
+import { useNavigate } from 'react-router-dom';
+
+import Button from '../components/ui/Button/Button';
+import Card from '../components/ui/Card/Card';
+import DarkModeContext from '../contexts/DarkModeProvider';
+import AirportService from '../services/AirportService';
+
+import Airport from '@/shared/interfaces/airport.interface';
 
 const AirpotsTable = () => {
   const [airports, setAirports] = useState<any[]>([]);
@@ -33,7 +35,7 @@ const AirpotsTable = () => {
     {
       name: 'Details',
       cell: (row) => (
-        <Button disabled={true} style="warning" onClick={() => navigate(``)}>
+        <Button disabled={true} style="warning" onClick={() => navigate('')}>
           Details (wip)
         </Button>
       ),
@@ -41,7 +43,7 @@ const AirpotsTable = () => {
     {
       name: 'Blocks',
       cell: (row) => (
-        <Button disabled={true} onClick={() => navigate(``)}>
+        <Button disabled={true} onClick={() => navigate('')}>
           Blocks (wip)
         </Button>
       ),
@@ -53,7 +55,7 @@ const AirpotsTable = () => {
       setAirports(data);
       setLoading(false);
     });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="grid grid-cols-12">

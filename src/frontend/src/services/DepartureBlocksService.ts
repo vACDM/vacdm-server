@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 export async function getAirportBlocks(icao: string | undefined) {
   try {
@@ -6,8 +6,11 @@ export async function getAirportBlocks(icao: string | undefined) {
 
     return blocks.data;
   } catch (error) {
+    console.error(error);
     throw error;
   }
 }
 
-export default { getAirportBlocks };
+export default {
+  getAirportBlocks,
+};

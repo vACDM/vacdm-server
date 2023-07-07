@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import MetaService from "../services/MetaService";
+import { useEffect, useState } from 'react';
+
+import MetaService from '../services/MetaService';
 
 const Footer = () => {
   const [version, setVersion] = useState<any>([]);
