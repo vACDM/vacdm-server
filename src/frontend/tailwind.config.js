@@ -1,7 +1,10 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 
 export default {
-  content: ['./src/frontend/index.html', './src/frontend/src/**/*.{js,ts,jsx,tsx}'],
+  content: [
+    './src/frontend/index.html',
+    './src/frontend/src/**/*.{js,ts,jsx,tsx}',
+  ],
   theme: {
     accentColor: ({ theme }) => ({
       ...theme('colors'),
