@@ -1,7 +1,7 @@
-const defaultTheme = require('tailwindcss/defaultTheme');
+import defaultTheme from 'tailwindcss/defaultTheme';
 
-module.exports = {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+export default {
+  content: ['./src/frontend/index.html', './src/frontend/src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     accentColor: ({ theme }) => ({
       ...theme('colors'),

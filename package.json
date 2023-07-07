@@ -3,7 +3,7 @@
   "version": "1.1.0",
   "description": "",
   "main": "app.js",
-  "_type": "module",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
 
@@ -52,9 +52,7 @@
     "@typescript-eslint/parser": "^5.38.1",
     "@vitejs/plugin-react": "^4.0.0",
     "autoprefixer": "^10.4.14",
-    "axios": "^0.27.2",
     "chart.js": "^3.9.1",
-    "dayjs": "^1.11.4",
     "eslint": "^8.23.1",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-plugin-import": "^2.26.0",
@@ -132,6 +130,14 @@
         }
       ],
       "@typescript-eslint/ban-ts-comment": "off"
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "tailwindcss": {
+        "config": "./src/frontend/tailwind.config.js"
+      },
+      "autoprefixer": {}
     }
   }
 }
