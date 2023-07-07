@@ -1,0 +1,137 @@
+{
+  "name": "vacdm",
+  "version": "1.1.0",
+  "description": "",
+  "main": "app.js",
+  "_type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+
+    "paths": "resolve-tspaths --out \"dist\"",
+
+    "start": "resolve-tspaths --out \"dist\" && node --inspect=0.0.0.0:9229 dist/backend/app.js",
+    "dev": "tsc-watch -p ./tsconfig.node.json --onSuccess \"npm run start\" --onFailure \"echo WHOOPS! Server compilation failed\"",
+
+    "spa-dev": "vite --config=src/frontend/vite.config.ts",
+    "spa-build": "vite --config=src/frontend/vite.config.ts build",
+    "spa-preview": "vite --config=src/frontend/vite.config.ts preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vACDM/vACDM"
+  },
+  "author": "Fionn Sperath / vACDM Team",
+  "license": "GPL3",
+  "dependencies": {
+    "@dotfionn/logger": "^1.0.1",
+    "axios": "^0.27.2",
+    "body-parser": "^1.20.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dayjs": "^1.11.7",
+    "express": "^4.18.1",
+    "helmet": "^5.1.1",
+    "jsonwebtoken": "^8.5.1",
+    "module-alias": "^2.2.2",
+    "mongoose": "^6.5.0",
+    "point-in-polygon": "^1.1.0"
+  },
+  "devDependencies": {
+    "@headlessui/react": "^1.7.15",
+    "@heroicons/react": "^2.0.18",
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/express": "^4.17.13",
+    "@types/jest": "^27.5.2",
+    "@types/jsonwebtoken": "^8.5.8",
+    "@types/node": "^18.6.2",
+    "@types/react": "^18.0.15",
+    "@types/react-dom": "^18.0.6",
+    "@typescript-eslint/eslint-plugin": "^5.38.1",
+    "@typescript-eslint/parser": "^5.38.1",
+    "@vitejs/plugin-react": "^4.0.0",
+    "autoprefixer": "^10.4.14",
+    "axios": "^0.27.2",
+    "chart.js": "^3.9.1",
+    "dayjs": "^1.11.4",
+    "eslint": "^8.23.1",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.2.5",
+    "eslint-plugin-promise": "^6.0.1",
+    "flowbite": "^1.6.5",
+    "flowbite-react": "^0.4.7",
+    "highlight.js": "^11.6.0",
+    "http-proxy-middleware": "^2.0.6",
+    "postcss": "^8.4.24",
+    "primeflex": "^3.2.1",
+    "primeicons": "^5.0.0",
+    "primereact": "^8.3.0",
+    "react": "^18.2.0",
+    "react-data-table-component": "^7.5.3",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.3.0",
+    "react-simple-code-editor": "^0.13.0",
+    "resolve-tspaths": "^0.8.8",
+    "rimraf": "^3.0.2",
+    "tailwindcss": "^3.3.2",
+    "tsc-watch": "^5.0.3",
+    "typed.js": "^2.0.16",
+    "typescript": "^4.7.4",
+    "vite": "^4.3.9",
+    "web-vitals": "^2.1.4"
+  },
+  "eslintConfig": {
+    "env": {
+      "es2021": true,
+      "node": true
+    },
+    "extends": [
+      "airbnb-typescript/base",
+      "eslint:recommended",
+      "plugin:@typescript-eslint/eslint-recommended",
+      "plugin:@typescript-eslint/recommended"
+    ],
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint",
+      "import",
+      "promise"
+    ],
+    "overrides": [],
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module",
+      "project": [
+        "./tsconfig.node.json",
+        "./tsconfig.web.json"
+      ]
+    },
+    "rules": {
+      "no-console": "warn",
+      "import/extensions": "off",
+      "eol-last": [
+        "error",
+        "always"
+      ],
+      "import/no-extraneous-dependencies": [
+        "error",
+        {
+          "devDependencies": true
+        }
+      ],
+      "import/order": [
+        "error",
+        {
+          "newlines-between": "always",
+          "alphabetize": {
+            "order": "asc"
+          }
+        }
+      ],
+      "@typescript-eslint/ban-ts-comment": "off"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "module": "ES2022",
+    "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "noImplicitAny": false,
+    "preserveConstEnums": true,
+    "removeComments": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "moduleResolution": "Node",
+    "paths": {
+      "@/*": ["./src/*"],
+    }
+  },
+  "watchOptions": {
+    "watchFile": "fixedpollinginterval"
+  },
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.web.json" }
+  ]
+}

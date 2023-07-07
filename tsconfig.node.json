@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/backend/**/*",
+    "src/shared/**/*",
+    "src/frontend/vite.config.ts"
+  ],
+  "compilerOptions": {
+    "composite": false
+  }
+}

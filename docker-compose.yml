@@ -5,7 +5,6 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-      target: development
       args:
         - NODE_ENV=development
     ports:
@@ -30,7 +29,8 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-      target: development
+      args:
+        - NODE_ENV=development
     ports:
       - '9230:9229/tcp'
     volumes:
