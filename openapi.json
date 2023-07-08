@@ -1,0 +1,1074 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "vACDM",
+    "version": "1.0"
+  },
+  "paths": {
+    "/api/v1/version": {
+      "get": {
+        "description": "This endpoint allows one to get the version of this API to allow for compatibility-checking",
+        "tags": [
+          "Meta"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/version"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/config": {
+      "get": {
+        "description": "This endpoint allows one to get the settings to configure the ES plugin",
+        "tags": [
+          "Meta"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/config-plugin"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/config/plugin": {
+      "get": {
+        "description": "This endpoint allows one to get the settings to configure the ES plugin",
+        "tags": [
+          "Meta"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/config-plugin"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/config/frontend": {
+      "get": {
+        "description": "This endpoint allows one to get the settings to configure the frontend application",
+        "tags": [
+          "Meta"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/config-frontend"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/pilots": {
+      "get": {
+        "description": "This endpoint allows one to get all pilots registered currently",
+        "tags": [
+          "Pilots"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "adep",
+            "required": false,
+            "description": "Allows filtering Pilots based on departure aerodrome. Case insensitive"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/pilot"
+                  }
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "description": "This endpoint allows one to create a new Pilot",
+        "tags": [
+          "Pilots"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/pilot"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "409": {
+            "description": "The pilot already exists. To modify use 'PATCH /pilots/:aaa'"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/pilots/{callsign}": {
+      "get": {
+        "description": "This endpoint allows one to get one of the currently registered pilots",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "callsign",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Pilots"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/pilot"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "patch": {
+        "description": "This endpoint allows one to update one of the currently registered pilots",
+        "tags": [
+          "Pilots"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/pilot"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "callsign",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "description": "This endpoint allows one to delete one of the currently registered pilots",
+        "tags": [
+          "Pilots"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "callsign",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/pilots/{callsign}/logs": {
+      "get": {
+        "description": "This endpoint allows one to get the logs regarding a specified pilot",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "callsign",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Pilots"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/pilot-logs"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/vdgs/{callsign}": {
+      "patch": {
+        "description": "This endpoint allows one to update one of the currently registered pilots",
+        "tags": [
+          "Pilots"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/pilot"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "callsign",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/airports": {
+      "get": {
+        "description": "This endpoint allows one to get all airports registered currently",
+        "tags": [
+          "Airports"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/airport"
+                  }
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "description": "This endpoint allows one to register a new Airport",
+        "tags": [
+          "Airports"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/airport"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/airports/{icao}": {
+      "get": {
+        "description": "This endpoint allows one to get one registered airport based on icao code",
+        "tags": [
+          "Airports"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "icao",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/airport"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "patch": {
+        "description": "This endpoint allows one to update one of the currently registered airports",
+        "tags": [
+          "Airports"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/airport"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "icao",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "description": "This endpoint allows one to delete one of the currently registered airports",
+        "tags": [
+          "Airports"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "icao",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/airports/{icao}/blocks": {
+      "get": {
+        "description": "This endpoint allows one to clear all departure blocks for a given airport",
+        "tags": [
+          "Airports"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "icao",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/airport-blocks"
+                  }
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/measures": {
+      "get": {
+        "description": "This endpoint allows one to get all current measures",
+        "tags": [
+          "Measures"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/measure"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/measures/{measureId}": {
+      "patch": {
+        "description": "This endpoint allows one to edit a given measure",
+        "tags": [
+          "Measures"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/measure"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/legacy-measures": {
+      "get": {
+        "description": "This endpoint allows one to get all measures in the legacy format",
+        "tags": [
+          "Measures"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "aerodromes",
+            "schema": {
+              "type": "string",
+              "example": "EDDF,EDDS,EDDM,EDDL"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "MDI": {
+                      "type": "array",
+                      "example": [],
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "pilot": {
+        "title": "Pilot",
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "MongoDB ObjectId"
+          },
+          "callsign": {
+            "type": "string"
+          },
+          "inactive": {
+            "type": "boolean",
+            "default": false
+          },
+          "position": {
+            "type": "object",
+            "properties": {
+              "lat": {
+                "type": "number"
+              },
+              "lon": {
+                "type": "number"
+              }
+            }
+          },
+          "flightplan": {
+            "type": "object",
+            "properties": {
+              "flight_rules": {
+                "type": "string",
+                "default": ""
+              },
+              "departure": {
+                "type": "string",
+                "default": ""
+              },
+              "arrival": {
+                "type": "string",
+                "default": ""
+              },
+              "deptime": {
+                "type": "string"
+              }
+            }
+          },
+          "vacdm": {
+            "type": "object",
+            "properties": {
+              "eobt": {
+                "type": "string",
+                "default": ""
+              },
+              "tobt": {
+                "type": "string",
+                "default": ""
+              },
+              "exot": {
+                "type": "number"
+              },
+              "manual_exot": {
+                "type": "boolean",
+                "default": false
+              },
+              "taxizone": {
+                "type": "string",
+                "default": ""
+              },
+              "ttot": {
+                "type": "string",
+                "default": ""
+              },
+              "ctot": {
+                "type": "string",
+                "default": ""
+              },
+              "tsat": {
+                "type": "string",
+                "default": ""
+              },
+              "asat": {
+                "type": "string",
+                "default": ""
+              },
+              "aobt": {
+                "type": "string",
+                "default": ""
+              },
+              "atot": {
+                "type": "string",
+                "default": ""
+              },
+              "eldt": {
+                "type": "string",
+                "default": ""
+              },
+              "aldt": {
+                "type": "string",
+                "default": ""
+              },
+              "etot": {
+                "type": "string",
+                "default": ""
+              },
+              "delay": {
+                "type": "number",
+                "default": 0
+              },
+              "prio": {
+                "type": "number",
+                "default": 0
+              },
+              "ete": {
+                "type": "string",
+                "default": ""
+              },
+              "sug": {
+                "type": "string",
+                "default": ""
+              },
+              "txg": {
+                "type": "string",
+                "default": ""
+              },
+              "blockAssignment": {
+                "type": "string",
+                "default": ""
+              },
+              "blockId": {
+                "type": "number",
+                "default": -1
+              },
+              "block_rwy_designator": {
+                "type": "string",
+                "default": ""
+              }
+            }
+          },
+          "clearance": {
+            "type": "object",
+            "properties": {
+              "dep_rwy": {
+                "type": "string",
+                "default": ""
+              },
+              "sid": {
+                "type": "string",
+                "default": ""
+              },
+              "initial_climb": {
+                "type": "string",
+                "default": ""
+              },
+              "assigned_squawk": {
+                "type": "string",
+                "default": ""
+              },
+              "current_squawk": {
+                "type": "string",
+                "default": ""
+              }
+            }
+          },
+          "log": {
+            "type": "object",
+            "properties": {
+              "time": {
+                "type": "string",
+                "default": ""
+              },
+              "job": {
+                "type": "string",
+                "default": ""
+              },
+              "action": {
+                "type": "string",
+                "default": ""
+              },
+              "data": {
+                "type": "object",
+                "default": {}
+              }
+            }
+          }
+        }
+      },
+      "pilot-logs": {
+        "title": "Pilotlogs",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "pilot": {
+              "type": "string",
+              "example": "DLH123"
+            },
+            "namespace": {
+              "type": "string",
+              "example": "calculations"
+            },
+            "action": {
+              "type": "string",
+              "example": "determined runway XX"
+            },
+            "data": {
+              "type": "object",
+              "example": "any data, but is object"
+            },
+            "time": {
+              "type": "string",
+              "example": "2023-01-01T00:00:00.000Z"
+            },
+            "createdAt": {
+              "type": "string",
+              "example": "2023-01-01T00:00:00.000Z"
+            },
+            "updatedAt": {
+              "type": "string",
+              "example": "2023-01-01T00:00:00.000Z"
+            }
+          }
+        }
+      },
+      "airport": {
+        "title": "Airport",
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "MongoDB ObjectId"
+          },
+          "icao": {
+            "type": "string"
+          },
+          "standard_taxitime": {
+            "type": "number"
+          },
+          "taxizones": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "polygon": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "example": "N048.35.18.396:E007.11.12.469",
+                    "description": "Coordinates following Euroscopes pattern"
+                  }
+                },
+                "taxitimes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "rwy_designator": {
+                        "type": "string"
+                      },
+                      "minutes": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                },
+                "taxiout": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "capacities": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "rwy_designator": {
+                  "type": "string"
+                },
+                "capacity": {
+                  "type": "number",
+                  "description": "amount of planes handlable per block"
+                },
+                "alias": {
+                  "type": "string",
+                  "description": "used to 'merge' runways in to one group to have them share one set of blocks"
+                }
+              }
+            }
+          }
+        }
+      },
+      "airport-blocks": {
+        "title": "Airport-Blocks",
+        "type": "object",
+        "properties": {
+          "icao": {
+            "type": "string",
+            "example": "EDDF"
+          },
+          "rwys": {
+            "type": "object",
+            "properties": {
+              "<rwy group designator>": {
+                "type": "object",
+                "properties": {
+                  "<block id / 0-143>": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/pilot"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "version": {
+        "title": "Version",
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "description": "Full version string",
+            "example": "1.0.0"
+          },
+          "major": {
+            "type": "number",
+            "example": 1
+          },
+          "minor": {
+            "type": "number",
+            "example": 0
+          },
+          "patch": {
+            "type": "number",
+            "example": 0
+          },
+          "prerelease": {
+            "type": "string",
+            "example": "alpha.1"
+          }
+        }
+      },
+      "config-plugin": {
+        "title": "Config",
+        "type": "object",
+        "properties": {
+          "serverName": {
+            "type": "string",
+            "example": "vACDM Server"
+          },
+          "allowSimSession": {
+            "type": "boolean",
+            "example": false
+          },
+          "allowObsMaster": {
+            "type": "boolean",
+            "example": false
+          }
+        }
+      },
+      "config-frontend": {
+        "title": "Config",
+        "type": "object",
+        "properties": {
+          "serverName": {
+            "type": "string",
+            "example": "vACDM Server"
+          },
+          "vatsimAuthUrl": {
+            "type": "string",
+            "example": "https://auth.vatsim.net"
+          },
+          "vatsimAuthClientId": {
+            "type": "string",
+            "example": "1234"
+          },
+          "vaccLogoUrl": {
+            "type": "string",
+            "example": "https://vatsim-germany.org/images/vacc_logo.png"
+          },
+          "vaccImprintUrl": {
+            "type": "string",
+            "example": "https://vatsim-germany.org/imprint"
+          }
+        }
+      },
+      "measure": {
+        "title": "Measure",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 0
+          },
+          "event": {
+            "type": "string"
+          },
+          "event_id": {
+            "type": "number"
+          },
+          "enabled": {
+            "type": "boolean",
+            "default": "true"
+          },
+          "reason": {
+            "type": "string",
+            "default": "''"
+          },
+          "starttime": {
+            "type": "string",
+            "default": "2023-01-01T00:00:00.000Z"
+          },
+          "endtime": {
+            "type": "string",
+            "default": "2023-01-01T00:00:00.000Z"
+          },
+          "withdrawn_at": {
+            "type": "string",
+            "default": "2023-01-01T00:00:00.000Z"
+          },
+          "notified_flight_information_regions": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "measure": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "value": {
+                "type": "number"
+              }
+            }
+          },
+          "filters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
