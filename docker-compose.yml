@@ -7,6 +7,8 @@ services:
       dockerfile: ./Dockerfile
       args:
         - NODE_ENV=development
+      target: build
+    command: npm run dev
     ports:
       - '3030:3000/tcp'
       - '9229:9229/tcp'
@@ -31,6 +33,8 @@ services:
       dockerfile: ./Dockerfile
       args:
         - NODE_ENV=development
+      target: build
+    command: npm run dev
     ports:
       - '9230:9229/tcp'
     volumes:
