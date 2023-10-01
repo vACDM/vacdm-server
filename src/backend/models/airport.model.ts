@@ -28,6 +28,19 @@ const airportSchema = new mongoose.Schema(
         alias: String,
       },
     ],
+    activeProfile: String,
+    profiles: [
+      {
+        id: String,
+        capacities: [
+          {
+            rwy_designator: String,
+            capacity: Number,
+            alias: String,
+          },
+        ],
+      },
+    ],
   },
   { timestamps: true },
 );
