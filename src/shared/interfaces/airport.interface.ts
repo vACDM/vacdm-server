@@ -6,6 +6,13 @@ export interface Airport {
   taxizones: AirportTaxizone[];
 
   capacities: AirportCapacity[];
+
+  activeProfile: string;
+
+  profiles: {
+    id: string;
+    capacities: AirportCapacity[];
+  }[];
 }
 
 export interface AirportTaxizone {
