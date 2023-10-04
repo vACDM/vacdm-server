@@ -1,8 +1,9 @@
 import fs from 'fs';
 
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import config from '../config';
+import airportService from '../services/airport.service';
 
 const packageString = fs.readFileSync('./package.json');
 let versionResponse = {
@@ -15,7 +16,7 @@ let versionResponse = {
 if (packageString) {
   const packageJson = JSON.parse(packageString.toString());
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+  // eslint-disable-next-line @typescript-eslint/naming-convention,@typescript-eslint/no-unused-vars
   const [version, major, minor, patch, _, prerelease] =
     /(\d).(\d).(\d)(-(.*))?/gi.exec(packageJson.version) as string[];
 
@@ -36,6 +37,20 @@ export function getPluginConfig(req: Request, res: Response) {
   res.json(config().pluginSettings);
 }
 
+async function getExtendedPluginConfig(req: Request, res: Response, next: NextFunction) {
+  try {
+    const airports = await airportService.getAllSupportedAirportsOrEmptyArray();
+
+    res.json({
+      version: versionResponse,
+      config: config().pluginSettings,
+      supportedAirports: airports,
+    });
+  } catch (e) {
+    next(e);
+  }
+}
+
 export function getFrontendConfig(req: Request, res: Response) {
   res.json(config().frontendSettings);
 }
@@ -44,4 +59,5 @@ export default {
   getVersion,
   getPluginConfig,
   getFrontendConfig,
+  getExtendedPluginConfig,
 };

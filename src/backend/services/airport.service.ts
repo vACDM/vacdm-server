@@ -198,6 +198,16 @@ export async function determineRunway(pilot: PilotDocument): Promise<string> {
   }
 }
 
+export async function getAllSupportedAirportsOrEmptyArray(): Promise<string[]> {
+  try {
+    const airports = await getAllAirports();
+
+    return airports.map(a => a.icao);
+  } catch (error) {
+    return [];
+  }
+}
+
 export default {
   getAllAirports,
   getAirport,
@@ -208,4 +218,6 @@ export default {
   determineTaxizone,
   determineRunway,
   getCapacity,
+
+  getAllSupportedAirportsOrEmptyArray,
 };
