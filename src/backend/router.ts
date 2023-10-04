@@ -17,7 +17,7 @@ router.use(requestloggerUtils);
 
 router.get('/version', metaController.getVersion);
 router.get('/config', metaController.getPluginConfig);
-router.get('/config/plugin', metaController.getPluginConfig);
+router.get('/config/plugin', metaController.getExtendedPluginConfig);
 router.get('/config/frontend', metaController.getFrontendConfig);
 
 router.get('/datafeed', miscController.getDataFeed);
