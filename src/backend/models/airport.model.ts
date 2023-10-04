@@ -4,7 +4,7 @@ import Airport from '@/shared/interfaces/airport.interface';
 
 export type AirportDocument = HydratedDocument<Airport>;
 
-const airportSchema = new mongoose.Schema(
+const airportSchema = new mongoose.Schema<Airport>(
   {
     icao: { type: String, unique: true },
     standard_taxitime: { type: Number, required: true },
