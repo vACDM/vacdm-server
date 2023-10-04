@@ -15,7 +15,7 @@ let versionResponse = {
 if (packageString) {
   const packageJson = JSON.parse(packageString.toString());
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+  // eslint-disable-next-line @typescript-eslint/naming-convention,@typescript-eslint/no-unused-vars
   const [version, major, minor, patch, _, prerelease] =
     /(\d).(\d).(\d)(-(.*))?/gi.exec(packageJson.version) as string[];
 
