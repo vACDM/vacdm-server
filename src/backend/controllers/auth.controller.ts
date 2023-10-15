@@ -1,5 +1,6 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 
+import authMiddleware from '../middleware/auth.middleware';
 import authService from '../services/auth.service';
 
 import { UserDocument } from './../models/user.model';
@@ -60,8 +61,11 @@ export async function logoutUser(
   res.json({ success: true });
 }
 
+const router = Router()
+  .get('/login', authUser)
+  .get('/logout', logoutUser)
+  .get('/profile', authMiddleware, getProfile);
+
 export default {
-  authUser,
-  getProfile,
-  logoutUser,
+  router,
 };

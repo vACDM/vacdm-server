@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 
 import { AirportDocument } from '../models/airport.model';
 import { PilotDocument } from '../models/pilot.model';
@@ -96,11 +96,90 @@ export async function updateAirport(req: Request, res: Response, next: NextFunct
   }
 }
 
+async function getAirportProfiles(req: Request, res: Response, next: NextFunction) {
+  const { icao } = req.params;
+
+  try {
+    const airport: AirportDocument = await airportService.getAirport(icao);
+
+    res.json({
+      profiles: airport.profiles,
+      activeProfile: airport.activeProfile,
+    });
+  } catch (e) {
+    next(e);
+  }
+}
+
+async function addAirportProfile(req: Request, res: Response, next: NextFunction) {
+  const { icao } = req.params;
+  const { id, capacities } = req.body;
+
+  try {
+    const airport: AirportDocument = await airportService.getAirport(icao);
+
+    airport.profiles.push({ id, capacities });
+    await airport.save();
+
+    res.json({
+      profiles: airport.profiles,
+      activeProfile: airport.activeProfile,
+    });
+  } catch (e) {
+    next(e);
+  }
+}
+
+async function removeAirportProfile(req: Request, res: Response, next: NextFunction) {
+  const { icao } = req.params;
+  const { id, capacities } = req.body;
+
+  try {
+    const airport: AirportDocument = await airportService.getAirport(icao);
+
+    airport.profiles.push({ id, capacities });
+    await airport.save();
+
+    res.json({
+      profiles: airport.profiles,
+      activeProfile: airport.activeProfile,
+    });
+  } catch (e) {
+    next(e);
+  }
+}
+
+async function updateAirportProfile(req: Request, res: Response, next: NextFunction) {
+  const { icao } = req.params;
+  const { id, capacities } = req.body;
+
+  try {
+    const airport: AirportDocument = await airportService.getAirport(icao);
+
+    airport.profiles.push({ id, capacities });
+    await airport.save();
+
+    res.json({
+      profiles: airport.profiles,
+      activeProfile: airport.activeProfile,
+    });
+  } catch (e) {
+    next(e);
+  }
+}
+
+const router = Router()
+  .get('', getAllAirports)
+  .post('', addAirport)
+  .get('/:icao', getAirport)
+  .get('/:icao/blocks', getAirportBlocks)
+  .get('/:icao/profiles', getAirportProfiles)
+  .post('/:icao/profiles', addAirportProfile)
+  .delete('/:icao/profiles/:profileId', removeAirportProfile)
+  .patch('/:icao/profiles/:profileId', updateAirportProfile)
+  .delete('/:icao', deleteAirport)
+  .patch('/:icao', updateAirport);
+
 export default {
-  getAllAirports,
-  getAirport,
-  getAirportBlocks,
-  addAirport,
-  deleteAirport,
-  updateAirport,
+  router,
 };

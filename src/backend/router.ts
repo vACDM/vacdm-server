@@ -31,23 +31,14 @@ router.get('/pilots/:callsign/logs', pilotController.getPilotLogs);
 router.delete('/pilots/:callsign', pilotController.deletePilot);
 router.patch('/pilots/:callsign', pilotController.updatePilot);
 
-
 router.patch('/vdgs/:callsign', authMiddleware, pilotController.updatePilot);
 
 router.get('/measures', flowController.getAllMeasures);
 router.patch('/measures/:id', flowController.editMeasure);
 router.get('/legacy-measures', flowController.getLegacyMeasures);
 
-router.get('/airports', airportController.getAllAirports);
-router.post('/airports', airportController.addAirport);
-router.get('/airports/:icao', airportController.getAirport);
-router.get('/airports/:icao/blocks', airportController.getAirportBlocks);
-router.delete('/airports/:icao', airportController.deleteAirport);
-router.patch('/airports/:icao', airportController.updateAirport);
-
-router.get('/auth/login', authController.authUser);
-router.get('/auth/logout', authController.logoutUser);
-router.get('/auth/profile', authMiddleware, authController.getProfile);
+router.use('/airports', airportController.router);
+router.use('/auth', authController.router);
 
 router.use((req: Request, res: Response, next: NextFunction) =>
   next(new APIError('Not Found', null, 404)),
