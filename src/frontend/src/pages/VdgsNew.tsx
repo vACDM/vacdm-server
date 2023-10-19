@@ -196,9 +196,13 @@ const Vdgs = () => {
                 >Set TOBT</Button>
                 </div>
             </div>
-            <p className=" mt-4"><b>Info:</b> Your TOBT (Target Off-Block Time) is the time you are fully ready for pushback.
+            <p className="mt-4">
+              <b>Info:</b> Your TOBT (Target Off-Block Time) is the time you are fully ready for pushback.
               The initial TOBT you see here is the one extracted from your fight plan on VATSIM.
               Once you "confirm" or "update" your TOBT in the field above, ATC is able to better plan a departure sequence.
+            </p>
+            <p className="mt-4">
+              Please always update the TOBT when the new TOBT differs from the current one by more than 5 minutes! 
             </p>
           </Card>
         </div>
