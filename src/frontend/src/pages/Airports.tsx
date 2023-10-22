@@ -1,10 +1,10 @@
-import { useState, useEffect, useContext } from 'react';
-import DataTable, { TableColumn } from 'react-data-table-component';
+import { Button } from 'primereact/button';
+import { Card } from 'primereact/card';
+import { Column } from 'primereact/column';
+import { DataTable } from 'primereact/datatable';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import Button from '../components/ui/Button/Button';
-import Card from '../components/ui/Card/Card';
-import DarkModeContext from '../contexts/DarkModeProvider';
 import AirportService from '../services/AirportService';
 
 import Airport from '@/shared/interfaces/airport.interface';
@@ -12,43 +12,7 @@ import Airport from '@/shared/interfaces/airport.interface';
 const AirpotsTable = () => {
   const [airports, setAirports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const { darkMode } = useContext(DarkModeContext);
   const navigate = useNavigate();
-
-  const columns: TableColumn<Airport>[] = [
-    {
-      name: 'ICAO',
-      selector: (row) => row.icao,
-    },
-    {
-      name: 'Standard Taxitime',
-      selector: (row) => row.standard_taxitime,
-    },
-    {
-      name: 'Taxizones',
-      selector: (row) => row.taxizones.length,
-    },
-    {
-      name: 'Capacities',
-      selector: (row) => row.capacities.length,
-    },
-    {
-      name: 'Details',
-      cell: (row) => (
-        <Button disabled={true} style="warning" onClick={() => navigate('')}>
-          Details (wip)
-        </Button>
-      ),
-    },
-    {
-      name: 'Blocks',
-      cell: (row) => (
-        <Button disabled={true} onClick={() => navigate('')}>
-          Blocks (wip)
-        </Button>
-      ),
-    },
-  ];
 
   useEffect(() => {
     AirportService.getAirports().then((data: any[]) => {
@@ -57,17 +21,31 @@ const AirpotsTable = () => {
     });
   }, []);
 
+  const adminBodyTemplate = (rowData: Airport) => {
+    return <Button severity="warning" size='small' onClick={() => navigate('/airports/' + rowData.icao)}>Edit</Button>;
+  };
+
+  const blocksBodyTemplate = (rowData: Airport) => {
+    return <Button disabled={true} size='small' onClick={() => navigate('/airports/blocks' + rowData.icao)}>Blocks (wip)</Button>;
+  };
+
   return (
     <div className="grid grid-cols-12">
       <div className="col-span-2"></div>
       <div className="col-span-8">
         <Card>
           <DataTable
-            columns={columns}
-            data={airports}
-            theme={!darkMode ? 'dark' : 'default'}
-            progressPending={loading}
-          />
+        value={airports}
+        size='small'
+        loading={loading}
+        >
+            <Column header='ICAO' field='icao'></Column>
+            <Column header='Standard Taxitime' field='standard_taxitime'></Column>
+            <Column header='Taxizones' field='taxizones.length'></Column>
+            <Column header='Capacities' field='capacities.length'></Column>
+            <Column header='Admin' body={adminBodyTemplate}></Column>
+            <Column header='Blocks' body={blocksBodyTemplate}></Column>
+          </DataTable>
         </Card>
       </div>
       <div className="col-span-2"></div>

@@ -4,6 +4,7 @@ export default {
   content: [
     './src/frontend/index.html',
     './src/frontend/src/**/*.{js,ts,jsx,tsx}',
+    './node_modules/primereact/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     accentColor: ({ theme }) => ({

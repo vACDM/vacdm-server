@@ -1,12 +1,15 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import { Button } from 'primereact/button';
+import { Card } from 'primereact/card';
+import { InputText } from 'primereact/inputtext';
 import { Toast } from 'primereact/toast';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import  Button  from '../components/ui/Button/Button';
-import  Card from '../components/ui/Card/Card';
-import { Input } from '../components/ui/Input/Input';
+
+
+
 import AuthService from '../services/AuthService';
 import DatafeedService from '../services/DatafeedService';
 import PilotService from '../services/PilotService';
@@ -179,17 +182,14 @@ const Vdgs = () => {
             
             <div className="flex flex-wrap gap-2">
               <div className="flex items-center gap-2">
-                <Input
-
-                  inputError={validity}
-                  loading={loading}
-                  hideSpinner={true}
+                <InputText
                   placeholder="HHMM"
                   aria-describedby="tobt-help"
                   className="min-h-[36px]"
-                ></Input>
+                ></InputText>
               <Button
               className="mb-auto"
+              size='small'
                 loading={loadingTobt}
                 onClick={updateTobt}
                 disabled={!pilot?.callsign  || pilot?.callsign === '' ? true : false}

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import Pilot, { PilotLog } from '@/shared/interfaces/pilot.interface';
 
-async function getPilots(): Promise<Pilot[]> {
+async function getPilots(): Promise<any> {
   try {
     const response = await axios.get<Pilot[]>('/api/v1/pilots');
     return response.data;
