@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
+import logger from '../logger';
 import authService from '../services/auth.service';
 
 import { UserDocument } from './../models/user.model';
@@ -23,7 +24,7 @@ export async function authUser(
     });
 
     const user: UserDocument = await authService.getUserFromToken(response);
-    console.log('User is: ', user);
+    logger.debug('User is: %o', user);
 
     if (user.vacdm.atc || user.vacdm.admin) {
       return res.redirect('/atc');
@@ -42,7 +43,7 @@ export async function authUser(
 export async function getProfile(
   req: Request,
   res: Response,
-  next: NextFunction,
+  // next: NextFunction,
 ) {
   if (req.user) {
     req.user.access_token = '';
@@ -54,7 +55,7 @@ export async function getProfile(
 export async function logoutUser(
   req: Request,
   res: Response,
-  next: NextFunction,
+  // next: NextFunction,
 ) {
   res.clearCookie('vacdm_token');
   res.json({ success: true });

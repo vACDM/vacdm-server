@@ -1,17 +1,15 @@
-import Logger from '@dotfionn/logger';
 import bodyparser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import mongoose from 'mongoose';
 
 import config from './config';
+import logger from './logger';
 import router from './router';
 import cdmService from './services/cdm.service';
 import ecfmpService from './services/ecfmp.service';
 
 import errors from '@/shared/errors';
-
-const logger = new Logger('vACDM:app');
 
 (async () => {
   logger.info('starting up');
@@ -20,6 +18,8 @@ const logger = new Logger('vACDM:app');
     throw new Error('MONGO_URI has to be set!');
   }
 
+  // TODO: default from mongoose7 will be false, needs to be checked
+  mongoose.set('strictQuery', true);
   await mongoose.connect(config().mongoUri);
 
   if (config().role == 'WORKER') {
@@ -30,7 +30,7 @@ const logger = new Logger('vACDM:app');
       try {
         await cdmService.cleanupPilots();
       } catch (error) {
-        logger.error('error occurred when cleaning up pilots', error);
+        logger.error('error occurred when cleaning up pilots %o', error);
       }
     }, 10000);
 
@@ -49,10 +49,9 @@ const logger = new Logger('vACDM:app');
       try {
         await cdmService.cleanupUsers();
       } catch (error) {
-        logger.error('error occurred when cleaning up users', error);
+        logger.error('error occurred when cleaning up users %o', error);
       }
     }, 6 * 60 * 60 * 1000); /* 6h */
-    console.log(6 * 60 * 60 * 1000);
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -62,7 +61,7 @@ const logger = new Logger('vACDM:app');
       try {
         await cdmService.optimizeBlockAssignments();
       } catch (error) {
-        logger.error('error occurred when optimizing block assignments', error);
+        logger.error('error occurred when optimizing block assignments %o', error);
       }
     }
 
@@ -89,7 +88,7 @@ const logger = new Logger('vACDM:app');
       res: express.Response,
       next: express.NextFunction,
     ) => {
-      console.log(err);
+      logger.warn(err);
 
       if (err instanceof errors.APIError) {
         return res.status(err.responseCode).json(err);
@@ -105,6 +104,6 @@ const logger = new Logger('vACDM:app');
 
   const port = config().port;
   app.listen(port, () => {
-    logger.info('listening on port', port);
+    logger.info('listening on port %d', port);
   });
 })();
