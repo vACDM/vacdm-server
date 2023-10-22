@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response, Router } from 'express';
+import morgan from 'morgan';
 
 import airportController from './controllers/airport.controller';
 import authController from './controllers/auth.controller';
@@ -6,14 +7,14 @@ import flowController from './controllers/flow.controller';
 import metaController from './controllers/meta.controller';
 import miscController from './controllers/misc.controller';
 import pilotController from './controllers/pilot.controller';
+import logger from './logger';
 import authMiddleware from './middleware/auth.middleware';
-import requestloggerUtils from './utils/requestlogger.utils';
 
 import { APIError } from '@/shared/errors';
 
 const router = Router();
 
-router.use(requestloggerUtils);
+router.use(morgan('short', { stream: { write: m => logger.http(m.trim()) } }));
 
 router.get('/version', metaController.getVersion);
 router.get('/config', metaController.getPluginConfig);

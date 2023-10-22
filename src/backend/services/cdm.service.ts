@@ -1,7 +1,7 @@
-import Logger from '@dotfionn/logger';
 import dayjs from 'dayjs';
 
 import config from '../config';
+import logger from '../logger';
 import pilotModel, { PilotDocument } from '../models/pilot.model';
 import userModel from '../models/user.model';
 import blockUtils from '../utils/block.utils';
@@ -12,10 +12,7 @@ import bookingsService from './bookings.service';
 import datafeedService from './datafeed.service';
 import pilotService from './pilot.service';
 
-
-
 import { AirportCapacity } from '@/shared/interfaces/airport.interface';
-const logger = new Logger('vACDM:services:cdm');
 
 export function determineInitialBlock(pilot: PilotDocument): {
   initialBlock: number;
@@ -183,11 +180,11 @@ export async function cleanupPilots() {
     })
     .exec();
 
-  logger.debug('pilotsToBeDeleted', pilotsToBeDeleted);
+  logger.debug('pilotsToBeDeleted %o', pilotsToBeDeleted);
 
   for (const pilot of pilotsToBeDeleted) {
     pilotService.deletePilot(pilot.callsign);
-    logger.debug('deleted inactive pilot', pilot.callsign);
+    logger.debug('deleted inactive pilot %o', pilot.callsign);
   }
 
   // deactivate long not seen pilots
@@ -202,7 +199,7 @@ export async function cleanupPilots() {
     })
     .exec();
 
-  logger.debug('pilotsToBeDeactivated', pilotsToBeDeactivated);
+  logger.debug('pilotsToBeDeactivated %o', pilotsToBeDeactivated);
 
   for (const pilot of pilotsToBeDeactivated) {
     pilot.inactive = true;
@@ -216,7 +213,7 @@ export async function cleanupPilots() {
       },
     });
 
-    logger.debug('deactivating pilot', pilot.callsign);
+    logger.debug('deactivating pilot %o', pilot.callsign);
 
     await pilot.save();
   }
@@ -325,7 +322,7 @@ export async function optimizeBlockAssignments() {
           pilot.vacdm.delay -= (144 + pilot.vacdm.blockId - firstBlockId) % 144;
           pilot.vacdm.blockId = firstBlockId;
 
-          console.log('==========>> setting pilot times', pilot.callsign);
+          logger.debug('==========>> setting pilot times %o', pilot.callsign);
 
           await setTime(pilot);
         }

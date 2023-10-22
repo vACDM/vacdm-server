@@ -14,6 +14,11 @@ interface VacdmConfig {
     timeSinceLastLogin: number;
   };
 
+  logging: {
+    levelConsole: string;
+    levelFile: string;
+  };
+
   eventUrl: string;
   eventPrio: number;
   eventPullInterval: number;
@@ -60,6 +65,11 @@ export default function config(): VacdmConfig {
       timeSinceLastSeen: Number(process.env.TIME_LAST_SEEN || 5) * 60 * 1000,
       timeSinceInactive: Number(process.env.TIME_INACTIVE || 5) * 60 * 1000,
       timeSinceLastLogin: Number(process.env.TIME_LAST_LOGIN || 48) * 60 * 60 * 1000,
+    },
+
+    logging: {
+      levelConsole: process.env.LOG_LEVEL_CONSOLE || 'http',
+      levelFile: process.env.LOG_LEVEL_FILE || 'info',
     },
 
     eventUrl: process.env.EVENT_URL || 'https://slots.vatsim-germany.org/api/events/',
