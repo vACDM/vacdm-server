@@ -1,10 +1,8 @@
-import Logger from '@dotfionn/logger';
 import axios from 'axios';
 import dayjs from 'dayjs';
 
 import config from '../config';
-
-const logger = new Logger('vACDM:services:booking');
+import logger from '../logger';
 
 let lastPull: Date | null = null;
 let relevantBookings: any[] | null = null;
@@ -40,7 +38,7 @@ export async function getAllBookings() {
 
     return relevantBookings;
   } catch (e) {
-    console.log('error getting all bookings', e);
+    logger.warn('error getting all bookings %o', e);
     throw e;
   }
 }
@@ -51,7 +49,7 @@ export async function pilotHasBooking(cid: number): Promise<boolean> {
 
     return bookings.findIndex((b) => b.user === cid) != -1;
   } catch (e) {
-    console.log('error checking if pilot has booking', cid, e);
+    logger.warn('error checking if pilot has booking %s %o', cid, e);
     throw e;
   }
 }

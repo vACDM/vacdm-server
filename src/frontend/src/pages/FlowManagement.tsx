@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
-import { useContext, useEffect, useState } from 'react';
-import DataTable, { TableColumn } from 'react-data-table-component';
+import { Card } from 'primereact/card';
+import { Checkbox } from 'primereact/checkbox';
+import { Column } from 'primereact/column';
+import { DataTable } from 'primereact/datatable';
+import { useEffect, useState } from 'react';
 
-import Card from '../components/ui/Card/Card';
-import { Checkbox } from '../components/ui/Checkbox/Checkbox';
-import DarkModeContext from '../contexts/DarkModeProvider';
 import FlowService from '../services/FlowService';
 
 import { EcfmpMeasure } from '@/shared/interfaces/ecfmp.interface';
@@ -12,7 +12,6 @@ import { EcfmpMeasure } from '@/shared/interfaces/ecfmp.interface';
 const FlowManagement = () => {
   const [measures, setMeasures] = useState<EcfmpMeasure[]>([]);
   const [loading, setLoading] = useState(true);
-  const { darkMode } = useContext(DarkModeContext);
 
   useEffect(() => {
     async function loadData() {
@@ -32,10 +31,10 @@ const FlowManagement = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const setMeasureEnabled = async (measure: EcfmpMeasure, checked: boolean) => {
+  const setMeasureEnabled = async (measure: EcfmpMeasure, checked?: boolean) => {
     const updatedMeasure = await FlowService.setMeasureEnable(
       measure.id,
-      checked,
+      checked ?? true,
     );
     setMeasures((currentMeasures) => [
       ...currentMeasures.filter((_measure) => _measure.id !== measure.id),
@@ -44,83 +43,48 @@ const FlowManagement = () => {
   };
 
   const enabledColumnTemplate = (rowData: EcfmpMeasure) => {
-    let checked = rowData.enabled;
     return (
       <Checkbox
-        checked={checked}
+        checked={rowData.enabled}
         onChange={(e) => {
-          setMeasureEnabled(rowData, e);
-          checked = e;          
+          setMeasureEnabled(rowData, e.checked);
         }}
       />
     );
   };
 
-  const filterColumns: TableColumn<any>[] = [
-    {
-      name: 'Type',
-      selector: (row) => row.type,
-    },
-    {
-      name: 'Value',
-      selector: (row) => row.value,
-    },
-  ];
-
-  const contraintsTemplate = (rowData: any) => {
-    return (
-      <DataTable
-        data={rowData.filters}
-        columns={filterColumns}
-        theme={!darkMode ? 'dark' : 'default'}
-      />
-    );
+  const filterValueTempate = (rowData) => {
+    return rowData.value.join(', ');
   };
 
-  const columns: TableColumn<EcfmpMeasure>[] = [
-    {
-      name: 'Enabled',
-      cell: (row) => enabledColumnTemplate(row),
-    },
-    {
-      name: 'Measure ID',
-      selector: (row) => row.ident,
-    },
-    {
-      name: 'WEF',
-      selector: (row) =>
-        dayjs(row.starttime).utc().format('dddd, DD.MM.YYYY HH:mm UTC'),
-    },
-    {
-      name: 'UNT',
-      selector: (row) =>
-        dayjs(row.endtime).utc().format('dddd, DD.MM.YYYY HH:mm UTC'),
-    },
-    {
-      name: 'Measure',
-      cell: (row) => (
-        <div>
-          <div>Type: {row.measure.type}</div>
-          <br />
-          <div>Value: {row.measure.value}</div>
-        </div>
-      ),
-    },
-    {
-      name: 'Constraints',
-      cell: (row) => contraintsTemplate(row),
-    },
-  ];
+  const contraintsTemplate = (rowData: EcfmpMeasure) => {
+    return (
+      <DataTable
+        value={rowData.filters}
+        size='small'
+      >
+        <Column header='Type' field='type' />
+        <Column header='Value' body={filterValueTempate} />
+      </DataTable>
+    );
+  };
 
   return (
     <Card>
       <DataTable
-        data={measures}
-        columns={columns}
-        theme={!darkMode ? 'dark' : 'default'}
-        progressPending={loading}
-      />
-    </Card>
+      value={measures}
+      size='small'
+      loading={loading}
+      sortField='ident'
+      sortOrder={1}
+      >
+        <Column header='Enabled' body={enabledColumnTemplate}></Column>
+        <Column header='Measure ID' sortable field='ident'></Column>
+        <Column header='WEF' body={(rowData) => dayjs(rowData.starttime).utc().format('dddd, DD.MM.YYYY HH:mm UTC')}></Column>
+        <Column header='UNT' body={(rowData) => dayjs(rowData.endtime).utc().format('dddd, DD.MM.YYYY HH:mm UTC')}></Column>
+        <Column header='Constraints' body={contraintsTemplate}></Column>
+      </DataTable>
+  </Card>
   );
 };
 

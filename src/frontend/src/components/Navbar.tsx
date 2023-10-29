@@ -1,5 +1,6 @@
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Button } from 'primereact/button';
 import { Fragment, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,8 +8,6 @@ import logo from '../assets/cdm_logo.png';
 import AuthContext from '../contexts/AuthProvider';
 import DarkModeContext from '../contexts/DarkModeProvider';
 import AuthService from '../services/AuthService';
-
-import Button from './ui/Button/Button';
 
 import { FrontendSettings } from '@/shared/interfaces/config.interface';
 
@@ -74,7 +73,6 @@ export default function NavbarWithDropdown(props: any) {
       window.location.protocol,
       '//',
       window.location.host,
-      //'localhost:3000',
       '/api/v1/auth/login',
       '&',
       'response_type=code',
@@ -200,7 +198,7 @@ export default function NavbarWithDropdown(props: any) {
                 </button>
 
                 <div className={`${auth.auth.user ? 'hidden' : ''} ml-2`}>
-                  <Button onClick={() => redirectToVatsimAuth()}>Login</Button>
+                  <Button size='small' onClick={() => redirectToVatsimAuth()}>Login</Button>
                 </div>
 
                 {/* Profile dropdown */}
@@ -226,32 +224,6 @@ export default function NavbarWithDropdown(props: any) {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      {/* <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            href="#"
-                            className={classNames(
-                              active ? 'bg-gray-100' : '',
-                              'block px-4 py-2 text-sm text-gray-700'
-                            )}
-                          >
-                            Your Profile
-                          </a>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            href="#"
-                            className={classNames(
-                              active ? 'bg-gray-100' : '',
-                              'block px-4 py-2 text-sm text-gray-700'
-                            )}
-                          >
-                            Settings
-                          </a>
-                        )}
-                      </Menu.Item> */}
                       <Menu.Item>
                         {({ active }) => (
                           <span

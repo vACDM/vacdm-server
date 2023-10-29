@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+import Airport from '../../../shared/interfaces/airport.interface';
+
 async function getAirports() {
   try {
     const response = await axios.get('/api/v1/airports');
