@@ -2,25 +2,27 @@ import { join } from 'path';
 
 import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import mongoose from 'mongoose';
+import { JoiPipeModule } from 'nestjs-joi';
 
-import config from './config';
-
-const databaseProviders = [
-  {
-    provide: 'DB',
-    useFactory: () => {
-      mongoose.set('strictQuery', true);
-      return mongoose.connect(config().mongoUri);
-    },
-  },
-];
+import { AirportModule } from './airport/airport.module';
+import { databaseProviders } from './database.module';
+import { PilotModule } from './pilot/pilot.module';
 
 @Module({
   imports: [
+    JoiPipeModule.forRoot({
+      pipeOpts: {
+        defaultValidationOptions: {
+          allowUnknown: false,
+        },
+      },
+    }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'frontend'),
+      exclude: ['/api/(.*)'],
     }),
+    AirportModule,
+    PilotModule,
   ],
   providers: [...databaseProviders],
   exports: [...databaseProviders],

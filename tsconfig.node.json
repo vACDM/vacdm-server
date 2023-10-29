@@ -2,8 +2,7 @@
   "extends": "./tsconfig.json",
   "include": [
     "src/backend/**/*",
-    "src/shared/**/*",
-    "src/frontend/vite.config.ts"
+    "src/shared/**/*"
   ],
   "exclude": [
     "node_modules",

@@ -27,18 +27,18 @@ services:
       - JWT_SECRET
       - ALLOW_SIM=true
       - ALLOW_OBS_MASTER=true
-  worker:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-      args:
-        - NODE_ENV=development
-      target: build
-    command: npm run dev
-    ports:
-      - '9230:9229/tcp'
-    volumes:
-      - .:/opt:delegated
-    environment:
-      - MONGO_URI
-      - ROLE=WORKER
+  # worker:
+  #   build:
+  #     context: .
+  #     dockerfile: ./Dockerfile
+  #     args:
+  #       - NODE_ENV=development
+  #     target: build
+  #   command: npm run dev
+  #   ports:
+  #     - '9230:9229/tcp'
+  #   volumes:
+  #     - .:/opt:delegated
+  #   environment:
+  #     - MONGO_URI
+  #     - ROLE=WORKER

@@ -31,11 +31,13 @@
     "dayjs": "^1.11.7",
     "express": "^4.18.1",
     "helmet": "^5.1.1",
+    "joi": "17.11.0",
     "jsonwebtoken": "^8.5.1",
     "module-alias": "^2.2.2",
     "mongoose": "^6.5.0",
     "morgan": "1.10.0",
     "nest-winston": "1.9.4",
+    "nestjs-joi": "1.10.0",
     "point-in-polygon": "^1.1.0",
     "reflect-metadata": "0.1.13",
     "rxjs": "7.8.1",
@@ -119,7 +121,8 @@
       "sourceType": "module",
       "project": [
         "./tsconfig.node.json",
-        "./tsconfig.web.json"
+        "./tsconfig.web.json",
+        "./tsconfig.viteconfig.json"
       ]
     },
     "rules": {

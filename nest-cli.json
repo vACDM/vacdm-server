@@ -3,7 +3,6 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "./src/backend",
   "compilerOptions": {
-    "deleteOutDir": true,
     "tsConfigPath": "tsconfig.node.json"
   },
   "entryFile": "backend/main"
