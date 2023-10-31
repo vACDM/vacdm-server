@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
 
-import { PilotDto } from './dto/pilot.create.dto';
+import { PilotDto } from './pilot.dto';
 import { PilotService } from './pilot.service';
 
 @Controller('v1/pilots')

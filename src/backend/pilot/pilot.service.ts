@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { PilotDto } from './dto/pilot.create.dto';
+import { PilotDto } from './pilot.dto';
 import { PILOT_MODEL, PilotDocument, PilotModel } from './pilot.model';
 
 @Injectable()
