@@ -27,6 +27,8 @@ services:
       - JWT_SECRET
       - ALLOW_SIM=true
       - ALLOW_OBS_MASTER=true
+      - LOG_LEVEL_CONSOLE=debug
+      - LOG_LEVEL_FILE=none
   # worker:
   #   build:
   #     context: .

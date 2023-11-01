@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import { JoiSchema, UPDATE, getTypeSchema } from 'nestjs-joi';
 
-export class PilotDtoPosition {
+class PilotDtoPosition {
   @JoiSchema(Joi.number().required())
   @JoiSchema([UPDATE], Joi.number().optional())
     lat: number;
@@ -11,7 +11,7 @@ export class PilotDtoPosition {
     lon: number;
 }
 
-export class PilotDtoFlightplan {
+class PilotDtoFlightplan {
   @JoiSchema(Joi.string().required())
   @JoiSchema([UPDATE], Joi.string().optional())
     flight_rules: string;
@@ -25,7 +25,7 @@ export class PilotDtoFlightplan {
     arrival: string;
 }
 
-export class PilotDtoVacdm {
+class PilotDtoVacdm {
   @JoiSchema(Joi.number().required())
   @JoiSchema([UPDATE], Joi.number().optional())
     eobt: number;
@@ -35,7 +35,7 @@ export class PilotDtoVacdm {
     tobt: number;
 }
 
-export class PilotDtoClearance {
+class PilotDtoClearance {
   @JoiSchema(Joi.string().required())
   @JoiSchema([UPDATE], Joi.string().optional())
     dep_rwy: string;
