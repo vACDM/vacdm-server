@@ -1,14 +1,21 @@
 import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import pointInPolygon from 'point-in-polygon';
 
 import logger from '../logger';
+import { PilotDocument } from '../pilot/pilot.model';
+import { UtilsService } from '../utils/utils.service';
 
 import { AirportDto } from './airport.dto';
 import { AIRPORT_MODEL, AirportDocument, AirportModel } from './airport.model';
+
+import { AirportCapacity, AirportTaxizone } from '@/shared/interfaces/airport.interface';
+import { AirportBlocks } from '@/shared/interfaces/pilot.interface';
 
 @Injectable()
 export class AirportService {
   constructor(
     @Inject(AIRPORT_MODEL) private airportModel: AirportModel,
+    private utilsService: UtilsService,
   ) {}
 
   getAllAirports(): Promise<AirportDocument[]> {
@@ -16,19 +23,23 @@ export class AirportService {
   }
   
   async getAirportFromId(id: string): Promise<AirportDocument> {
+    logger.debug('trying to get an airport with id "%s"', id);
     const arpt = await this.airportModel.findById(id);
-
+    
     if (!arpt) {
+      logger.verbose('could not find airport with id "%s"', id);
       throw new NotFoundException();
     }
-
+    
     return arpt;
   }
   
   async getAirportFromIcao(icao: string): Promise<AirportDocument> {
+    logger.debug('trying to get an airport with icao "%s"', icao);
     const arpt = await this.airportModel.findOne({ icao });
-
+    
     if (!arpt) {
+      logger.verbose('could not find airport with icao "%s"', icao);
       throw new NotFoundException();
     }
 
@@ -62,7 +73,7 @@ export class AirportService {
   }
 
   async deleteAirport(icao: string) {
-    logger.verbose('deleting airport %s', icao);
+    logger.verbose('deleting airport "%s"', icao);
     if (!await this.doesAirportExist(icao)) {
       throw new NotFoundException();
     }
@@ -71,4 +82,88 @@ export class AirportService {
 
     return arpt;
   }
+
+  async getCapacityForRwyDesignator(icao: string, rwyDesignator: string): Promise<AirportCapacity> {
+    const airport = await this.getAirportFromIcao(icao);
+
+    const capacity = airport.capacities.find(c => [c.alias, c.rwy_designator].includes(rwyDesignator));
+
+    if (!capacity) {
+      throw new NotFoundException();
+    }
+
+    return capacity;
+  }
+
+  async determineRunway(pilot: PilotDocument): Promise<string> {
+    const icao = pilot.flightplan.departure;
+    const rwy = pilot.clearance.dep_rwy;
+
+    const cap = await this.getCapacityForRwyDesignator(icao, rwy);
+
+    return cap.alias || cap.rwy_designator;
+  }
+
+  async getKnownAirportIcaos(): Promise<string[]> {
+    try {
+      const airports = await this.getAllAirports();
+      return airports.map(arpt => arpt.icao);
+    } catch (error) {
+      // explicitly return empty array on error
+      // because plugin uses this to distribute requests
+      return [];
+    }
+  }
+
+  async determineTaxizone(pilot: PilotDocument): Promise<{ taxizone: string; exot: number; taxiout: boolean }> {
+    const icao = pilot.flightplan.departure;
+    const rwy = pilot.clearance.dep_rwy;
+
+    const airport = await this.getAirportFromIcao(icao);
+
+    const defaultTaxiZone = {
+      taxizone: 'default taxitime',
+      exot: airport.standard_taxitime,
+      taxiout: false,
+    };
+
+    const pilotPos = [pilot.position.lat, pilot.position.lon];
+    let taxizone: AirportTaxizone | undefined = undefined;
+
+    for (const tz of airport.taxizones) {
+      const poly = this.utilsService.convertScopeCoordsToLatLonPairs(tz.polygon);
+
+      if (pointInPolygon(pilotPos, poly)) {
+        taxizone = tz;
+        break;
+      }
+    }
+
+    if (!taxizone) {
+      return defaultTaxiZone;
+    }
+
+    const timeDefinition = taxizone.taxitimes.find(d => d.rwy_designator == rwy);
+
+    if (!timeDefinition) {
+      return defaultTaxiZone;
+    }
+
+    return {
+      taxizone: taxizone.label,
+      exot: timeDefinition.minutes,
+      taxiout: taxizone.taxiout,
+    };
+  }
+
+  // async getBlockUtilization(icao: string): Promise<AirportBlocks> {
+  //   const airport = await this.getAirportFromIcao(icao);
+
+  //   const blocks: AirportBlocks = {
+  //     icao,
+  //     rwys: {},
+  //   };
+
+
+  // }
 }

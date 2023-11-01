@@ -7,6 +7,7 @@ import { JoiPipeModule } from 'nestjs-joi';
 import { AirportModule } from './airport/airport.module';
 import { databaseProviders } from './database.module';
 import { PilotModule } from './pilot/pilot.module';
+import { UtilsModule } from './utils/utils.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { PilotModule } from './pilot/pilot.module';
     }),
     AirportModule,
     PilotModule,
+    UtilsModule,
   ],
   providers: [...databaseProviders],
   exports: [...databaseProviders],

@@ -26,6 +26,7 @@ export class AirportController {
   }
 
   @Patch('/:icao')
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   updateAirport(@Param('icao', new JoiPipe(AirportIcaoValidator.required())) icao: string, @Body() dto: AirportDto) {
     throw new NotImplementedException();
   }

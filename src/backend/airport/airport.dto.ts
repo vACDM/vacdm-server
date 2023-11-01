@@ -1,6 +1,8 @@
 import Joi from 'joi';
 import { JoiSchema, UPDATE, getTypeSchema } from 'nestjs-joi';
 
+import { UtilsService } from '../utils/utils.service';
+
 export const AirportIcaoValidator = Joi.string().regex(/^[A-Z0-9]{4}$/).message('"icao" must be four uppercase letters between A and Z or digits between 0 and 9');
 
 class AirportDtoTaxizoneTaxitime {
@@ -23,7 +25,7 @@ class AirportDtoTaxizone {
     taxiout: boolean;
 
   @JoiSchema(Joi.array().items(Joi.string()).min(3).required())
-  @JoiSchema([UPDATE], Joi.array().items(Joi.string()).min(3).optional())
+  @JoiSchema([UPDATE], Joi.array().items(Joi.string().regex(UtilsService.scopeCoordsRegex)).min(3).optional())
     polygon: string[];
   
   @JoiSchema(Joi.array().items(getTypeSchema(AirportDtoTaxizoneTaxitime)).required())
