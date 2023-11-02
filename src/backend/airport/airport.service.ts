@@ -3,6 +3,7 @@ import pointInPolygon from 'point-in-polygon';
 
 import logger from '../logger';
 import { PilotDocument } from '../pilot/pilot.model';
+import { PilotService } from '../pilot/pilot.service';
 import { UtilsService } from '../utils/utils.service';
 
 import { AirportDto } from './airport.dto';
@@ -16,6 +17,7 @@ export class AirportService {
   constructor(
     @Inject(AIRPORT_MODEL) private airportModel: AirportModel,
     private utilsService: UtilsService,
+    private pilotService: PilotService,
   ) {}
 
   getAllAirports(): Promise<AirportDocument[]> {
@@ -156,14 +158,31 @@ export class AirportService {
     };
   }
 
-  // async getBlockUtilization(icao: string): Promise<AirportBlocks> {
-  //   const airport = await this.getAirportFromIcao(icao);
+  // TODO: refactor this to aggregation at some point
+  async getBlockUtilization(icao: string): Promise<AirportBlocks> {
+    const airport = await this.getAirportFromIcao(icao);
 
-  //   const blocks: AirportBlocks = {
-  //     icao,
-  //     rwys: {},
-  //   };
+    const blocks: AirportBlocks = {
+      icao,
+      rwys: {},
+    };
 
+    for (const cap of airport.capacities) {
+      const rwyDesignator = cap.alias || cap.rwy_designator;
 
-  // }
+      blocks.rwys[rwyDesignator] = Object.fromEntries(Array(144).fill(null).map((_, i) => [i, []]));
+    }
+
+    const pilots = await this.pilotService.getPilots({
+      'vacdm.blockId': { $not: { $eq: -1 } },
+      'flightplan.departure': icao,
+    });
+
+    for (const pilot of pilots) {
+      const { block_rwy_designator: blockRwyDesignator, blockId } = pilot.vacdm;
+      blocks.rwys[blockRwyDesignator][blockId].push(pilot);
+    }
+
+    return blocks;
+  }
 }

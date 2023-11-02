@@ -9,8 +9,12 @@ export class PilotService {
     @Inject(PILOT_MODEL) private pilotModel: PilotModel,
   ) {}
 
+  getPilots(filter: object): Promise<PilotDocument[]> {
+    return this.pilotModel.find(filter).exec();
+  }
+
   getAllPilots(): Promise<PilotDocument[]> {
-    return this.pilotModel.find({}).exec();
+    return this.getPilots({});
   }
 
   async createPilot(createData: PilotDto): Promise<PilotDocument>  {

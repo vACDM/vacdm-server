@@ -10,5 +10,6 @@ import { PilotService } from './pilot.service';
   imports: [DatabaseModule],
   providers: [PilotService, PilotProvider],
   controllers: [PilotController],
+  exports: [PilotService],
 })
 export class PilotModule {}
