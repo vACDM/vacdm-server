@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 
 import { PilotDto } from './pilot.dto';
 import { PILOT_MODEL, PilotDocument, PilotModel } from './pilot.model';
@@ -20,9 +20,21 @@ export class PilotService {
   async createPilot(createData: PilotDto): Promise<PilotDocument>  {
     const pilot = new this.pilotModel(createData);
         
-    // TODO
+    // TODO: determine steps to take when pilot is created
 
     await pilot.save();
+
+    return pilot;
+  }
+
+  async deletePilot(callsign: string): Promise<PilotDocument> {
+    const pilot = await this.pilotModel.findOneAndDelete({ callsign });
+
+    if (!pilot) {
+      throw new NotFoundException();
+    }
+
+    // TODO: get and archive pilot and pilot logs
 
     return pilot;
   }
