@@ -17,6 +17,20 @@ export class PilotService {
     return this.getPilots({});
   }
 
+  async doesPilotExist(callsign): Promise<boolean> {
+    try {
+      await this.getPilots({ callsign });
+
+      return true;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        return false;
+      }
+
+      throw error;
+    }
+  }
+
   async createPilot(createData: PilotDto): Promise<PilotDocument>  {
     const pilot = new this.pilotModel(createData);
         
