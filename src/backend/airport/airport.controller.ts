@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { JoiPipe } from 'nestjs-joi';
 
 import { AirportDto, AirportIcaoValidator } from './airport.dto';
@@ -28,7 +28,7 @@ export class AirportController {
   @Patch('/:icao')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   updateAirport(@Param('icao', new JoiPipe(AirportIcaoValidator.required())) icao: string, @Body() dto: AirportDto) {
-    throw new NotImplementedException();
+    return this.airportService.updateAirport(icao, dto);
   }
 
   @Delete('/:icao')

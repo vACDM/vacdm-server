@@ -23,7 +23,7 @@ export class AirportService {
   getAllAirports(): Promise<AirportDocument[]> {
     return this.airportModel.find({}).exec();
   }
-  
+
   async getAirportFromId(id: string): Promise<AirportDocument> {
     logger.debug('trying to get an airport with id "%s"', id);
     const arpt = await this.airportModel.findById(id);
@@ -35,7 +35,7 @@ export class AirportService {
     
     return arpt;
   }
-  
+
   async getAirportFromIcao(icao: string): Promise<AirportDocument> {
     logger.debug('trying to get an airport with icao "%s"', icao);
     const arpt = await this.airportModel.findOne({ icao });
@@ -74,13 +74,26 @@ export class AirportService {
     return arpt;
   }
 
-  async deleteAirport(icao: string) {
+  async deleteAirport(icao: string): Promise<AirportDocument> {
     logger.verbose('deleting airport "%s"', icao);
-    if (!await this.doesAirportExist(icao)) {
+    
+    const arpt = await this.airportModel.findOneAndRemove({ icao });
+    
+    if (!arpt) {
       throw new NotFoundException();
     }
 
-    const arpt = await this.airportModel.findOneAndRemove({ icao });
+    return arpt;
+  }
+
+  async updateAirport(icao: string, diff: Partial<AirportDto>): Promise<AirportDocument> {
+    const diffOps = this.utilsService.getDiffOps(diff);
+
+    const arpt = await this.airportModel.findOneAndUpdate({ icao }, { $set: diffOps }, { new: true });
+
+    if (!arpt) {
+      throw new NotFoundException();
+    }
 
     return arpt;
   }
