@@ -12,6 +12,7 @@ interface User {
 
   roles: string[];
   banned: boolean;
+  admin: boolean;
 }
 
 export default User;

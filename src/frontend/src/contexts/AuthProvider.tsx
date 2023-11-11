@@ -10,24 +10,28 @@ import { useNavigate } from 'react-router-dom';
 
 import authService from '../services/AuthService';
 
+import User from '@/shared/interfaces/user.interface';
+
 const AuthContext = createContext<{
-  auth: object;
-  setAuth: Dispatch<SetStateAction<object>>;
-}>({ auth: {}, setAuth: () => {} });
+  auth: {
+    user: User | undefined
+  };
+  setAuth: Dispatch<SetStateAction<{ user: User | undefined }>>;
+}>({ auth: { user: undefined }, setAuth: () => {} });
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
-  const [auth, setAuth] = useState({});
+  const [auth, setAuth] = useState<{ user: User | undefined }>({ user: undefined });
 
   const navigate = useNavigate();
 
   useEffect(() => {
     authService
       .getProfile()
-      .then((data) => {
-        setAuth({ user: data });
+      .then((user) => {
+        setAuth({ user });
       })
-      .catch((e) => {
-        setAuth({});
+      .catch(() => {
+        setAuth({ user: undefined });
         navigate('/');
       });
   }, []);

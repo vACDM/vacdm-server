@@ -11,17 +11,24 @@ import AuthService from '../services/AuthService';
 import Button from './ui/Button/Button';
 
 import { FrontendSettings } from '@/shared/interfaces/config.interface';
+import User from '@/shared/interfaces/user.interface';
 
-function classNames(...classes: any) {
+interface NavItemDefinition {
+  label: string;
+  href: string;
+  permission?: (user: User | undefined) => boolean;
+  current: boolean;
+}
+
+function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function NavbarWithDropdown(props: any) {
+export default function NavbarWithDropdown() {
   const [config, setConfig] = useState<FrontendSettings>();
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>({});
-  const [items, setItems] = useState<any>([]);
-  const auth: any = useContext(AuthContext);
+  const [items, setItems] = useState<NavItemDefinition[]>([]);
+  const { auth } = useContext(AuthContext);
   const { darkMode, changeDarkMode } = useContext(DarkModeContext);
 
   async function logout() {
@@ -30,34 +37,29 @@ export default function NavbarWithDropdown(props: any) {
     window.location.reload();
   }
 
-  const navItems: {
-    label: string;
-    href: string;
-    permission?: (user: any) => boolean;
-    current: boolean;
-  }[] = [
+  const navItems: NavItemDefinition[] = [
     {
       label: 'Delivery',
       href: '/delivery',
-      permission: (relevantUser) => relevantUser && !relevantUser.vacdm.banned && (relevantUser.vacdm.admin || relevantUser.vacdm.atc),
+      permission: (usr) => !!usr && !usr.banned && (usr.admin || usr.hasAtcRating),
       current: true,
     },
     {
       label: 'Airports',
       href: '/airports',
-      permission: (relevantUser) => relevantUser && !relevantUser.vacdm.banned && relevantUser.vacdm.admin,
+      permission: (usr) => !!usr && !usr.banned && usr.admin,
       current: false,
     },
     {
       label: 'Flow Management',
       href: '/flow-management',
-      permission: (relevantUser) => relevantUser && !relevantUser.vacdm.banned && (relevantUser.vacdm.admin || relevantUser.vacdm.atc),
+      permission: (usr) => !!usr && !usr.banned && (usr.admin || usr.hasAtcRating),
       current: false,
     },
     {
       label: 'AVDGS',
       href: '/vdgs',
-      permission: (relevantUser) => relevantUser && !relevantUser.vacdm.banned,
+      permission: (usr) => !!usr && !usr.banned,
       current: false,
     },
   ];
@@ -89,14 +91,12 @@ export default function NavbarWithDropdown(props: any) {
   };
 
   useEffect(() => {
-    // if (auth.auth.user !== undefined) {
-    setUser(auth.auth.user);
     setItems(
       navItems.filter((item) =>
-        (item.permission ? item.permission : () => true)(auth.auth.user),
+        (item.permission ? item.permission : () => true)(auth.user),
       ),
     );
-    // }
+    
     AuthService.getConfig()
       .then((data) => {
         setConfig(data);
@@ -141,7 +141,7 @@ export default function NavbarWithDropdown(props: any) {
                 </button>
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
-                    {items.map((item: any) => (
+                    {items.map((item) => (
                       <a
                         key={item.label}
                         onClick={() => navigate(item.href)}
@@ -199,19 +199,19 @@ export default function NavbarWithDropdown(props: any) {
                   )}
                 </button>
 
-                <div className={`${auth.auth.user ? 'hidden' : ''} ml-2`}>
+                <div className={`${auth.user ? 'hidden' : ''} ml-2`}>
                   <Button onClick={() => redirectToVatsimAuth()}>Login</Button>
                 </div>
 
                 {/* Profile dropdown */}
 
                 <Menu as="div" className="relative ml-3">
-                  <div className={!auth.auth.user ? 'hidden' : ''}>
+                  <div className={!auth.user ? 'hidden' : ''}>
                     <Menu.Button className="flex rounded-full bg-zinc-900  text-white hover:text-white">
                       <span className="sr-only">Open user menu</span>
                       <img
                         className="h-8 w-8 rounded-full"
-                        src={`https://ui-avatars.com/api/?name=${user?.apidata?.personal?.name_first.charAt(0)}+${user?.apidata?.personal?.name_last.charAt(0)}&color=FFFFFF&background=18181B&format=svg`}
+                        src={`https://ui-avatars.com/api/?name=${auth.user?.firstName.charAt(0)}+${auth.user?.lastName.charAt(0)}&color=FFFFFF&background=18181B&format=svg`}
                         alt="##"
                       />
                     </Menu.Button>
