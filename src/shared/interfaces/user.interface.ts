@@ -1,40 +1,17 @@
 interface User {
-  apidata: {
-    cid: number;
-    personal: {
-      name_first: string;
-      name_last: string;
-      name_full: string;
-    };
-  };
+  cid: number;
 
-  vatsim: {
-    rating: LongVatsimDetails;
-    pilotrating: LongVatsimDetails;
-    division: ShortVatsimDetails;
-    region: ShortVatsimDetails;
-    subdivision: ShortVatsimDetails;
-  };
+  firstName: string;
+  lastName: string;
+
+  /** has any rating other than SUS or OBS */
+  hasAtcRating: boolean;
 
   access_token?: string;
   refresh_token?: string;
 
-  vacdm: {
-    admin: boolean;
-    atc: boolean;
-    banned: boolean;
-  }
-}
-
-export interface LongVatsimDetails {
-  id: number;
-  long: string;
-  short: string;
-}
-
-export interface ShortVatsimDetails {
-  id: number;
-  name: string;
+  roles: string[];
+  banned: boolean;
 }
 
 export default User;

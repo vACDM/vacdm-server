@@ -38,9 +38,7 @@ const Vdgs = () => {
     try {
       const user: User = await AuthService.getProfile();
 
-      const datafeedPilot = await DatafeedService.getPilotFromCid(
-        user.apidata.cid,
-      );
+      const datafeedPilot = await DatafeedService.getPilotFromCid(user.cid);
 
       const vacdmPilot: Pilot = await PilotService.getPilot(datafeedPilot.callsign);
 

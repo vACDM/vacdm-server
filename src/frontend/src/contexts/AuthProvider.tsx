@@ -4,6 +4,7 @@ import {
   Dispatch,
   SetStateAction,
   useEffect,
+  PropsWithChildren,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,7 +15,7 @@ const AuthContext = createContext<{
   setAuth: Dispatch<SetStateAction<object>>;
 }>({ auth: {}, setAuth: () => {} });
 
-export const AuthProvider = ({ children }: { children: any }) => {
+export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [auth, setAuth] = useState({});
 
   const navigate = useNavigate();
