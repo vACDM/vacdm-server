@@ -1,5 +1,8 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 
+import logger from '../logger';
+import { UtilsService } from '../utils/utils.service';
+
 import { PilotDto } from './pilot.dto';
 import { PILOT_MODEL, PilotDocument, PilotModel } from './pilot.model';
 
@@ -7,6 +10,7 @@ import { PILOT_MODEL, PilotDocument, PilotModel } from './pilot.model';
 export class PilotService {
   constructor(
     @Inject(PILOT_MODEL) private pilotModel: PilotModel,
+    private utilsService: UtilsService,
   ) {}
 
   getPilots(filter: object): Promise<PilotDocument[]> {
@@ -17,9 +21,21 @@ export class PilotService {
     return this.getPilots({});
   }
 
+  async getPilotFromCallsign(callsign: string): Promise<PilotDocument> {
+    logger.debug('trying to get an pilot with callsign "%s"', callsign);
+    const arpt = await this.pilotModel.findOne({ icao: callsign });
+    
+    if (!arpt) {
+      logger.verbose('could not find pilot with callsign "%s"', callsign);
+      throw new NotFoundException();
+    }
+
+    return arpt;
+  }
+
   async doesPilotExist(callsign): Promise<boolean> {
     try {
-      await this.getPilots({ callsign });
+      await this.getPilotFromCallsign(callsign);
 
       return true;
     } catch (error) {
@@ -49,6 +65,18 @@ export class PilotService {
     }
 
     // TODO: get and archive pilot and pilot logs
+
+    return pilot;
+  }
+
+  async updatePilot(callsign: string, diff: Partial<PilotDto>): Promise<PilotDocument> {
+    const diffOps = this.utilsService.getDiffOps(diff);
+
+    const pilot = await this.pilotModel.findOneAndUpdate({ callsign }, { $set: diffOps }, { new: true });
+
+    if (!pilot) {
+      throw new NotFoundException();
+    }
 
     return pilot;
   }

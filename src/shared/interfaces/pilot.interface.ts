@@ -40,10 +40,8 @@ interface Pilot {
   hasBooking: boolean;
 
   flightplan: {
-    flight_rules: string;
-
-    departure: string;
-    arrival: string;
+    adep: string;
+    ades: string;
   };
 
   clearance: {

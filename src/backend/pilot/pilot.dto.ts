@@ -14,15 +14,11 @@ class PilotDtoPosition {
 class PilotDtoFlightplan {
   @JoiSchema(Joi.string().required())
   @JoiSchema([UPDATE], Joi.string().optional())
-    flight_rules: string;
+    adep: string;
 
   @JoiSchema(Joi.string().required())
   @JoiSchema([UPDATE], Joi.string().optional())
-    departure: string;
-
-  @JoiSchema(Joi.string().required())
-  @JoiSchema([UPDATE], Joi.string().optional())
-    arrival: string;
+    ades: string;
 }
 
 class PilotDtoVacdm {
@@ -62,8 +58,7 @@ export class PilotDto {
   @JoiSchema([UPDATE], Joi.forbidden())
     callsign!: string;
   
-  @JoiSchema(Joi.boolean().required())
-  @JoiSchema([UPDATE], Joi.boolean().optional())
+  @JoiSchema(Joi.boolean().optional().default(false))
     inactive!: boolean;
 
   @JoiSchema(getTypeSchema(PilotDtoPosition).required())

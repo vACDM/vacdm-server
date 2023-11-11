@@ -111,7 +111,7 @@ export class AirportService {
   }
 
   async determineRunway(pilot: PilotDocument): Promise<string> {
-    const icao = pilot.flightplan.departure;
+    const icao = pilot.flightplan.adep;
     const rwy = pilot.clearance.dep_rwy;
 
     const cap = await this.getCapacityForRwyDesignator(icao, rwy);
@@ -131,7 +131,7 @@ export class AirportService {
   }
 
   async determineTaxizone(pilot: PilotDocument): Promise<{ taxizone: string; exot: number; taxiout: boolean }> {
-    const icao = pilot.flightplan.departure;
+    const icao = pilot.flightplan.adep;
     const rwy = pilot.clearance.dep_rwy;
 
     const airport = await this.getAirportFromIcao(icao);

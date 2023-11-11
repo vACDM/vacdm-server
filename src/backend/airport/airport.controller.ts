@@ -4,6 +4,8 @@ import { JoiPipe } from 'nestjs-joi';
 import { AirportDto, AirportIcaoValidator } from './airport.dto';
 import { AirportService } from './airport.service';
 
+const joiPipeAirportIcao = new JoiPipe(AirportIcaoValidator.required());
+
 @Controller('v1/airports')
 export class AirportController {
   constructor(
@@ -16,7 +18,7 @@ export class AirportController {
   }
   
   @Get('/:icao')
-  getAirport(@Param('icao', new JoiPipe(AirportIcaoValidator.required())) icao: string) {
+  getAirport(@Param('icao', joiPipeAirportIcao) icao: string) {
     return this.airportService.getAirportFromIcao(icao);
   }
 
@@ -26,13 +28,12 @@ export class AirportController {
   }
 
   @Patch('/:icao')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  updateAirport(@Param('icao', new JoiPipe(AirportIcaoValidator.required())) icao: string, @Body() dto: AirportDto) {
+  updateAirport(@Param('icao', joiPipeAirportIcao) icao: string, @Body() dto: AirportDto) {
     return this.airportService.updateAirport(icao, dto);
   }
 
   @Delete('/:icao')
-  deleteAirport(@Param('icao', new JoiPipe(AirportIcaoValidator.required())) icao: string) {
+  deleteAirport(@Param('icao', joiPipeAirportIcao) icao: string) {
     return this.airportService.deleteAirport(icao);
   }
 }

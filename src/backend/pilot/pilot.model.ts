@@ -8,7 +8,7 @@ export const PILOT_MODEL = 'PILOT_MODEL';
 export type PilotModel = Model<Pilot>;
 export type PilotDocument = HydratedDocument<Pilot>;
 
-const PilotSchema = new mongoose.Schema({
+const PilotSchema = new mongoose.Schema<Pilot>({
   callsign: { type: String, unique: true },
 
   position: {
@@ -56,10 +56,8 @@ const PilotSchema = new mongoose.Schema({
   hasBooking: { type: Boolean, default: false },
 
   flightplan: {
-    flight_rules: { type: String, default: '' },
-
-    departure: { type: String, default: '' },
-    arrival: { type: String, default: '' },
+    adep: { type: String, default: '' },
+    ades: { type: String, default: '' },
   },
 
   clearance: {
