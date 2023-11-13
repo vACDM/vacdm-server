@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import mongoose from 'mongoose';
 
-import config from './config';
+import getAppConfig from './config';
 
 export const DB_PROVIDER = 'DB';
 
@@ -10,7 +10,7 @@ export const databaseProviders = [
     provide: DB_PROVIDER,
     useFactory: () => {
       mongoose.set('strictQuery', true);
-      return mongoose.connect(config().mongoUri);
+      return mongoose.connect(getAppConfig().mongoUri);
     },
   },
 ];

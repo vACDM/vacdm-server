@@ -33,7 +33,7 @@ interface VacdmConfig {
   jwtSecret: string;
 }
 
-export default function config(): VacdmConfig {
+export default function getAppConfig(): VacdmConfig {
   const options = {
     serverName: process.env.SERVER_NAME ?? 'vACDM Server',
     vatsimAuthUrl: process.env.VATSIM_AUTH_URL ?? 'https://auth.vatsim.net',

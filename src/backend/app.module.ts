@@ -10,6 +10,7 @@ import { databaseProviders } from './database.module';
 import { EtfmsModule } from './etfms/etfms.module';
 import { MessageModule } from './message/message.module';
 import { PilotModule } from './pilot/pilot.module';
+import { UserModule } from './user/user.module';
 import { UtilsModule } from './utils/utils.module';
 
 @Module({
@@ -31,6 +32,7 @@ import { UtilsModule } from './utils/utils.module';
     MessageModule,
     CdmModule,
     EtfmsModule,
+    UserModule,
   ],
   providers: [...databaseProviders],
   exports: [...databaseProviders],

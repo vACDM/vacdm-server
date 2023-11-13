@@ -8,7 +8,7 @@ export const AIRPORT_MODEL = 'AIRPORT_MODEL';
 export type AirportModel = Model<Airport>;
 export type AirportDocument = HydratedDocument<Airport>;
 
-const AirportSchema = new mongoose.Schema({
+const AirportSchema = new mongoose.Schema<Airport>({
   icao: { type: String, unique: true },
   standard_taxitime: { type: Number, required: true },
   taxizones: [

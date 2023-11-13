@@ -1,10 +1,13 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { FilterQuery } from 'mongoose';
 
 import logger from '../logger';
 import { UtilsService } from '../utils/utils.service';
 
 import { PilotDto } from './pilot.dto';
 import { PILOT_MODEL, PilotDocument, PilotModel } from './pilot.model';
+
+import Pilot from '@/shared/interfaces/pilot.interface';
 
 @Injectable()
 export class PilotService {
@@ -13,7 +16,7 @@ export class PilotService {
     private utilsService: UtilsService,
   ) {}
 
-  getPilots(filter: object): Promise<PilotDocument[]> {
+  getPilots(filter: FilterQuery<Pilot>): Promise<PilotDocument[]> {
     return this.pilotModel.find(filter).exec();
   }
 
