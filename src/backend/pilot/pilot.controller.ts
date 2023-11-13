@@ -2,10 +2,10 @@ import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/commo
 import Joi from 'joi';
 import { JoiPipe } from 'nestjs-joi';
 
-import { PilotDto } from './pilot.dto';
+import { PilotDto, PilotCallsignValidator } from './pilot.dto';
 import { PilotService } from './pilot.service';
 
-const joiPipecallSign = new JoiPipe(Joi.string().required());
+const joiPipecallSign = new JoiPipe(PilotCallsignValidator.required());
 
 @Controller('v1/pilots')
 export class PilotController {

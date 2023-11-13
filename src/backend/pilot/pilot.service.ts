@@ -51,6 +51,10 @@ export class PilotService {
     const pilot = new this.pilotModel(createData);
         
     // TODO: determine steps to take when pilot is created
+    // 0. write history message
+    // 1. determine departure runway and log it
+    // 2. determine taxi zone and log it
+    // 3. determine departure block and log it
 
     await pilot.save();
 
@@ -77,6 +81,8 @@ export class PilotService {
     if (!pilot) {
       throw new NotFoundException();
     }
+
+    // TODO: run through calculation steps again based on tobt state (last DPI message)
 
     return pilot;
   }

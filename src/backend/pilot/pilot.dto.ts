@@ -1,6 +1,8 @@
 import Joi from 'joi';
 import { JoiSchema, UPDATE, getTypeSchema } from 'nestjs-joi';
 
+export const PilotCallsignValidator = Joi.string().regex(/^[A-Z0-9]{1,12}$/).message('"callsign" must be between 1 and 12 letters between A and Z or digits between 0 and 9');
+
 class PilotDtoPosition {
   @JoiSchema(Joi.number().required())
   @JoiSchema([UPDATE], Joi.number().optional())
@@ -54,7 +56,7 @@ class PilotDtoClearance {
 }
 
 export class PilotDto {
-  @JoiSchema(Joi.string().required())
+  @JoiSchema(PilotCallsignValidator.required())
   @JoiSchema([UPDATE], Joi.forbidden())
     callsign!: string;
   
