@@ -1,4 +1,5 @@
 export interface Airport {
+  id?: string;
   icao: string;
 
   standard_taxitime: number;

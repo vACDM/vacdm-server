@@ -1,13 +1,14 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import utc from 'dayjs/plugin/utc';
-import { useState, useEffect, useContext } from 'react';
-import DataTable, { TableColumn } from 'react-data-table-component';
+import { Button } from 'primereact/button';
+import { Card } from 'primereact/card';
+import { Column } from 'primereact/column';
+import { DataTable } from 'primereact/datatable';
+import { classNames } from 'primereact/utils';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import Button from '../components/ui/Button/Button';
-import Card from '../components/ui/Card/Card';
-import DarkModeContext from '../contexts/DarkModeProvider';
 import PilotService from '../services/PilotService';
 
 import Pilot from '@/shared/interfaces/pilot.interface';
@@ -20,100 +21,8 @@ const Delivery = () => {
   const [departureAirports, setdepartureAirports] = useState<any[]>([]);
   const [arrivalAirports, setarrivalAirports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const { darkMode } = useContext(DarkModeContext);
   const navigate = useNavigate();
 
-  const columns: TableColumn<Pilot>[] = [
-    {
-      name: 'Callsign',
-      selector: (row) => row.callsign,
-    },
-    {
-      name: 'EOBT',
-      selector: (row) => dayjs(row.vacdm.eobt).format('HH:mm'),
-    },
-    {
-      name: 'TOBT',
-      selector: (row) => dayjs(row.vacdm.tobt).format('HH:mm'),
-      conditionalCellStyles: [
-        {
-          when: (row) =>
-            dayjs().diff(dayjs(row.vacdm.tobt).second(0), 'minute') > 5 ||
-            dayjs(row.vacdm.asat).unix() !== -1,
-          classNames: ['text-gray-500'],
-        },
-      ],
-    },
-    {
-      name: 'TSAT',
-      selector: (row) => dayjs(row.vacdm.tsat).format('HH:mm'),
-      conditionalCellStyles: [
-        {
-          when: (row) => dayjs(row.vacdm.asat).unix() !== -1,
-          classNames: ['text-gray-500'],
-        },
-        {
-          when: (row) =>
-            dayjs().diff(dayjs(row.vacdm.tsat).second(0), 'minutes') >= -5 &&
-            dayjs().diff(dayjs(row.vacdm.tsat).second(0), 'minutes') <= 5,
-          classNames: ['bg-green-800'],
-        },
-        {
-          when: (row) =>
-            dayjs().diff(dayjs(row.vacdm.tsat).second(0), 'minute') > 5,
-          classNames: ['text-amber-500'],
-        },
-        {
-          when: (row) =>
-            dayjs().diff(dayjs(row.vacdm.tsat).second(0), 'minute') < -5,
-          classNames: ['text-green-300'],
-        },
-      ],
-    },
-    {
-      name: 'ASAT',
-      selector: (row) => dayjs(row.vacdm.asat).format('HH:mm'),
-    },
-    {
-      name: 'EXOT',
-      selector: (row) => row.vacdm.exot,
-    },
-    {
-      name: 'TTOT',
-      selector: (row) => dayjs(row.vacdm.ttot).format('HH:mm'),
-    },
-    {
-      name: 'CTOT',
-      selector: (row) => dayjs(row.vacdm.ctot).format('HH:mm'),
-    },
-    {
-      name: 'ADEP',
-      selector: (row) => row.flightplan.departure,
-    },
-    {
-      name: 'SID+RWY',
-      selector: (row) => row.clearance.sid + ' ' + row.clearance.dep_rwy,
-    },
-    {
-      name: 'ADES',
-      selector: (row) => row.flightplan.arrival,
-    },
-    {
-      name: 'Taxizone',
-      selector: (row) => row.vacdm.taxizone,
-    },
-    {
-      name: 'Debug',
-      cell: (row) => (
-        <Button
-          style="warning"
-          onClick={() => navigate(`/debug/${row.callsign}`)}
-        >
-          Debug
-        </Button>
-      ),
-    },
-  ];
   useEffect(() => {
     async function loadData() {
       try {
@@ -152,15 +61,59 @@ const Delivery = () => {
     return () => clearInterval(intervalId);
   }, []);
 
+  const tobtBodyTemplate = (rowData: Pilot) => {
+    const tobtClassName = (dayjs().diff(dayjs(rowData.vacdm.tobt).second(0), 'minute') > 5 || dayjs(rowData.vacdm.asat).unix() !== -1) ? 'text-gray-500' : '';
+
+    return <div className={tobtClassName}>{dayjs(rowData.vacdm.tobt).format('HH:mm')}</div>;
+  };
+
+  const tsatBodyTemplate = (rowData: Pilot) => {
+    const tsatClassName = classNames('', {
+      'text-gray-500' : dayjs(rowData.vacdm.asat).unix() !== -1,
+      'bg-green-800' : dayjs().diff(dayjs(rowData.vacdm.tsat).second(0), 'minutes') >= -5 && dayjs().diff(dayjs(rowData.vacdm.tsat).second(0), 'minutes') <= 5,
+      'text-amber-500' : dayjs().diff(dayjs(rowData.vacdm.tsat).second(0), 'minute') > 5,
+      'text-green-300' : dayjs().diff(dayjs(rowData.vacdm.tsat).second(0), 'minute') < -5,
+    });
+    return <div className={tsatClassName}>{dayjs(rowData.vacdm.tsat).format('HH:mm')}</div>;
+  };
+
+  const sidRwyBodyTemplate = (rowData: Pilot) => {
+    return <div>{rowData.clearance.sid + ' (' + rowData.clearance.dep_rwy + ')'}</div>;
+  };
+
+  const debugBodyTemplate = (rowData: Pilot) => {
+    return <Button
+    severity="warning"
+    size='small'
+    onClick={() => navigate(`/debug/${rowData.callsign}`)}
+  >
+    Debug
+  </Button>;
+  };
+
+
   return (
     <div>
       <Card>
         <DataTable
-          columns={columns}
-          data={pilots}
-          theme={!darkMode ? 'dark' : 'default'}
-          progressPending={loading}
-        />
+        value={pilots}
+        size='small'
+        loading={loading}
+        >
+          <Column field='callsign' header='Callsign'></Column>
+          <Column header='EOBT' body={(rowData) => dayjs(rowData.vacdm.eobt).format('HH:mm')}></Column>
+          <Column header='TOBT' body={tobtBodyTemplate}></Column>
+          <Column header='TSAT' body={tsatBodyTemplate}></Column>
+          <Column header='ASAT' body={(rowData) => dayjs(rowData.vacdm.asat).format('HH:mm')}></Column>
+          <Column header='EXOT' field='vacdm.exot'></Column>
+          <Column header='TTOT' body={(rowData) => dayjs(rowData.vacdm.ttot).format('HH:mm')}></Column>
+          <Column header='CTOT' body={(rowData) => dayjs(rowData.vacdm.ctot).format('HH:mm')}></Column>
+          <Column header='ADEP' field='flightplan.departure'></Column>
+          <Column header='SID-RWY' body={sidRwyBodyTemplate}></Column>
+          <Column header='ADES' field='flightplan.arrival'></Column>
+          <Column header='Taxizone' field='vacdm.taxizone'></Column>
+          <Column header='Debug' body={debugBodyTemplate}></Column>
+        </DataTable>
       </Card>
     </div>
   );
