@@ -1,4 +1,4 @@
-import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import pointInPolygon from 'point-in-polygon';
 
 import logger from '../logger';
@@ -17,7 +17,7 @@ export class AirportService {
   constructor(
     @Inject(AIRPORT_MODEL) private airportModel: AirportModel,
     private utilsService: UtilsService,
-    private pilotService: PilotService,
+    @Inject(forwardRef(() => PilotService)) private pilotService: PilotService,
   ) {}
 
   getAllAirports(): Promise<AirportDocument[]> {
@@ -192,7 +192,7 @@ export class AirportService {
     });
 
     for (const pilot of pilots) {
-      const { block_rwy_designator: blockRwyDesignator, blockId } = pilot.vacdm;
+      const { blockRwyDesignator: blockRwyDesignator, blockId } = pilot.vacdm;
       blocks.rwys[blockRwyDesignator][blockId].push(pilot);
     }
 

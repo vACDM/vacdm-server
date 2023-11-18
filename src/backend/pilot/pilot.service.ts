@@ -1,6 +1,7 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import { FilterQuery } from 'mongoose';
 
+import { AirportService } from '../airport/airport.service';
 import logger from '../logger';
 import { UtilsService } from '../utils/utils.service';
 
@@ -14,6 +15,7 @@ export class PilotService {
   constructor(
     @Inject(PILOT_MODEL) private pilotModel: PilotModel,
     private utilsService: UtilsService,
+    @Inject(forwardRef(() => AirportService)) private airportService: AirportService,
   ) {}
 
   getPilots(filter: FilterQuery<Pilot>): Promise<PilotDocument[]> {
@@ -56,7 +58,15 @@ export class PilotService {
     // TODO: determine steps to take when pilot is created
     // 0. write history message
     // 1. determine departure runway and log it
+    pilot.vacdm.blockRwyDesignator = await this.airportService.determineRunway(pilot);
+    
     // 2. determine taxi zone and log it
+    ({
+      exot: pilot.vacdm.exot,
+      taxiout: pilot.vacdm.taxizoneIsTaxiout,
+      taxizone: pilot.vacdm.taxizone,
+    } = await this.airportService.determineTaxizone(pilot));
+    
     // 3. determine departure block and log it
 
     await pilot.save();
@@ -81,11 +91,31 @@ export class PilotService {
 
     const pilot = await this.pilotModel.findOneAndUpdate({ callsign }, { $set: diffOps }, { new: true });
 
+    let resave = false;
+
     if (!pilot) {
       throw new NotFoundException();
     }
 
+    if (diff.clearance?.dep_rwy) {
+      resave = true;
+      pilot.vacdm.blockRwyDesignator = await this.airportService.determineRunway(pilot);
+    }
+
+    if (pilot.vacdm.asat.valueOf() === -1 && (diff.position?.lat || diff.position?.lon)) {
+      resave = true;
+      ({
+        exot: pilot.vacdm.exot,
+        taxiout: pilot.vacdm.taxizoneIsTaxiout,
+        taxizone: pilot.vacdm.taxizone,
+      } = await this.airportService.determineTaxizone(pilot));
+    }
+
     // TODO: run through calculation steps again based on tobt state (last DPI message)
+
+    if (resave) {
+      await pilot.save();
+    } 
 
     return pilot;
   }

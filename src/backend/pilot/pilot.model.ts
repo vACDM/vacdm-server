@@ -19,14 +19,14 @@ const PilotSchema = new mongoose.Schema<Pilot>({
   vacdm: {
     eobt: { type: Date, default: -1 },
     tobt: { type: Date, default: -1 },
-    tobt_state: {
+    tobtState: {
       type: String,
-      enum: ['GUESS', 'FLIGHTPLAN', 'CONFIRMED', 'NOW'],
-      default: 'GUESS',
+      enum: ['FLIGHTPLAN', 'CONFIRMED', 'NOW'],
+      default: 'FLIGHTPLAN',
     },
 
     exot: { type: Number, default: -1 },
-    manual_exot: { type: Boolean, default: false },
+    manualExot: { type: Boolean, default: false },
 
     tsat: { type: Date, default: -1 },
 
@@ -51,7 +51,7 @@ const PilotSchema = new mongoose.Schema<Pilot>({
 
     blockAssignment: { type: Date, default: () => new Date() },
     blockId: { type: Number, default: -1 },
-    block_rwy_designator: { type: String, default: '' },
+    blockRwyDesignator: { type: String, default: '' },
   },
   hasBooking: { type: Boolean, default: false },
 
@@ -63,9 +63,6 @@ const PilotSchema = new mongoose.Schema<Pilot>({
   clearance: {
     dep_rwy: { type: String, default: '' },
     sid: { type: String, default: '' },
-    initial_climb: { type: String, default: '' },
-    assigned_squawk: { type: String, default: '' },
-    current_squawk: { type: String, default: '' },
   },
   measures: [{
     ident: { type: String, required: true },

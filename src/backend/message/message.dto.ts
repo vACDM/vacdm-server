@@ -15,19 +15,6 @@ class BaseClientMessage {
 }
 
 @JoiSchemaExtends(BaseClientMessage)
-export class EarlyDPI extends BaseClientMessage {
-  @JoiSchema(Joi.string().allow('E-DPI'))
-    messageType: 'E-DPI';
-
-  @JoiSchema(Joi.string().allow(TobtState.FLIGHTPLAN))
-    tobtState: TobtState.FLIGHTPLAN;
-
-  @JoiSchema(TimeStringValidator.required())
-    eobt: string;
-
-}
-
-@JoiSchemaExtends(BaseClientMessage)
 export class TargetDPINow extends BaseClientMessage {
   @JoiSchema(Joi.string().allow('T-DPI-n').required())
     messageType: 'T-DPI-n';

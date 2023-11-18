@@ -1,22 +1,13 @@
 import { Injectable } from '@nestjs/common';
 
-import { AtcDPI, CustomDPIRequest, CustomDPITaxioutTime, EarlyDPI, TargetDPINow, TargetDPISequenced, TargetDPITarget } from './message.dto';
+import { AtcDPI, CustomDPIRequest, CustomDPITaxioutTime, TargetDPINow, TargetDPISequenced, TargetDPITarget } from './message.dto';
 
 import { AnyNetworkMessage, MessageClass } from '@/shared/interfaces/message.interface';
 
 @Injectable()
 export class MessageService {
-  private async writeMessageToDb(message: EarlyDPI | TargetDPINow | TargetDPISequenced | TargetDPITarget | AtcDPI | CustomDPITaxioutTime | CustomDPIRequest) {
+  private async writeMessageToDb(message: TargetDPINow | TargetDPISequenced | TargetDPITarget | AtcDPI | CustomDPITaxioutTime | CustomDPIRequest) {
     // TODO: write to db somehow
-  }
-
-  async handleEarlyDPI(message: EarlyDPI): Promise<AnyNetworkMessage> {
-    await this.writeMessageToDb(message);
-
-    return {
-      messageClass: MessageClass.Outbound,
-      messageType: 'LAM',
-    };
   }
   
   async handleTargetDPINow(message: TargetDPINow): Promise<AnyNetworkMessage> {

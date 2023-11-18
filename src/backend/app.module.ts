@@ -8,6 +8,7 @@ import { AirportModule } from './airport/airport.module';
 import { CdmModule } from './cdm/cdm.module';
 import getAppConfig from './config';
 import { databaseProviders } from './database.module';
+import { EcfmpModule } from './ecfmp/ecfmp.module';
 import { EtfmsModule } from './etfms/etfms.module';
 import { FrontendProxyMiddleware } from './frontend-proxy/frontend-proxy.middleware';
 import { FrontendProxyModule } from './frontend-proxy/frontend-proxy.module';
@@ -41,6 +42,7 @@ const { frontendProxy } = getAppConfig();
     EtfmsModule,
     UserModule,
     FrontendProxyModule,
+    EcfmpModule,
   ],
   providers: [...databaseProviders],
   exports: [...databaseProviders],

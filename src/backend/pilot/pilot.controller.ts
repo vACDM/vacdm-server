@@ -4,7 +4,7 @@ import { JoiPipe } from 'nestjs-joi';
 import { PilotDto, PilotCallsignValidator } from './pilot.dto';
 import { PilotService } from './pilot.service';
 
-const joiPipecallSign = new JoiPipe(PilotCallsignValidator.required());
+const joiPipeCallSign = new JoiPipe(PilotCallsignValidator.required());
 
 @Controller('api/v1/pilots')
 export class PilotController {
@@ -18,7 +18,7 @@ export class PilotController {
   }
 
   @Get('/:callsign')
-  getPilot(@Param('callsign', joiPipecallSign) callsign: string) {
+  getPilot(@Param('callsign', joiPipeCallSign) callsign: string) {
     return this.pilotService.getPilotFromCallsign(callsign);
   }
 
@@ -28,12 +28,12 @@ export class PilotController {
   }
 
   @Patch('/:callsign')
-  updatePilot(@Param('callsign', joiPipecallSign) callsign: string, @Body() dto: PilotDto) {
+  updatePilot(@Param('callsign', joiPipeCallSign) callsign: string, @Body() dto: PilotDto) {
     return this.pilotService.updatePilot(callsign, dto);
   }
 
   @Delete('/:callsign')
-  deletePilot(@Param('callsign', joiPipecallSign) callsign: string) {
+  deletePilot(@Param('callsign', joiPipeCallSign) callsign: string) {
     return this.pilotService.deletePilot(callsign);
   }
 }

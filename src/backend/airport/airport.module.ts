@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 
 import { DatabaseModule } from '../database.module';
 import { PilotModule } from '../pilot/pilot.module';
@@ -9,7 +9,11 @@ import { AirportProvider } from './airport.model';
 import { AirportService } from './airport.service';
 
 @Module({
-  imports: [DatabaseModule, UtilsModule, PilotModule],
+  imports: [
+    DatabaseModule,
+    UtilsModule,
+    forwardRef(() => PilotModule),
+  ],
   providers: [AirportService, AirportProvider],
   controllers: [AirportController],
   exports: [AirportService],

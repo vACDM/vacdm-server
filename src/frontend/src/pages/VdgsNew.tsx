@@ -79,7 +79,7 @@ const Vdgs = () => {
       return '';
     }
 
-    if (isTobtConfirmed(pilot?.vacdm.tobt_state)) {
+    if (isTobtConfirmed(pilot?.vacdm.tobtState)) {
       return <span className="text-green-500">Your TOBT is confirmed!<br />Set your TOBT to get your TSAT.</span>;
     } else {
       return <span className="text-amber-500">Your TOBT is not yet confirmed!</span>;
@@ -146,14 +146,14 @@ const Vdgs = () => {
                 <div className="inline-block mx-auto">
                   <div className="text-center">{pilot?.callsign}</div>
                   <div className="text-center">
-                     {isTobtConfirmed(pilot?.vacdm?.tobt_state) ? 'TOBT ' + TimeUtils.formatTime(pilot?.vacdm?.tobt) + ' UTC' : 'NO TOBT' } 
+                     {isTobtConfirmed(pilot?.vacdm?.tobtState) ? 'TOBT ' + TimeUtils.formatTime(pilot?.vacdm?.tobt) + ' UTC' : 'NO TOBT' } 
                   </div>
                   <div className="text-center">
-                     {isTobtConfirmed(pilot?.vacdm?.tobt_state) ? 'TSAT ' + TimeUtils.formatTime(pilot?.vacdm?.tsat) + ' UTC' : '-'}
+                     {isTobtConfirmed(pilot?.vacdm?.tobtState) ? 'TSAT ' + TimeUtils.formatTime(pilot?.vacdm?.tsat) + ' UTC' : '-'}
                   </div>
                   <div className="text-center">
                     <span className={vdgsColorController(pilot?.vacdm?.tsat)}>
-                      {isTobtConfirmed(pilot?.vacdm?.tobt_state) ? TimeUtils.calculateVdgsDiff(pilot?.vacdm?.tsat) : '-'}
+                      {isTobtConfirmed(pilot?.vacdm?.tobtState) ? TimeUtils.calculateVdgsDiff(pilot?.vacdm?.tsat) : '-'}
                     </span>
                   </div>
                   <div className="text-center">
