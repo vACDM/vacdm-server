@@ -1,5 +1,4 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import Joi from 'joi';
 import { JoiPipe } from 'nestjs-joi';
 
 import { PilotDto, PilotCallsignValidator } from './pilot.dto';
