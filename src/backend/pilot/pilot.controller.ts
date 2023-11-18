@@ -7,7 +7,7 @@ import { PilotService } from './pilot.service';
 
 const joiPipecallSign = new JoiPipe(PilotCallsignValidator.required());
 
-@Controller('v1/pilots')
+@Controller('api/v1/pilots')
 export class PilotController {
   constructor(
     private pilotService: PilotService,

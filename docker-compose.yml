@@ -1,7 +1,7 @@
 version: '2.4'
 
 services:
-  api:
+  server:
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -29,18 +29,10 @@ services:
       - ALLOW_OBS_MASTER=true
       - LOG_LEVEL_CONSOLE=debug
       - LOG_LEVEL_FILE=none
-  # worker:
-  #   build:
-  #     context: .
-  #     dockerfile: ./Dockerfile
-  #     args:
-  #       - NODE_ENV=development
-  #     target: build
-  #   command: npm run dev
-  #   ports:
-  #     - '9230:9229/tcp'
-  #   volumes:
-  #     - .:/opt:delegated
-  #   environment:
-  #     - MONGO_URI
-  #     - ROLE=WORKER
+      - FRONTEND_PROXY=http://frontend:5173/
+  frontend:
+    image: node:18-alpine
+    working_dir: /app
+    command: npm run spa-dev
+    volumes:
+      - .:/app:delegated

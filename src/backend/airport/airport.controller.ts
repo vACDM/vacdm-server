@@ -6,7 +6,7 @@ import { AirportService } from './airport.service';
 
 const joiPipeAirportIcao = new JoiPipe(AirportIcaoValidator.required());
 
-@Controller('v1/airports')
+@Controller('api/v1/airports')
 export class AirportController {
   constructor(
     private airportService: AirportService,

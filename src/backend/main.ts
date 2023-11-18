@@ -11,8 +11,6 @@ async function bootstrap() {
       instance: logger,
     }),
   });
-  
-  app.setGlobalPrefix('/api');
 
   app.use(morgan('short', { stream: { write: m => logger.http(m.trim()) } }));
 

@@ -31,6 +31,8 @@ interface VacdmConfig {
   publicUrl: string;
   vatsimAuthUrl: string;
   jwtSecret: string;
+
+  frontendProxy: string;
 }
 
 export default function getAppConfig(): VacdmConfig {
@@ -85,5 +87,7 @@ export default function getAppConfig(): VacdmConfig {
 
     publicUrl: process.env.PUBLIC_URL ?? '',
     jwtSecret: process.env.JWT_SECRET ?? 'super-secret-secret!',
+
+    frontendProxy: process.env.FRONTEND_PROXY ?? '',
   };
 }

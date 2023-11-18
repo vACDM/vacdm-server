@@ -1,17 +1,22 @@
 import { join } from 'path';
 
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { JoiPipeModule } from 'nestjs-joi';
 
 import { AirportModule } from './airport/airport.module';
 import { CdmModule } from './cdm/cdm.module';
+import getAppConfig from './config';
 import { databaseProviders } from './database.module';
 import { EtfmsModule } from './etfms/etfms.module';
+import { FrontendProxyMiddleware } from './frontend-proxy/frontend-proxy.middleware';
+import { FrontendProxyModule } from './frontend-proxy/frontend-proxy.module';
 import { MessageModule } from './message/message.module';
 import { PilotModule } from './pilot/pilot.module';
 import { UserModule } from './user/user.module';
 import { UtilsModule } from './utils/utils.module';
+
+const { frontendProxy } = getAppConfig();
 
 @Module({
   imports: [
@@ -22,10 +27,12 @@ import { UtilsModule } from './utils/utils.module';
         },
       },
     }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'frontend'),
-      exclude: ['/api/(.*)'],
-    }),
+    ...(!frontendProxy ? [
+      ServeStaticModule.forRoot({
+        rootPath: join(__dirname, '..', 'frontend'),
+        exclude: ['/api/(.*)'],
+      }),
+    ] : []),
     AirportModule,
     PilotModule,
     UtilsModule,
@@ -33,8 +40,18 @@ import { UtilsModule } from './utils/utils.module';
     CdmModule,
     EtfmsModule,
     UserModule,
+    FrontendProxyModule,
   ],
   providers: [...databaseProviders],
   exports: [...databaseProviders],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    if (frontendProxy) {
+      consumer
+        .apply(FrontendProxyMiddleware)
+        .exclude('/api/(.*)')
+        .forRoutes('/*');
+    }
+  }
+}
