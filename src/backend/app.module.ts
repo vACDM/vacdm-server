@@ -16,6 +16,7 @@ import { MessageModule } from './message/message.module';
 import { PilotModule } from './pilot/pilot.module';
 import { UserModule } from './user/user.module';
 import { UtilsModule } from './utils/utils.module';
+import { VatsimConnectModule } from './vatsim-connect/vatsim-connect.module';
 
 const { frontendProxy } = getAppConfig();
 
@@ -43,6 +44,7 @@ const { frontendProxy } = getAppConfig();
     UserModule,
     FrontendProxyModule,
     EcfmpModule,
+    VatsimConnectModule,
   ],
   providers: [...databaseProviders],
   exports: [...databaseProviders],
