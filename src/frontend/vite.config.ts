@@ -18,9 +18,6 @@ export default defineConfig({
   },
   server: {
     open: false,
-    hmr: {
-      overlay: false,
-    },
   },
   define: {
     'process.env': `(${JSON.stringify(process.env)})`,
