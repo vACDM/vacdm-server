@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
+import Joi from 'joi';
 import mongoose from 'mongoose';
+import { JoiPipe } from 'nestjs-joi';
 
 import getAppConfig from './config';
 
@@ -15,6 +17,13 @@ export const databaseProviders = [
   },
 ];
 
+export const AirportIcaoValidator = Joi.string().custom((value, helpers) => {
+  const filtered = mongoose.isValidObjectId(value);
+  return !filtered ? helpers.error('any.invalid') : value;
+},
+'invalid objectId' ).required();
+
+export const joiPipeMongoId = new JoiPipe(AirportIcaoValidator.required());
 
 @Module({
   providers: [...databaseProviders],

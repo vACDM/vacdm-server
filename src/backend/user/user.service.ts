@@ -1,8 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import jwt from 'jsonwebtoken';
 import { FilterQuery } from 'mongoose';
 
 import getAppConfig from '../config';
+import logger from '../logger';
 
 import { USER_MODEL, UserDocument, UserModel } from './user.model';
 
@@ -21,6 +22,18 @@ export class UserService {
 
   getAllUsers(): Promise<UserDocument[]> {
     return this.getUsers({});
+  }
+
+  async getUserFromId(id: string): Promise<UserDocument> {
+    logger.debug('trying to get a user with id "%s"', id);
+    const user = await this.userModel.findById(id);
+    
+    if (!user) {
+      logger.verbose('could not find user with id "%s"', id);
+      throw new NotFoundException();
+    }
+    
+    return user;
   }
 
   async upsertUser(data: VatsimConnectUserResponseData): Promise<UserDocument> {
@@ -61,5 +74,15 @@ export class UserService {
     });
 
     return Promise.allSettled(inactiveUsers.map(u => u.delete()));
+  }
+
+  async deleteUser(id: string): Promise<UserDocument> {
+    const user = await this.userModel.findByIdAndDelete(id);
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    return user;
   }
 }
