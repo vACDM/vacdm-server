@@ -1,6 +1,9 @@
 import Joi from 'joi';
 import { JoiSchema, UPDATE, getTypeSchema } from 'nestjs-joi';
 
+import Pilot from '@/shared/interfaces/pilot.interface';
+import { ConvertForApis, NestedPartial } from '@/shared/utils/type.utils';
+
 export const PilotCallsignValidator = Joi.string().regex(/^[A-Z0-9]{1,12}$/).message('"callsign" must be between 1 and 12 letters between A and Z or digits between 0 and 9');
 
 class PilotDtoPosition {
@@ -41,41 +44,29 @@ class PilotDtoClearance {
   @JoiSchema(Joi.string().required())
   @JoiSchema([UPDATE], Joi.string().optional())
     sid: string;
-
-  @JoiSchema(Joi.number().required())
-  @JoiSchema([UPDATE], Joi.number().optional())
-    initial_climb: number;
-
-  @JoiSchema(Joi.number().required())
-  @JoiSchema([UPDATE], Joi.number().optional())
-    assigned_squawk: number;
-
-  @JoiSchema(Joi.number().required())
-  @JoiSchema([UPDATE], Joi.number().optional())
-    current_squawk: number;
 }
 
-export class PilotDto {
+export class PilotDto implements NestedPartial<ConvertForApis<Pilot>> {
   @JoiSchema(PilotCallsignValidator.required())
   @JoiSchema([UPDATE], Joi.forbidden())
-    callsign!: string;
+    callsign: string;
   
   @JoiSchema(Joi.boolean().optional().default(false))
-    inactive!: boolean;
+    inactive: boolean;
 
   @JoiSchema(getTypeSchema(PilotDtoPosition).required())
   @JoiSchema([UPDATE], getTypeSchema(PilotDtoPosition).optional())
-    position!: PilotDtoPosition;
+    position: PilotDtoPosition;
 
   @JoiSchema(getTypeSchema(PilotDtoFlightplan).required())
   @JoiSchema([UPDATE], getTypeSchema(PilotDtoFlightplan).optional())
-    flightplan!: PilotDtoFlightplan;
+    flightplan: PilotDtoFlightplan;
 
   @JoiSchema(getTypeSchema(PilotDtoVacdm).required())
   @JoiSchema([UPDATE], getTypeSchema(PilotDtoVacdm).optional())
-    vacdm!: PilotDtoVacdm;
+    vacdm: PilotDtoVacdm;
 
   @JoiSchema(getTypeSchema(PilotDtoClearance).required())
   @JoiSchema([UPDATE], getTypeSchema(PilotDtoClearance).optional())
-    clearance!: PilotDtoClearance;
+    clearance: PilotDtoClearance;
 }
