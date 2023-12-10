@@ -4,7 +4,7 @@ import { joiPipeMongoId } from '../database.module';
 
 import { UserService } from './user.service';
 
-@Controller('user')
+@Controller('api/v1/user')
 export class UserController {
   constructor(
     private userService: UserService,

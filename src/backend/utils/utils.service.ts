@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
+import logger from '../logger';
+
 @Injectable()
 export class UtilsService {
   static scopeCoordsRegex = /^(.)(\d{0,3})\.(\d{0,2})\.(\d{0,2})\.(\d{0,3}):(.)(\d{0,3})\.(\d{0,2})\.(\d{0,2})\.(\d{0,3})$/;
@@ -65,5 +67,44 @@ export class UtilsService {
     });
   
     return current;
+  }
+
+  isTimeEmpty(date: Date): boolean {
+    return date.valueOf() === -1;
+  }
+
+  addMinutes(date: Date, minutes: number): Date {
+    const dateNew = new Date(date);
+  
+    dateNew.setUTCMinutes(date.getUTCMinutes() + minutes);
+  
+    return dateNew;
+  }
+
+  emptyDate = new Date(-1);
+
+  getBlockFromTime(hhmm: Date): number {
+    const hh = hhmm.getUTCHours();
+    const mm = hhmm.getUTCMinutes();
+  
+    const block = (Number(hh) * 60 + Number(mm)) / 10;
+  
+    return Math.floor(block);
+  }
+
+  getTimeFromBlock(blockId: number): Date {
+    if (blockId > 143) {
+      logger.warn('tried to get time from block > 143: %d', blockId);
+    }
+  
+    const minutes = blockId * 10;
+    const hour = Math.floor(minutes / 60);
+    const minutesInHour = minutes % 60;
+  
+    const plausibleDate = new Date();
+    plausibleDate.setUTCHours(hour);
+    plausibleDate.setUTCMinutes(minutesInHour);
+  
+    return plausibleDate;
   }
 }

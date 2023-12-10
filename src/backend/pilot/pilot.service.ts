@@ -2,6 +2,7 @@ import { Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/commo
 import { FilterQuery } from 'mongoose';
 
 import { AirportService } from '../airport/airport.service';
+import getAppConfig from '../config';
 import logger from '../logger';
 import { UtilsService } from '../utils/utils.service';
 
@@ -118,5 +119,53 @@ export class PilotService {
     } 
 
     return pilot;
+  }
+
+  async cleanupPilots() {
+    // delete long inactive pilots
+    const pilotsToBeDeleted = await this.getPilots({
+      inactive: true,
+      updatedAt: {
+        $lte: new Date(
+          Date.now() - getAppConfig().timeframes.timeSinceInactive,
+        ).getTime(),
+      },
+    });
+  
+    logger.debug('pilotsToBeDeleted %o', pilotsToBeDeleted);
+  
+    for (const pilot of pilotsToBeDeleted) {
+      this.deletePilot(pilot.callsign);
+      logger.debug('deleted inactive pilot %o', pilot.callsign);
+    }
+  
+    // deactivate long not seen pilots
+    const pilotsToBeDeactivated = await this.getPilots({
+      inactive: { $not: { $eq: true } },
+      updatedAt: {
+        $lt: new Date(
+          Date.now() - getAppConfig().timeframes.timeSinceLastSeen,
+        ).getTime(),
+      },
+    });
+  
+    logger.debug('pilotsToBeDeactivated %o', pilotsToBeDeactivated);
+  
+    for (const pilot of pilotsToBeDeactivated) {
+      pilot.inactive = true;
+  
+      // await this.pilotService.addLog({
+      //   pilot: pilot.callsign,
+      //   namespace: 'worker',
+      //   action: 'deactivated pilot',
+      //   data: {
+      //     updated: pilot.updatedAt,
+      //   },
+      // });
+  
+      logger.debug('deactivating pilot %o', pilot.callsign);
+  
+      await pilot.save();
+    }
   }
 }

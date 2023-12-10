@@ -64,28 +64,7 @@ export default function NavbarWithDropdown() {
   ];
 
   const redirectToVatsimAuth = () => {
-    const authUrl = [
-      config?.vatsimAuthUrl,
-      '/oauth/authorize',
-      '?',
-      'client_id=',
-      config?.vatsimAuthClientId,
-      '&',
-      'redirect_uri=',
-      window.location.protocol,
-      '//',
-      window.location.host,
-      '/api/v1/auth/login',
-      '&',
-      'response_type=code',
-      '&',
-      'scope=full_name+vatsim_details',
-      '&',
-      'required_scopes=full_name+vatsim_details',
-      '&',
-      'approval_prompt=auto',
-    ].join('');
-    window.location.replace(authUrl);
+    window.location.replace('/api/vatsim-connect');
   };
 
   useEffect(() => {
