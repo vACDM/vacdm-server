@@ -47,6 +47,9 @@ class PilotDtoClearance {
 }
 
 export class PilotDto implements NestedPartial<ConvertForApis<Pilot>> {
+  @JoiSchema(Joi.string().optional())
+    _id: string;
+  
   @JoiSchema(PilotCallsignValidator.required())
   @JoiSchema([UPDATE], Joi.forbidden())
     callsign: string;

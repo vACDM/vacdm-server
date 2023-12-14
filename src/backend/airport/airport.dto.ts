@@ -6,6 +6,9 @@ import { UtilsService } from '../utils/utils.service';
 export const AirportIcaoValidator = Joi.string().regex(/^[A-Z0-9]{4}$/).message('"icao" must be four uppercase letters between A and Z or digits between 0 and 9');
 
 class AirportDtoTaxizoneTaxitime {
+  @JoiSchema(Joi.string().optional())
+    _id: string;
+  
   @JoiSchema(Joi.string().required())
   @JoiSchema([UPDATE], Joi.string().optional())
     rwy_designator: string;
@@ -16,6 +19,9 @@ class AirportDtoTaxizoneTaxitime {
 }
 
 class AirportDtoTaxizone {
+  @JoiSchema(Joi.string().optional())
+    _id: string;
+  
   @JoiSchema(Joi.string().required())
   @JoiSchema([UPDATE], Joi.string().optional())
     label: string;
@@ -34,6 +40,10 @@ class AirportDtoTaxizone {
 }
 
 class AirportDtoCapacity {
+  @JoiSchema(Joi.string().optional())
+    _id: string;
+  
+  
   @JoiSchema(Joi.string().required())
   @JoiSchema([UPDATE], Joi.string().optional())
     rwy_designator: string;
@@ -42,12 +52,16 @@ class AirportDtoCapacity {
   @JoiSchema([UPDATE], Joi.number().optional())
     capacity: number;
 
-  @JoiSchema(Joi.string().required())
-  @JoiSchema([UPDATE], Joi.string().optional())
+  @JoiSchema(Joi.string().allow('').optional())
+  @JoiSchema([UPDATE], Joi.string().allow('').optional())
     alias: string;
 }
 
 export class AirportDto {
+  @JoiSchema(Joi.string().optional())
+    _id: string;
+  
+  
   @JoiSchema(AirportIcaoValidator.required())
   @JoiSchema([UPDATE], Joi.forbidden())
     icao!: string;
