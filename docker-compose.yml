@@ -16,15 +16,12 @@ services:
       - .:/opt:delegated
     environment:
       - MONGO_URI
-      - CLIENT_ID
-      - CLIENT_SECRET
-      - PUBLIC_URL
-      - VATSIM_AUTH_URL
-      - VACC_AUTH_URL
-      - VACC_AUTH_TOKEN
-      - VACC_LOGO_URL
-      - VACC_IMPRINT_URL
-      - JWT_SECRET
+      - SERVER_NAME=vACDM local dev server
+      - PUBLIC_URL=http://localhost:3030
+      - PORT=3000
+      - VATSIM_AUTH_URL=https://auth-dev.vatsim.net
+      - CLIENT_ID=652
+      - CLIENT_SECRET=CcjuDBhLylxN60WXYYyurhd9wKBXfW5jD4n36fXk
       - ALLOW_SIM=true
       - ALLOW_OBS_MASTER=true
       - LOG_LEVEL_CONSOLE=debug
