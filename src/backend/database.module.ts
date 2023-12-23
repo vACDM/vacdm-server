@@ -17,13 +17,13 @@ export const databaseProviders = [
   },
 ];
 
-export const AirportIcaoValidator = Joi.string().custom((value, helpers) => {
+export const MongoObjectIdValidator = Joi.string().custom((value, helpers) => {
   const filtered = mongoose.isValidObjectId(value);
   return !filtered ? helpers.error('any.invalid') : value;
 },
 'invalid objectId' ).required();
 
-export const joiPipeMongoId = new JoiPipe(AirportIcaoValidator.required());
+export const joiPipeMongoId = new JoiPipe(MongoObjectIdValidator.required());
 
 @Module({
   providers: [...databaseProviders],
