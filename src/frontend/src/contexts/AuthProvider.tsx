@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       })
       .catch(() => {
         setAuth({ user: undefined });
-        navigate('/');
+        navigate('/auth-failure');
       });
   }, []);
 

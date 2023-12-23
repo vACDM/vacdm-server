@@ -21,7 +21,11 @@ export class VatsimConnectController {
   }
 
   @Get('/callback')
-  async vatsimConnectCallback(@Res() res: Response, @Query('code', new JoiPipe(Joi.string().required())) code: string, @Query('state') state: string) {
+  async vatsimConnectCallback(@Res() res: Response, @Query('code', new JoiPipe(Joi.string())) code: string, @Query('state') state: string, @Query('message', new JoiPipe(Joi.string())) message: string) {
+    if (!code && message) {
+      return res.redirect('/auth-failure');
+    }
+    
     const { token, user } = await this.vatsimConnectService.processConnectCallback(code);
 
     logger.debug('user login (%s) %o', state, user);

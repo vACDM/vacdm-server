@@ -60,7 +60,6 @@ const Landingpage = () => {
   };
 
   const statusTemplate = (rowData) => {
-    console.log(pilots);
     if (pilots) {
       const number = pilots.filter((value) => value.flightplan.adep === rowData.icao);
       return (number.length !== 0 ? <span className='text-green-500'>CDM in operation</span> : <span className='text-gray-500'>no CDM operation</span>);
