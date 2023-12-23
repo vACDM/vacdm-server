@@ -73,6 +73,6 @@ const PilotSchema = new mongoose.Schema<Pilot>({
 
 export const PilotProvider = {
   provide: PILOT_MODEL,
-  useFactory: (connection: mongoose.Connection) => connection.model('Pilot', PilotSchema),
+  useFactory: (connection: typeof mongoose) => connection.model('Pilot', PilotSchema),
   inject: [DB_PROVIDER],
 };

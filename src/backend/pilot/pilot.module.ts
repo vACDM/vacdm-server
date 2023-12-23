@@ -1,5 +1,6 @@
 import { Module, forwardRef } from '@nestjs/common';
 
+import { AgendaModule } from '../agenda.module';
 import { AirportModule } from '../airport/airport.module';
 import { DatabaseModule } from '../database.module';
 import { UtilsModule } from '../utils/utils.module';
@@ -13,6 +14,7 @@ import { PilotService } from './pilot.service';
     DatabaseModule,
     UtilsModule,
     forwardRef(() => AirportModule),
+    AgendaModule,
   ],
   providers: [PilotService, PilotProvider],
   controllers: [PilotController],

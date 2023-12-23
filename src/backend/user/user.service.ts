@@ -1,7 +1,9 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import Agenda from 'agenda';
 import jwt from 'jsonwebtoken';
 import { FilterQuery } from 'mongoose';
 
+import { AGENDA_PROVIDER } from '../agenda.module';
 import getAppConfig from '../config';
 import logger from '../logger';
 
@@ -14,7 +16,11 @@ import { VatsimConnectUserResponseData } from '@/shared/interfaces/vatsim.interf
 export class UserService {
   constructor(
     @Inject(USER_MODEL) private userModel: UserModel,
-  ) {}
+    @Inject(AGENDA_PROVIDER) private agenda: Agenda,
+  ) {
+    this.agenda.define('USER_cleanupUsers', this.cleanupUsers.bind(this));
+    this.agenda.every('10 minutes', 'USER_cleanupUsers');
+  }
 
   getUsers(filter: FilterQuery<User>): Promise<UserDocument[]> {
     return this.userModel.find(filter).exec();

@@ -1,6 +1,8 @@
 import { Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
+import Agenda from 'agenda';
 import { FilterQuery } from 'mongoose';
 
+import { AGENDA_PROVIDER } from '../agenda.module';
 import { AirportService } from '../airport/airport.service';
 import getAppConfig from '../config';
 import logger from '../logger';
@@ -17,7 +19,11 @@ export class PilotService {
     @Inject(PILOT_MODEL) private pilotModel: PilotModel,
     private utilsService: UtilsService,
     @Inject(forwardRef(() => AirportService)) private airportService: AirportService,
-  ) {}
+    @Inject(AGENDA_PROVIDER) private agenda: Agenda,
+  ) {
+    this.agenda.define('PILOT_cleanupPilots', this.cleanupPilots.bind(this));
+    this.agenda.every('10 minutes', 'PILOT_cleanupPilots');
+  }
 
   getPilots(filter: FilterQuery<Pilot>): Promise<PilotDocument[]> {
     return this.pilotModel.find(filter).exec();

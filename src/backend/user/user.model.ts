@@ -23,6 +23,6 @@ const UserSchema = new mongoose.Schema<User>({
 
 export const UserProvider = {
   provide: USER_MODEL,
-  useFactory: (connection: mongoose.Connection) => connection.model('User', UserSchema),
+  useFactory: (connection: typeof mongoose) => connection.model('User', UserSchema),
   inject: [DB_PROVIDER],
 };

@@ -35,6 +35,6 @@ const AirportSchema = new mongoose.Schema<Airport>({
 
 export const AirportProvider = {
   provide: AIRPORT_MODEL,
-  useFactory: (connection: mongoose.Connection) => connection.model('Airport', AirportSchema),
+  useFactory: (connection: typeof mongoose) => connection.model('Airport', AirportSchema),
   inject: [DB_PROVIDER],
 };

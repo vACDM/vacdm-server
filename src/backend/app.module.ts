@@ -4,6 +4,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { JoiPipeModule } from 'nestjs-joi';
 
+import { agendaProviders } from './agenda.module';
 import { AirportModule } from './airport/airport.module';
 import { CdmModule } from './cdm/cdm.module';
 import getAppConfig from './config';
@@ -46,7 +47,7 @@ const { frontendProxy } = getAppConfig();
     EcfmpModule,
     VatsimConnectModule,
   ],
-  providers: [...databaseProviders],
+  providers: [...databaseProviders, ...agendaProviders],
   exports: [...databaseProviders],
 })
 export class AppModule implements NestModule {
