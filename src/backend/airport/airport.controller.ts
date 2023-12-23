@@ -13,8 +13,13 @@ export class AirportController {
   ) {}
 
   @Get('/')
-  getAirports() {
-    return this.airportService.getAllAirports();
+  async getAirports() {
+    const airports = await this.airportService.getAllAirports();
+
+    return {
+      count: airports.length,
+      airports: airports,
+    };
   }
   
   @Get('/:icao')

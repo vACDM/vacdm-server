@@ -11,17 +11,22 @@ export class UserController {
   ) {}
 
   @Get('/')
-  getAllPilots() {
-    return this.userService.getAllUsers(); 
+  async getAllUsers() {
+    const users = await this.userService.getAllUsers();
+    
+    return {
+      count: users.length,
+      users: users,
+    };
   }
 
   @Get('/:userid')
-  getPilot(@Param('userid', joiPipeMongoId) userid: string) {
+  getUser(@Param('userid', joiPipeMongoId) userid: string) {
     return this.userService.getUserFromId(userid);
   }
 
   @Delete('/:userid')
-  deletePilot(@Param('userid', joiPipeMongoId) userid: string) {
+  deleteUser(@Param('userid', joiPipeMongoId) userid: string) {
     return this.userService.deleteUser(userid);
   }
 }

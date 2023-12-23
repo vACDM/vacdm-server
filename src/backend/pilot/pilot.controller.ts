@@ -13,8 +13,13 @@ export class PilotController {
   ) {}
 
   @Get('/')
-  getAllPilots() {
-    return this.pilotService.getAllPilots(); 
+  async getAllPilots() {
+    const pilots = await this.pilotService.getAllPilots();
+    
+    return {
+      count: pilots.length,
+      pilots: pilots,
+    };
   }
 
   @Get('/:callsign')

@@ -7,7 +7,6 @@ import logger from '../logger';
 
 import { VatsimConnectService } from './vatsim-connect.service';
 
-
 @Controller('/api/vatsim-connect')
 export class VatsimConnectController {
   constructor(
