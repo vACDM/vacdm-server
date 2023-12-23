@@ -2,25 +2,27 @@ import axios from 'axios';
 
 import Airport from '../../../shared/interfaces/airport.interface';
 
-async function getAirports() {
+async function getAirports(): Promise<Airport[]> {
   try {
-    const response = await axios.get('/api/v1/airports');
-    return response.data;
+    const response = await axios.get<{ count: number; airports: Airport[]; }>('/api/v1/airports');
+    return response.data.airports;
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 
-async function getAirport(icao: string) {
+async function getAirport(icao: string): Promise<Airport> {
   try {
-    const response = await axios.get('/api/v1/airports/' + icao);
+    const response = await axios.get<Airport>('/api/v1/airports/' + icao);
     return response.data;
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 
-async function updateAirport(icao: string, body: object) {
+async function updateAirport(icao: string, body: object): Promise<void> {
   try {       
     await axios.patch('/api/v1/airports/' + icao, body);
     return;
@@ -30,9 +32,9 @@ async function updateAirport(icao: string, body: object) {
   }
 }
 
-async function createAirport(body: object) {
+async function createAirport(body: object): Promise<Airport> {
   try {
-    const response = await axios.post('/api/v1/airports/', body);
+    const response = await axios.post<Airport>('/api/v1/airports/', body);
     return response.data;
   } catch (error) {
     console.error(error);

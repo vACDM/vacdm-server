@@ -18,8 +18,8 @@ dayjs.extend(relativeTime);
 
 const Delivery = () => {
   const [pilots, setPilots] = useState<Pilot[]>([]);
-  const [departureAirports, setdepartureAirports] = useState<any[]>([]);
-  const [arrivalAirports, setarrivalAirports] = useState<any[]>([]);
+  const [departureAirports, setdepartureAirports] = useState<{ name: string; value: string; }[]>([]);
+  const [arrivalAirports, setarrivalAirports] = useState<{ name: string; value: string; }[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -32,8 +32,7 @@ const Delivery = () => {
         data.forEach((element: Pilot) => {
           if (!element.inactive) {
             filteredPilots.push(element);
-            const adep = element.flightplan.departure;
-            const ades = element.flightplan.arrival;
+            const { adep, ades } = element.flightplan;
 
             if (departureAirports.findIndex((aerodrome) => aerodrome.name === adep) === -1) {
               departureAirports.push({ name: adep, value: adep });

@@ -10,12 +10,12 @@ import AirportService from '../services/AirportService';
 import Airport from '@/shared/interfaces/airport.interface';
 
 const AirpotsTable = () => {
-  const [airports, setAirports] = useState<any[]>([]);
+  const [airports, setAirports] = useState<Airport[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    AirportService.getAirports().then((data: any[]) => {
+    AirportService.getAirports().then((data: Airport[]) => {
       setAirports(data);
       setLoading(false);
     });
