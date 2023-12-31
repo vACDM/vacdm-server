@@ -30,4 +30,4 @@ export const agendaProviders = [
   providers: [...agendaProviders],
   exports: [...agendaProviders],
 })
-export class AgendaModule {}
+export class ScheduleModule {}

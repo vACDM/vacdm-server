@@ -3,7 +3,7 @@ import Agenda from 'agenda';
 import jwt from 'jsonwebtoken';
 import { FilterQuery } from 'mongoose';
 
-import { AGENDA_PROVIDER } from '../agenda.module';
+import { AGENDA_PROVIDER } from '../schedule.module';
 import getAppConfig from '../config';
 import logger from '../logger';
 
