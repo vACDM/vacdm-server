@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { JoiPipe } from 'nestjs-joi';
 
 import { PilotDto, PilotCallsignValidator } from './pilot.dto';
@@ -6,6 +7,7 @@ import { PilotService } from './pilot.service';
 
 const joiPipeCallSign = new JoiPipe(PilotCallsignValidator.required());
 
+@ApiTags('pilots')
 @Controller('api/v1/pilots')
 export class PilotController {
   constructor(

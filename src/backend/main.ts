@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import { Request } from 'express';
 import morgan from 'morgan';
@@ -28,6 +29,16 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
+  const config = new DocumentBuilder()
+    .setTitle('vACDM')
+    .setDescription('vACDM API Documentation')
+    .setVersion('1.0')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
+
+
   await app.listen(3000);
 }
+
 bootstrap();

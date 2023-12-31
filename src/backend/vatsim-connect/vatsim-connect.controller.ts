@@ -1,4 +1,5 @@
 import { Controller, Get, Query, Res } from '@nestjs/common';
+import { ApiExcludeController } from '@nestjs/swagger';
 import { Response } from 'express';
 import Joi from 'joi';
 import { JoiPipe } from 'nestjs-joi';
@@ -6,7 +7,7 @@ import { JoiPipe } from 'nestjs-joi';
 import logger from '../logger';
 
 import { VatsimConnectService } from './vatsim-connect.service';
-
+@ApiExcludeController()
 @Controller('/api/vatsim-connect')
 export class VatsimConnectController {
   constructor(

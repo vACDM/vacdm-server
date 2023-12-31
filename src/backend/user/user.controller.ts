@@ -1,10 +1,12 @@
 import { Controller, Delete, Get, Param } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
 import { joiPipeMongoId } from '../database.module';
 
 import { UserService } from './user.service';
 
-@Controller('api/v1/user')
+@ApiTags('users')
+@Controller('api/v1/users')
 export class UserController {
   constructor(
     private userService: UserService,

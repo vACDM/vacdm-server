@@ -1,9 +1,11 @@
 import { Body, Controller, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
 import { TargetDPINow, TargetDPITarget, TargetDPISequenced, AtcDPI, CustomDPITaxioutTime, CustomDPIRequest } from './message.dto';
 import { MessageService } from './message.service';
 
-@Controller('api/v1/message')
+@ApiTags('messages')
+@Controller('api/v1/messages')
 export class MessageController {
   constructor(
     private messageService: MessageService,

@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { JoiPipe } from 'nestjs-joi';
 
 import { AirportDto, AirportIcaoValidator } from './airport.dto';
@@ -6,6 +7,7 @@ import { AirportService } from './airport.service';
 
 const joiPipeAirportIcao = new JoiPipe(AirportIcaoValidator.required());
 
+@ApiTags('airports')
 @Controller('api/v1/airports')
 export class AirportController {
   constructor(
