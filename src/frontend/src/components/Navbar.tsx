@@ -64,7 +64,7 @@ export default function NavbarWithDropdown() {
   ];
 
   const redirectToVatsimAuth = () => {
-    window.location.replace('/api/vatsim-connect');
+    window.location.replace('/api/auth');
   };
 
   useEffect(() => {

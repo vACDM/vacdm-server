@@ -7,14 +7,14 @@ import { UserService } from '../user/user.service';
 import { VatsimConnectUserResponse, VatsimConnectUserResponseData } from '@/shared/interfaces/vatsim.interface';
 
 @Injectable()
-export class VatsimConnectService {
+export class AuthService {
   constructor(
     private userService: UserService,
   ) {}
 
   private authCallbackUrl() {
     const { publicUrl } = getAppConfig();
-    return `${publicUrl}/api/vatsim-connect/callback`;
+    return `${publicUrl}/api/auth/callback`;
   }
 
   getVatsimConnectUrl(state: string | void) {

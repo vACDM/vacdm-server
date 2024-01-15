@@ -5,6 +5,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { JoiPipeModule } from 'nestjs-joi';
 
 import { AirportModule } from './airport/airport.module';
+import { AuthMiddleware } from './auth/auth.middleware';
+import { AuthModule } from './auth/auth.module';
 import { CdmModule } from './cdm/cdm.module';
 import getAppConfig from './config';
 import { ConfigModule } from './config/config.module';
@@ -18,7 +20,6 @@ import { PilotModule } from './pilot/pilot.module';
 import { agendaProviders } from './schedule.module';
 import { UserModule } from './user/user.module';
 import { UtilsModule } from './utils/utils.module';
-import { VatsimConnectModule } from './vatsim-connect/vatsim-connect.module';
 
 const { frontendProxy } = getAppConfig();
 
@@ -46,7 +47,7 @@ const { frontendProxy } = getAppConfig();
     UserModule,
     FrontendProxyModule,
     EcfmpModule,
-    VatsimConnectModule,
+    AuthModule,
     ConfigModule,
   ],
   providers: [...databaseProviders, ...agendaProviders],
@@ -60,5 +61,9 @@ export class AppModule implements NestModule {
         .exclude('/api/(.*)')
         .forRoutes('/*');
     }
+
+    consumer
+      .apply(AuthMiddleware)
+      .forRoutes('/');
   }
 }

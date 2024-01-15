@@ -3,9 +3,9 @@ import Agenda from 'agenda';
 import jwt from 'jsonwebtoken';
 import { FilterQuery } from 'mongoose';
 
-import { AGENDA_PROVIDER } from '../schedule.module';
 import getAppConfig from '../config';
 import logger from '../logger';
+import { AGENDA_PROVIDER } from '../schedule.module';
 
 import { USER_MODEL, UserDocument, UserModel } from './user.model';
 
@@ -42,6 +42,18 @@ export class UserService {
     return user;
   }
 
+  async getUserFromCid(cid: number): Promise<UserDocument> {
+    logger.debug('trying to get a user with cid "%s"', cid);
+    const user = await this.userModel.findOne({ cid });
+    
+    if (!user) {
+      logger.verbose('could not find user with id "%s"', cid);
+      throw new NotFoundException();
+    }
+    
+    return user;
+  }
+
   async upsertUser(data: VatsimConnectUserResponseData): Promise<UserDocument> {
     const user = await this.userModel.findOneAndUpdate({
       cid: data.cid,
@@ -67,6 +79,19 @@ export class UserService {
     }, jwtSecret, {
       expiresIn: '1h',
     });
+  }
+
+  getUserFromToken(token: string): Promise<UserDocument> {
+    const { jwtSecret } = getAppConfig();
+    
+    const tokenData = jwt.verify(token, jwtSecret);
+
+    if (typeof tokenData != 'object') {
+      logger.warn('somehow tokendata was not object, how tf can this happen? :O %o', tokenData);
+      throw new Error('something weird happened');
+    }
+
+    return this.getUserFromCid(tokenData.cid);
   }
 
   async cleanupUsers() {
