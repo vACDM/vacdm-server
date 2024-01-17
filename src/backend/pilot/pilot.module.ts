@@ -1,8 +1,8 @@
 import { Module, forwardRef } from '@nestjs/common';
 
-import { ScheduleModule } from '../schedule.module';
 import { AirportModule } from '../airport/airport.module';
 import { DatabaseModule } from '../database.module';
+import { ScheduleModule } from '../schedule.module';
 import { UtilsModule } from '../utils/utils.module';
 
 import { PilotController } from './pilot.controller';
