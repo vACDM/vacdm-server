@@ -22,6 +22,9 @@ interface Pilot {
     asat: Date;
     aobt: Date;
 
+    asrt: Date;
+    aort: Date;
+
     delay: number;
     prio: number;
 
