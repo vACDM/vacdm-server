@@ -44,7 +44,8 @@ export class AirportService {
       logger.verbose('could not find airport with icao "%s"', icao);
       throw new NotFoundException();
     }
-
+    
+    logger.debug('found airport with icao "%s"', icao);
     return arpt;
   }
 

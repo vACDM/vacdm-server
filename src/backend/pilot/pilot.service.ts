@@ -1,8 +1,9 @@
-import { Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import Agenda from 'agenda';
 import { FilterQuery } from 'mongoose';
 
 import { AirportService } from '../airport/airport.service';
+import { CdmService } from '../cdm/cdm.service';
 import getAppConfig from '../config';
 import logger from '../logger';
 import { AGENDA_PROVIDER } from '../schedule.module';
@@ -20,6 +21,7 @@ export class PilotService {
     private utilsService: UtilsService,
     @Inject(forwardRef(() => AirportService)) private airportService: AirportService,
     @Inject(AGENDA_PROVIDER) private agenda: Agenda,
+    @Inject(forwardRef(() => CdmService)) private cdmService: CdmService,
   ) {
     this.agenda.define('PILOT_cleanupPilots', this.cleanupPilots.bind(this));
     this.agenda.every('10 minutes', 'PILOT_cleanupPilots');
@@ -60,25 +62,40 @@ export class PilotService {
   }
 
   async createPilot(createData: PilotDto): Promise<PilotDocument>  {
-    const pilot = new this.pilotModel(createData);
+    logger.debug('creating pilot with data %o', createData);
+
+    try {
+      const pilot = new this.pilotModel(createData);
         
-    // TODO: determine steps to take when pilot is created
-    // 0. write history message
-    // 1. determine departure runway and log it
-    pilot.vacdm.blockRwyDesignator = await this.airportService.determineRunway(pilot);
+      // TODO: determine steps to take when pilot is created
+      // 0. write history message
+      // 1. determine departure runway and log it
+      pilot.vacdm.blockRwyDesignator = await this.airportService.determineRunway(pilot);
     
-    // 2. determine taxi zone and log it
-    ({
-      exot: pilot.vacdm.exot,
-      taxiout: pilot.vacdm.taxizoneIsTaxiout,
-      taxizone: pilot.vacdm.taxizone,
-    } = await this.airportService.determineTaxizone(pilot));
+      // 2. determine taxi zone and log it
+      ({
+        exot: pilot.vacdm.exot,
+        taxiout: pilot.vacdm.taxizoneIsTaxiout,
+        taxizone: pilot.vacdm.taxizone,
+      } = await this.airportService.determineTaxizone(pilot));
     
-    // 3. determine departure block and log it
+      // 3. determine departure block and log it
+      ({
+        initialBlock: pilot.vacdm.blockId,
+        initialTtot: pilot.vacdm.ttot,
+      } = await this.cdmService.determineInitialBlock(pilot));
 
-    await pilot.save();
+      await this.cdmService.putPilotIntoBlock(pilot);
+      await pilot.save();
 
-    return pilot;
+      return pilot;
+    } catch (error) {
+      if (typeof error.message === 'string' && error.message.includes('duplicate key error')) {
+        throw new ConflictException('Callsign already in use');
+      }
+
+      throw error;
+    }
   }
 
   async deletePilot(callsign: string): Promise<PilotDocument> {

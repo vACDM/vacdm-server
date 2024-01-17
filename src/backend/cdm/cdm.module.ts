@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 
 import { AirportModule } from '../airport/airport.module';
 import { PilotModule } from '../pilot/pilot.module';
@@ -9,6 +9,10 @@ import { CdmService } from './cdm.service';
 @Module({
   providers: [CdmService],
   exports: [CdmService],
-  imports: [AirportModule, PilotModule, UtilsModule],
+  imports: [
+    forwardRef(() => AirportModule),
+    forwardRef(() => PilotModule),
+    UtilsModule,
+  ],
 })
 export class CdmModule {}

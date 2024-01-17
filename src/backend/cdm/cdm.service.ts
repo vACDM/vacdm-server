@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import dayjs from 'dayjs';
 
 import { AirportService } from '../airport/airport.service';
@@ -12,12 +12,12 @@ import { AirportCapacity } from '@/shared/interfaces/airport.interface';
 @Injectable()
 export class CdmService {
   constructor(
-    private airportService: AirportService,
-    private pilotService: PilotService,
+    @Inject(forwardRef(() => AirportService)) private airportService: AirportService,
+    @Inject(forwardRef(() => PilotService)) private pilotService: PilotService,
     private utilsService: UtilsService,
   ) {}
   
-  private determineInitialBlock(pilot: PilotDocument): {
+  determineInitialBlock(pilot: PilotDocument): {
     initialBlock: number;
     initialTtot: Date;
   } {
@@ -86,8 +86,12 @@ export class CdmService {
 
   async putPilotIntoBlock(
     pilot: PilotDocument,
-    allPilots: PilotDocument[],
+    allPilots: PilotDocument[] | void,
   ): Promise<{ finalBlock: number; finalTtot: Date }> {
+    if (!allPilots) {
+      allPilots = await this.pilotService.getAllPilots();
+    }
+
     // count all pilots in block
     pilot.vacdm.ctot = this.utilsService.emptyDate;
     const otherPilotsOnRunway = allPilots.filter(
