@@ -20,6 +20,7 @@ import { AuthProvider } from './contexts/AuthProvider';
 import { DarkModeProvider } from './contexts/DarkModeProvider';
 import AirportDetails from './pages/AirportDetails';
 import Airports from './pages/Airports';
+import AuthFailurePage from './pages/AuthFailure';
 import Debug from './pages/Debug';
 import Delivery from './pages/Delivery';
 import FlowManagement from './pages/FlowManagement';
@@ -81,6 +82,7 @@ function App() {
                   <Route path="/flow-management" element={<FlowManagement />} />
                   <Route path="/landingpage" element={<Landingpage />} />
                   <Route path="/delivery" element={<Delivery />} />
+                  <Route path="/auth-failure" element={<AuthFailurePage />} />
                   <Route path="/" element={<Landingpage />} />
                   <Route path="*" element={<Navigate to="/" />} />
                 </Routes>

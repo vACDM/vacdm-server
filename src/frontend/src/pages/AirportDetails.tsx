@@ -1,23 +1,16 @@
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 import { Column } from 'primereact/column';
-import { DataTable } from 'primereact/datatable/';
-import { Dialog } from 'primereact/dialog';
+import { DataTable } from 'primereact/datatable/';;
 import { Dropdown } from 'primereact/dropdown';
-import { InputText } from 'primereact/inputtext';
-import { InputTextarea } from 'primereact/inputtextarea';
-import { SelectButton, SelectButtonChangeEvent } from 'primereact/selectbutton';
 import { Toast } from 'primereact/toast';
-import { Toolbar } from 'primereact/toolbar';
-import { classNames } from 'primereact/utils';
-import { useState, useEffect, useContext, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
 import TaxizoneDeleteDialog from '../components/TaxizoneDeleteDialog';
-import TaxizoneForm from '../components/TaxizoneDialog';
 import TaxizoneDialog from '../components/TaxizoneDialog';
-import DarkModeContext from '../contexts/DarkModeProvider';
+import RunwayCapacityDialog from '../components/RunwayCapacityDialog';
 import {
   IAirport,
   IAirportCapacity,
@@ -34,19 +27,22 @@ const AirpotDetailsTable = () => {
     taxitimes: [],
   };
 
+  const emptyCapacity: IAirportCapacity = {
+    _id: null,
+    rwy_designator: '',
+    capacity: 0,
+    alias: ''
+  };
+
   const { icao } = useParams();
   const toast = useRef<Toast>(null);
   const [taxizoneDialog, setTaxizoneDialog] = useState(false);
+  const [rwyCapacityDialog, setRwyCapacityDialog] = useState(false);
   const [deleteTaxizoneDialog, setDeleteTaxizoneDialog] = useState(false);
-  const [deleteTaxizonesDialog, setDeleteTaxizonesDialog] = useState(false);
+  const [deleteRwyCapacityDialog, setDeleteRwyCapacityDialog] = useState(false);
   const [airport, setAirport] = useState<IAirport>();
-  const [selectedTaxizones, setSelectedTaxizones] = useState<
-  IAirportTaxizone[]
-  >([]);
-  const [selectedCapacities, setSelectedCapacities] = useState<
-  IAirportCapacity[]
-  >([]);
   const [taxizone, setTaxizone] = useState<IAirportTaxizone>(emptyTaxizone);
+  const [rwyCapacity, setRwyCapacity] = useState<IAirportCapacity>(emptyCapacity);
   const [loading, setLoading] = useState(true);
   
 
@@ -62,24 +58,31 @@ const AirpotDetailsTable = () => {
     }
   }
   
-  useEffect(() => {
-    //setLoading(true);  
+  useEffect(() => { 
     fetchAirport();   
   }, []);
 
   
 
-  const openNew = () => {
+  const openNewTaxizone = () => {
     setTaxizone(emptyTaxizone);
     setTaxizoneDialog(true);
   };
 
+  const openNewCapacity = () => {
+    setRwyCapacity(emptyCapacity);
+    setRwyCapacityDialog(true);
+  };
 
-  const hideDialog = () => {
+
+  const hideTaxizoneDialog = () => {
     setTaxizoneDialog(false);
     setDeleteTaxizoneDialog(false);
-    setDeleteTaxizonesDialog(false);
-    //fetchAirport();
+  };
+
+  const hideCapacityDialog = () => {
+    setRwyCapacityDialog(false);
+    setDeleteRwyCapacityDialog(false);
   };
 
 
@@ -88,8 +91,9 @@ const AirpotDetailsTable = () => {
     setDeleteTaxizoneDialog(true);
   };
 
-  const confirmDeleteSelected = () => {
-    setDeleteTaxizonesDialog(true);
+  const confirmDeleteCapacity = (_capacity) => {
+    setRwyCapacity(_capacity);
+    setDeleteTaxizoneDialog(true);
   };
 
 
@@ -101,7 +105,7 @@ const AirpotDetailsTable = () => {
         icon="pi pi-plus"
         severity="success"
         size="small"
-        onClick={openNew}
+        onClick={openNewTaxizone}
       />
 
       <h4 className="m-0">Edit Taxizones</h4>
@@ -115,14 +119,14 @@ const AirpotDetailsTable = () => {
         icon="pi pi-plus"
         severity="success"
         size="small"
-        onClick={openNew}
+        onClick={openNewCapacity}
       />
 
       <h4 className="m-0">Edit Capacities</h4>
     </div>
   );
 
-  const actionBodyTemplate = (rowData: IAirportTaxizone) => {
+  const actionBodyTaxizoneTemplate = (rowData: IAirportTaxizone) => {
     return (
       <React.Fragment>
         <Button
@@ -145,6 +149,29 @@ const AirpotDetailsTable = () => {
     );
   };
 
+  const actionBodyCapacityTemplate = (rowData: IAirportCapacity) => {
+    return (
+      <React.Fragment>
+        <Button
+          icon="pi pi-pencil"
+          className="mr-2"
+          severity="warning"
+          size="small"
+          onClick={() => {
+            setRwyCapacity(rowData);
+            setRwyCapacityDialog(true);
+          }}
+        />
+        <Button
+          icon="pi pi-trash"
+          severity="danger"
+          size="small"
+          onClick={() => confirmDeleteCapacity(rowData)}
+        />
+      </React.Fragment>
+    );
+  };
+
 
 
   return (
@@ -161,19 +188,13 @@ const AirpotDetailsTable = () => {
             loading={loading}
               size="small"
               value={airport?.taxizones}
-              
-              onSelectionChange={(e) => {
-                if (Array.isArray(e.value)) {
-                  setSelectedTaxizones(e.value);
-                }
-              }}
               dataKey="_id"
               header={header}
             >
               <Column field="label" header="Label"></Column>
               <Column field="taxiout" header="Taxiout"></Column>
 
-              <Column header="Admin" body={actionBodyTemplate}></Column>
+              <Column header="Admin" body={actionBodyTaxizoneTemplate}></Column>
             </DataTable>
           </div>
         </Card>
@@ -184,20 +205,13 @@ const AirpotDetailsTable = () => {
               loading={loading}
                 size="small"
                 value={airport?.capacities}
-                selection={selectedCapacities}
-                selectionMode={'checkbox'}
-                onSelectionChange={(e) => {
-                  if (Array.isArray(e.value)) {
-                    setSelectedCapacities(e.value);
-                  }
-                }}
                 dataKey="_id"
                 header={capacityHeader}
               >
                 <Column field="rwy_designator" header="Runway"></Column>
                 <Column field="capacity" header="Capacity"></Column>
                 <Column field="alias" header="Alias"></Column>
-                <Column header="Admin" body={actionBodyTemplate}></Column>
+                <Column header="Admin" body={actionBodyCapacityTemplate}></Column>
               </DataTable>
             </div>
           </Card>
@@ -222,10 +236,11 @@ const AirpotDetailsTable = () => {
 
       
       <TaxizoneDialog        
-      airport={airport} taxizone={taxizone} visible={taxizoneDialog} onHide={hideDialog} />
+      airport={airport} taxizone={taxizone} visible={taxizoneDialog} onHide={hideTaxizoneDialog} />
       
+      <RunwayCapacityDialog airport={airport} capacity={rwyCapacity} visible={rwyCapacityDialog} onHide={hideCapacityDialog} />
 
-      <TaxizoneDeleteDialog airport={airport} taxizone={taxizone} visible={deleteTaxizoneDialog} onHide={hideDialog} />
+      <TaxizoneDeleteDialog airport={airport} taxizone={taxizone} visible={deleteTaxizoneDialog} onHide={hideTaxizoneDialog} />
 
     </>
   );

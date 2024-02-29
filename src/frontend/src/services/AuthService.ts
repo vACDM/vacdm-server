@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export async function getProfile() {
   try {
-    const profile = await axios.get('/api/v1/auth/profile', {
+    const profile = await axios.get('/api/auth/profile', {
       withCredentials: true,
     });
 
@@ -26,7 +26,7 @@ export async function getConfig() {
 
 export async function logout() {
   try {
-    await axios.get('/api/v1/auth/logout', {
+    await axios.get('/api/auth/logout', {
       withCredentials: true,
     });
     

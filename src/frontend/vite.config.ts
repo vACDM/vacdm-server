@@ -17,14 +17,7 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3030',
-        changeOrigin: true,
-        // secure: false,
-        // ws: true,
-      },
-    },
+    open: false,
   },
   define: {
     'process.env': `(${JSON.stringify(process.env)})`,

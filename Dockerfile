@@ -9,7 +9,7 @@ ENV NODE_ENV production
 
 RUN apk update && \
     apk upgrade && \
-    npm i npm@latest -g && \
+    npm i npm@next-10 -g && \
     chown node:node -R /opt
     
     # && \

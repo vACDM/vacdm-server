@@ -3,10 +3,10 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "module": "ES2022",
-    "target": "ES2022",
+    "module": "CommonJS",
+    "target": "ES2021",
     "lib": [
-      "ES2022",
+      "ES6",
       "DOM"
     ],
     "sourceMap": true,
@@ -19,7 +19,10 @@
     "moduleResolution": "Node",
     "paths": {
       "@/*": ["./src/*"],
-    }
+    },
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true
   },
   "watchOptions": {
     "watchFile": "fixedpollinginterval"

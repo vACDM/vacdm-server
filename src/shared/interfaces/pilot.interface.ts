@@ -9,10 +9,10 @@ interface Pilot {
   vacdm: {
     eobt: Date;
     tobt: Date;
-    tobt_state: 'GUESS' | 'FLIGHTPLAN' | 'CONFIRMED' | 'NOW';
+    tobtState: 'FLIGHTPLAN' | 'CONFIRMED' | 'NOW';
 
     exot: number;
-    manual_exot: boolean;
+    manualExot: boolean;
 
     tsat: Date;
 
@@ -21,6 +21,9 @@ interface Pilot {
 
     asat: Date;
     aobt: Date;
+
+    asrt: Date;
+    aort: Date;
 
     delay: number;
     prio: number;
@@ -34,24 +37,19 @@ interface Pilot {
 
     blockAssignment: Date;
     blockId: number;
-    block_rwy_designator: string;
+    blockRwyDesignator: string;
   };
 
   hasBooking: boolean;
 
   flightplan: {
-    flight_rules: string;
-
-    departure: string;
-    arrival: string;
+    adep: string;
+    ades: string;
   };
 
   clearance: {
     dep_rwy: string;
     sid: string;
-    initial_climb: string;
-    assigned_squawk: string;
-    current_squawk: string;
   };
 
   measures: {

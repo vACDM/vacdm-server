@@ -2,10 +2,10 @@ import axios from 'axios';
 
 import Pilot, { PilotLog } from '@/shared/interfaces/pilot.interface';
 
-async function getPilots(): Promise<any> {
+async function getPilots(): Promise<Pilot[]> {
   try {
-    const response = await axios.get<Pilot[]>('/api/v1/pilots');
-    return response.data;
+    const response = await axios.get<{ count: number; pilots: Pilot[] }>('/api/v1/pilots');
+    return response.data.pilots;
   } catch (error) {
     console.error(error);
     throw error;

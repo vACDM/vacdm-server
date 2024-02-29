@@ -1,7 +1,7 @@
 version: '2.4'
 
 services:
-  api:
+  server:
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -16,29 +16,20 @@ services:
       - .:/opt:delegated
     environment:
       - MONGO_URI
-      - CLIENT_ID
-      - CLIENT_SECRET
-      - PUBLIC_URL
-      - VATSIM_AUTH_URL
-      - VACC_AUTH_URL
-      - VACC_AUTH_TOKEN
-      - VACC_LOGO_URL
-      - VACC_IMPRINT_URL
-      - JWT_SECRET
+      - SERVER_NAME=vACDM local dev server
+      - PUBLIC_URL=http://localhost:3030
+      - PORT=3000
+      - VATSIM_AUTH_URL=https://auth-dev.vatsim.net
+      - CLIENT_ID=652
+      - CLIENT_SECRET=CcjuDBhLylxN60WXYYyurhd9wKBXfW5jD4n36fXk
       - ALLOW_SIM=true
       - ALLOW_OBS_MASTER=true
-  worker:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-      args:
-        - NODE_ENV=development
-      target: build
-    command: npm run dev
-    ports:
-      - '9230:9229/tcp'
+      - LOG_LEVEL_CONSOLE=debug
+      - LOG_LEVEL_FILE=none
+      - FRONTEND_PROXY=http://frontend:5173/
+  frontend:
+    image: node:18-alpine
+    working_dir: /app
+    command: npm run spa-dev
     volumes:
-      - .:/opt:delegated
-    environment:
-      - MONGO_URI
-      - ROLE=WORKER
+      - .:/app:delegated

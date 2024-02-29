@@ -4,30 +4,35 @@ import {
   Dispatch,
   SetStateAction,
   useEffect,
+  PropsWithChildren,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import authService from '../services/AuthService';
 
-const AuthContext = createContext<{
-  auth: object;
-  setAuth: Dispatch<SetStateAction<object>>;
-}>({ auth: {}, setAuth: () => {} });
+import User from '@/shared/interfaces/user.interface';
 
-export const AuthProvider = ({ children }: { children: any }) => {
-  const [auth, setAuth] = useState({});
+const AuthContext = createContext<{
+  auth: {
+    user: User | undefined
+  };
+  setAuth: Dispatch<SetStateAction<{ user: User | undefined }>>;
+}>({ auth: { user: undefined }, setAuth: () => {} });
+
+export const AuthProvider = ({ children }: PropsWithChildren) => {
+  const [auth, setAuth] = useState<{ user: User | undefined }>({ user: undefined });
 
   const navigate = useNavigate();
 
   useEffect(() => {
     authService
       .getProfile()
-      .then((data) => {
-        setAuth({ user: data });
+      .then((user) => {
+        setAuth({ user });
       })
-      .catch((e) => {
-        setAuth({});
-        navigate('/');
+      .catch(() => {
+        setAuth({ user: undefined });
+        navigate('/auth-failure');
       });
   }, []);
 

@@ -103,3 +103,30 @@ export interface VatsimPilotRating {
   short_name: string;
   long_name: string;
 }
+
+export interface VatsimDivision {
+  id: string;
+  name: string;
+}
+
+export interface VatsimConnectUserResponseData {
+  cid: number;
+
+  personal: {
+    name_first: string;
+    name_last: string;
+    name_full: string;
+  }
+
+  vatsim: {
+    rating: VatsimFacilityRating;
+    pilotrating: VatsimPilotRating;
+    division: VatsimDivision;
+    region: VatsimDivision;
+    subdivision: VatsimDivision;
+  }
+}
+  
+export interface VatsimConnectUserResponse {
+  data: VatsimConnectUserResponseData
+}

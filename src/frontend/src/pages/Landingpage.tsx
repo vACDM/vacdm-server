@@ -6,12 +6,15 @@ import { useEffect, useState } from 'react';
 import AirportService from '../services/AirportService';
 import PilotService from '../services/PilotService';
 
+import Airport from '@/shared/interfaces/airport.interface';
+import Pilot from '@/shared/interfaces/pilot.interface';
+
 
 
 const Landingpage = () => {
 
-  const [airports, setAirports] = useState();
-  const [pilots, setPilots] = useState<any[]>();
+  const [airports, setAirports] = useState<Airport[]>([]);
+  const [pilots, setPilots] = useState<Pilot[]>();
   const [loading, setLoading] = useState(true);
   
 
@@ -40,7 +43,7 @@ const Landingpage = () => {
 
   const numberOfPilotsTemplate = (rowData) => {
     if (pilots) {
-      const number = pilots.filter((value) => value.flightplan.departure === rowData.icao);
+      const number = pilots.filter((value) => value.flightplan.adep === rowData.icao);
       return number.length;
     }
   };
@@ -48,7 +51,7 @@ const Landingpage = () => {
   const avgStartupDelayTemplate = (rowData) => {
     if (pilots) {
       let delay = 0;
-      const number = pilots.filter((pilot) => pilot.flightplan.departure === rowData.icao);
+      const number = pilots.filter((pilot) => pilot.flightplan.adep === rowData.icao);
       for (const pilot of number) {
         delay = delay + pilot.vacdm.delay;
       }
@@ -58,7 +61,7 @@ const Landingpage = () => {
 
   const statusTemplate = (rowData) => {
     if (pilots) {
-      const number = pilots.filter((value) => value.flightplan.departure === rowData.icao);
+      const number = pilots.filter((value) => value.flightplan.adep === rowData.icao);
       return (number.length !== 0 ? <span className='text-green-500'>CDM in operation</span> : <span className='text-gray-500'>no CDM operation</span>);
     }
   };

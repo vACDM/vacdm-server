@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/frontend/vite.config.ts"
+  ],
+  "compilerOptions": {
+    "composite": false
+  }
+}
