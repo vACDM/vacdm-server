@@ -54,4 +54,4 @@ FROM base as production
 COPY --from=build --chown=node:node /opt/dist ./dist
 COPY --from=modules --chown=node:node /opt/node_modules ./node_modules
 
-CMD node dist/backend/app.js
+CMD ["node", "dist/backend/main.js"]

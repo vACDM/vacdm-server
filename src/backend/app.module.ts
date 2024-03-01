@@ -37,7 +37,9 @@ const { frontendProxy } = getAppConfig();
         rootPath: join(__dirname, '..', 'frontend'),
         exclude: ['/api/(.*)'],
       }),
-    ] : []),
+    ] : [
+      FrontendProxyModule,
+    ]),
     AirportModule,
     PilotModule,
     UtilsModule,
@@ -45,7 +47,6 @@ const { frontendProxy } = getAppConfig();
     CdmModule,
     EtfmsModule,
     UserModule,
-    FrontendProxyModule,
     EcfmpModule,
     AuthModule,
     ConfigModule,
