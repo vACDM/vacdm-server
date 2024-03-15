@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, NotFoundException, Param, Post, Res, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpCode, NotFoundException, Param, Post, Res, UnauthorizedException } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { Response } from 'express';
 
@@ -35,6 +35,7 @@ export class PluginTokenController {
    * @param user 
    * @returns 
    */
+  @HttpCode(200)
   @Post('/authorize/:id')
   async authorizePluginToken(@Param('id') tokenId: string, @User() user: UserDocument, @Body('confirm') confirmation: string, @Body('label') label: string) {
     if (!user) {
@@ -83,6 +84,7 @@ export class PluginTokenController {
     }
   }
 
+  @HttpCode(200)
   @Post('/poll/:id')
   async pollingPluginToken(@Param('id') id: string, @Body('secret') pollingSecret: string) {
     logger.debug('id: %s, pollingSecret: %s', id, pollingSecret);
