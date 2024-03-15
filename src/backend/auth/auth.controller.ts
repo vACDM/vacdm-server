@@ -39,9 +39,10 @@ export class AuthController {
 
     res.cookie(COOKIE_NAME_VACDM_TOKEN, token);
 
-    // if (state) {
-    // TODO: redirect to url set in state
-    // }
+    if (state) {
+      // TODO: we need some sort of validation here - it mustn't be an external url
+      return res.redirect(state);
+    }
 
     res.redirect('/');
   }
