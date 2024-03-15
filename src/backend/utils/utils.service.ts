@@ -1,3 +1,5 @@
+import crypto from 'node:crypto';
+
 import { Injectable } from '@nestjs/common';
 
 import logger from '../logger';
@@ -106,5 +108,9 @@ export class UtilsService {
     plausibleDate.setUTCMinutes(minutesInHour);
   
     return plausibleDate;
+  }
+
+  generateRandomBytes(length = 32, encoding: BufferEncoding = 'base64') {
+    return crypto.randomBytes(length).toString(encoding);
   }
 }
