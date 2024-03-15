@@ -21,6 +21,7 @@ import { DarkModeProvider } from './contexts/DarkModeProvider';
 import AirportDetails from './pages/AirportDetails';
 import Airports from './pages/Airports';
 import AuthFailurePage from './pages/AuthFailure';
+import AuthorizePluginPage from './pages/AuthorizePlugin';
 import Debug from './pages/Debug';
 import Delivery from './pages/Delivery';
 import FlowManagement from './pages/FlowManagement';
@@ -83,6 +84,7 @@ function App() {
                   <Route path="/landingpage" element={<Landingpage />} />
                   <Route path="/delivery" element={<Delivery />} />
                   <Route path="/auth-failure" element={<AuthFailurePage />} />
+                  <Route path='/authorize-plugin/:id' element={<AuthorizePluginPage />} />
                   <Route path="/" element={<Landingpage />} />
                   <Route path="*" element={<Navigate to="/" />} />
                 </Routes>

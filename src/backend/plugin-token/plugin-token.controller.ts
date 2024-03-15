@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Res } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, NotFoundException, Param, Post, Res, UnauthorizedException } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { Response } from 'express';
 
@@ -29,8 +29,43 @@ export class PluginTokenController {
     };
   }
 
+  /**
+   * Endpoint for user to actually authorize plugin token
+   * @param tokenId 
+   * @param user 
+   * @returns 
+   */
+  @Post('/authorize/:id')
+  async authorizePluginToken(@Param('id') tokenId: string, @User() user: UserDocument, @Body('confirm') confirmation: string, @Body('label') label: string) {
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    if (confirmation !== 'yes') {
+      throw new BadRequestException();
+    }
+
+    const wasAuthorized = await this.pluginTokenService.userAuthorizeToken(user._id, tokenId, label);
+
+    if (!wasAuthorized) {
+      throw new NotFoundException();
+    }
+
+    return {
+      tokenId: tokenId,
+      userId: user._id,
+    };
+  }
+
+  /**
+   * Endpoint for plugin to redirect user to, redirects to either frontend or authentication endpoints
+   * @param id 
+   * @param res 
+   * @param user 
+   * @returns 
+   */
   @Get('/authorize/:id')
-  async authorizePluginToken(@Param('id') id: string, @Res() res: Response, @User() user: UserDocument) {
+  async startAuthorizePluginToken(@Param('id') id: string, @Res() res: Response, @User() user: UserDocument) {
     logger.debug('id: %s', id);
 
     const isFlowValid = await this.pluginTokenService.isFlowIdValid(id);
@@ -51,6 +86,12 @@ export class PluginTokenController {
   @Post('/poll/:id')
   async pollingPluginToken(@Param('id') id: string, @Body('secret') pollingSecret: string) {
     logger.debug('id: %s, pollingSecret: %s', id, pollingSecret);
-    return {};
+
+    const token = await this.pluginTokenService.exchangePollingSecretForToken(id, pollingSecret);
+
+    return {
+      ready: !!token,
+      token,
+    };
   }
 }

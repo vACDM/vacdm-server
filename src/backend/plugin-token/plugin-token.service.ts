@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import mongoose from 'mongoose';
 
 import { UtilsService } from '../utils/utils.service';
 
@@ -29,8 +30,9 @@ export class PluginTokenService {
    * @param pollingSecret pollingsecret provided by plugin
    * @returns token or undefined if pollingsecret not valid
    */
-  async exchangePollingSecretForToken(pollingSecret: string): Promise<string | undefined> {
+  async exchangePollingSecretForToken(id: string, pollingSecret: string): Promise<string | undefined> {
     const pluginToken = await this.pluginTokenModel.findOneAndUpdate({
+      _id: id,
       pollingSecret,
       user: { $not: { $eq: null } },
     }, {
@@ -58,6 +60,19 @@ export class PluginTokenService {
     });
 
     return pluginToken?.user;
+  }
+
+  async userAuthorizeToken(userId: string | mongoose.Types.ObjectId, tokenId: string, label = 'Token'): Promise<boolean> {
+    const pluginToken = await this.pluginTokenModel.findOneAndUpdate({
+      _id: tokenId,
+    }, {
+      $set: {
+        user: userId,
+        label,
+      },
+    });
+
+    return !!pluginToken;
   }
 
   async isFlowIdValid(id: string): Promise<boolean> {
