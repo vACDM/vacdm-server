@@ -1,6 +1,8 @@
 import crypto from 'node:crypto';
+import fs from 'node:fs';
 
 import { Injectable } from '@nestjs/common';
+import peggy, { Parser } from 'peggy';
 
 import logger from '../logger';
 
@@ -112,5 +114,51 @@ export class UtilsService {
 
   generateRandomBytes(length = 32, encoding: BufferEncoding = 'base64') {
     return crypto.randomBytes(length).toString(encoding);
+  }
+
+  generateFilter(fieldMapping = {}, disallowUndefinedFieldNames = false): Parser {
+    const baseFilter = fs.readFileSync('assets/filter.peggy', { encoding: 'utf8' });
+
+    if (Object.values(fieldMapping).length == 0 && disallowUndefinedFieldNames) {
+      return peggy.generate(baseFilter);
+    }
+
+    const lines = baseFilter.replace(/\r\n/gm, '\n').split('\n');
+    let line = -1;
+    let prefix = '';
+
+    // find line to replace
+    for (let i = 0; i < lines.length; i++) {
+      const lstring = lines[i];
+      if (lstring.includes('PLACEHOLDER_REPLACE_THIS_LINE')) {
+        line = i;
+        const match = lstring.match(/([ \t]+)[\w\W\d ]*/i);
+
+        if (match) {
+          prefix = match[1];
+        }
+
+        break;
+      }
+    }
+
+    if (line == -1) {
+      return peggy.generate(baseFilter);
+    }
+
+    const fieldsLines = Object.entries(fieldMapping)
+      .map(([k, v]) => `${prefix}case '${k}': return '${v}'`);
+
+    if (disallowUndefinedFieldNames) {
+      fieldsLines.push(`${prefix}default: throw new Error('"' + s + '" is not an accepted field name');`);
+    } else {
+      fieldsLines.push(`${prefix}default: return s;`);
+    }
+
+    lines.splice(line, 1, ...fieldsLines);
+
+    const newFilter = lines.join('\n');
+
+    return peggy.generate(newFilter);
   }
 }

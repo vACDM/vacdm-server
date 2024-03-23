@@ -1,6 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { JoiPipe } from 'nestjs-joi';
+
+import logger from '../logger';
 
 import { PilotDto, PilotCallsignValidator } from './pilot.dto';
 import { PilotService } from './pilot.service';
@@ -15,8 +17,19 @@ export class PilotController {
   ) {}
 
   @Get('/')
-  async getAllPilots() {
-    const pilots = await this.pilotService.getAllPilots();
+  async getAllPilots(@Query('filter') filter = '') {
+    let parsedFilter = {};
+
+    if (filter) {
+      try {
+        parsedFilter = this.pilotService.processFilter(filter);
+      } catch (error) {
+        throw new BadRequestException(error.message);
+      }
+      logger.debug('filter: %s - parsedFilter: %o', filter, parsedFilter);
+    }
+
+    const pilots = await this.pilotService.getPilots(parsedFilter);
     
     return {
       count: pilots.length,

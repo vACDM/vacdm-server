@@ -17,6 +17,7 @@ RUN apk update && \
     # apk add --no-cache git && \
 
 COPY --chown=node:node package*.json ./
+COPY --chown=node:node assets ./assets
 
 USER node
 

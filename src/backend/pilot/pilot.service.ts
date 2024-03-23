@@ -1,6 +1,7 @@
 import { ConflictException, Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import Agenda from 'agenda';
 import { FilterQuery } from 'mongoose';
+import { Parser } from 'peggy';
 
 import { AirportService } from '../airport/airport.service';
 import { CdmService } from '../cdm/cdm.service';
@@ -25,6 +26,17 @@ export class PilotService {
   ) {
     this.agenda.define('PILOT_cleanupPilots', this.cleanupPilots.bind(this));
     this.agenda.every('10 minutes', 'PILOT_cleanupPilots');
+
+    this.parser = this.utilsService.generateFilter({
+      adep: 'flightplan.adep',
+      ades: 'flightplan.ades',
+    }, true);
+  }
+
+  private parser: Parser;
+
+  processFilter(filter: string): FilterQuery<Pilot> {
+    return this.parser.parse(filter);
   }
 
   getPilots(filter: FilterQuery<Pilot>): Promise<PilotDocument[]> {
