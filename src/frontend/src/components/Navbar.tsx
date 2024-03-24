@@ -2,14 +2,16 @@ import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Button } from 'primereact/button';
 import { Fragment, useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import logo from '../assets/cdm_logo.png';
 import AuthContext from '../contexts/AuthProvider';
 import DarkModeContext from '../contexts/DarkModeProvider';
 import AuthService from '../services/AuthService';
 
-import { FrontendSettings } from '@/shared/interfaces/config.interface';
+// import { FrontendSettings } from '@/shared/interfaces/config.interface';
+import ProfilePicture from './ProfilePicture';
+
 import User from '@/shared/interfaces/user.interface';
 
 interface NavItemDefinition {
@@ -24,7 +26,7 @@ function classNames(...classes: string[]) {
 }
 
 export default function NavbarWithDropdown() {
-  const [config, setConfig] = useState<FrontendSettings>();
+  // const [config, setConfig] = useState<FrontendSettings>();
   const navigate = useNavigate();
   const [items, setItems] = useState<NavItemDefinition[]>([]);
   const { auth } = useContext(AuthContext);
@@ -74,13 +76,13 @@ export default function NavbarWithDropdown() {
       ),
     );
     
-    AuthService.getConfig()
-      .then((data) => {
-        setConfig(data);
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+    // AuthService.getConfig()
+    //   .then((data) => {
+    //     setConfig(data);
+    //   })
+    //   .catch((e) => {
+    //     console.error(e);
+    //   });
     return () => {};
   }, [auth]);
 
@@ -137,7 +139,7 @@ export default function NavbarWithDropdown() {
                 </div>
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-              {config?.vaccLogoUrl && <img alt="vacc-logo" src={config?.vaccLogoUrl} className='hidden md:block  max-h-[40px] mr-3' />}
+              {/* {config?.vaccLogoUrl && <img alt="vacc-logo" src={config?.vaccLogoUrl} className='hidden md:block  max-h-[40px] mr-3' />} */}
                 <button
                   onClick={changeDarkMode}
                   type="button"
@@ -186,11 +188,7 @@ export default function NavbarWithDropdown() {
                   <div className={!auth.user ? 'hidden' : ''}>
                     <Menu.Button className="flex rounded-full bg-zinc-900  text-white hover:text-white">
                       <span className="sr-only">Open user menu</span>
-                      <img
-                        className="h-8 w-8 rounded-full"
-                        src={`https://ui-avatars.com/api/?name=${auth.user?.firstName.charAt(0)}+${auth.user?.lastName.charAt(0)}&color=FFFFFF&background=18181B&format=svg`}
-                        alt="##"
-                      />
+                      <ProfilePicture user={auth.user} className='h-8 w-8 rounded-full' />
                     </Menu.Button>
                   </div>
                   <Transition
@@ -203,6 +201,19 @@ export default function NavbarWithDropdown() {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link
+                            to="/profile"
+                            className={classNames(
+                              active ? 'bg-gray-100' : '',
+                              'block px-4 py-2 text-sm text-gray-700 cursor-pointer',
+                            )}
+                          >
+                            Profile
+                          </Link>
+                        )}
+                      </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
                           <span
