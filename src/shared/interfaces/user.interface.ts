@@ -13,6 +13,10 @@ interface User {
   roles: string[];
   banned: boolean;
   admin: boolean;
+
+  createdAt: string;
+  updatedAt: string;
+  _id: string;
 }
 
 export default User;

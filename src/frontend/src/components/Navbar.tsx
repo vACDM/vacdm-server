@@ -7,7 +7,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import logo from '../assets/cdm_logo.png';
 import AuthContext from '../contexts/AuthProvider';
 import DarkModeContext from '../contexts/DarkModeProvider';
-import AuthService from '../services/AuthService';
 
 // import { FrontendSettings } from '@/shared/interfaces/config.interface';
 import ProfilePicture from './ProfilePicture';
@@ -29,14 +28,8 @@ export default function NavbarWithDropdown() {
   // const [config, setConfig] = useState<FrontendSettings>();
   const navigate = useNavigate();
   const [items, setItems] = useState<NavItemDefinition[]>([]);
-  const { auth } = useContext(AuthContext);
+  const { auth, authenticate, logout } = useContext(AuthContext);
   const { darkMode, changeDarkMode } = useContext(DarkModeContext);
-
-  async function logout() {
-    await AuthService.logout();
-
-    window.location.reload();
-  }
 
   const navItems: NavItemDefinition[] = [
     {
@@ -64,10 +57,6 @@ export default function NavbarWithDropdown() {
       current: false,
     },
   ];
-
-  const redirectToVatsimAuth = () => {
-    window.location.replace('/api/auth');
-  };
 
   useEffect(() => {
     setItems(
@@ -179,7 +168,7 @@ export default function NavbarWithDropdown() {
                 </button>
 
                 <div className={`${auth.user ? 'hidden' : ''} ml-2`}>
-                  <Button size='small' onClick={() => redirectToVatsimAuth()}>Login</Button>
+                  <Button size='small' onClick={authenticate}>Login</Button>
                 </div>
 
                 {/* Profile dropdown */}
@@ -217,7 +206,7 @@ export default function NavbarWithDropdown() {
                       <Menu.Item>
                         {({ active }) => (
                           <span
-                            onClick={() => logout()}
+                            onClick={logout}
                             className={classNames(
                               active ? 'bg-gray-100' : '',
                               'block px-4 py-2 text-sm text-gray-700 cursor-pointer',

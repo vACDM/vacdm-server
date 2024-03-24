@@ -6,7 +6,7 @@ export interface IProfilePictureProps {
   size?: number | void;
 }
 
-export default function ProfilePicture({ user, className = 'rounded-full', size = 64 }: IProfilePictureProps) {
+export default function ProfilePicture({ user, className = 'rounded-full border-2', size = 64 }: IProfilePictureProps) {
   return <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -27,12 +27,12 @@ export default function ProfilePicture({ user, className = 'rounded-full', size 
           x="50%"
           y="50%"
           style={{ color: '#FFF', lineHeight: 1, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif" }}
-          alignment-baseline="middle"
-          text-anchor="middle"
-          font-size={size / 2.3}
-          font-weight="400"
+          alignmentBaseline="middle"
+          textAnchor="middle"
+          fontSize={size / 2.3}
+          fontWeight="400"
           dy=".1em"
-          dominant-baseline="middle"
+          dominantBaseline="middle"
           fill="#FFFFFF"
         >{user ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}` : '?'}</text>
     </svg>;

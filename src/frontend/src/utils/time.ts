@@ -12,6 +12,10 @@ function formatTime(inputTime: Date | undefined) {
   return dayjs(inputTime).utc().format('HH:mm');
 }
 
+function formatDateTime(date: Date | string) {
+  return dayjs(date).utc().format('DD MMM YYYY HH:mm:ss[z]');
+}
+
 function calculateVdgsDiff(time: Date | undefined) {
   const now: dayjs.Dayjs = dayjs().second(0);
   const tsat: number = dayjs(time).unix();
@@ -38,6 +42,7 @@ function formatVdgsTobt(time: string) {
 
 export default {
   formatTime,
+  formatDateTime,
   calculateVdgsDiff,
   flowTimeFormat,
   formatVdgsTobt,

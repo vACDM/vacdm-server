@@ -17,12 +17,24 @@ const AuthContext = createContext<{
     user: User | undefined
   };
   setAuth: Dispatch<SetStateAction<{ user: User | undefined }>>;
-}>({ auth: { user: undefined }, setAuth: () => {} });
+  authenticate: () => void;
+  logout: () => void;
+}>({ auth: { user: undefined }, setAuth() {}, authenticate() {}, logout() {} });
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [auth, setAuth] = useState<{ user: User | undefined }>({ user: undefined });
 
   const navigate = useNavigate();
+
+  function authenticate() {
+    window.location.replace('/api/auth');
+  }
+  
+  async function logout() {
+    await authService.logout();
+
+    window.location.reload();
+  }
 
   useEffect(() => {
     authService
@@ -30,7 +42,8 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       .then((user) => {
         setAuth({ user });
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error(error);
         setAuth({ user: undefined });
         navigate('/auth-failure');
       });
@@ -38,7 +51,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
   return (
     <>
-      <AuthContext.Provider value={{ auth, setAuth }}>
+      <AuthContext.Provider value={{ auth, setAuth, authenticate, logout }}>
         {children}
       </AuthContext.Provider>
     </>

@@ -26,15 +26,18 @@ import Debug from './pages/Debug';
 import Delivery from './pages/Delivery';
 import FlowManagement from './pages/FlowManagement';
 import Landingpage from './pages/Landingpage';
+import ProfilePage from './pages/Profile';
 import Vdgs from './pages/VdgsNew';
 import { button } from './utils/ui/customDesign/button';
 import { card } from './utils/ui/customDesign/card';
 import { datatable } from './utils/ui/customDesign/datatable';
+import { dataview } from './utils/ui/customDesign/dataview';
 import { dialog } from './utils/ui/customDesign/dialog';
 import { dropdown } from './utils/ui/customDesign/dropdown';
 import { global } from './utils/ui/customDesign/global';
 import { inputnumber } from './utils/ui/customDesign/inputnumber';
 import { inputtext } from './utils/ui/customDesign/inputtext';
+import { menu } from './utils/ui/customDesign/menu';
 import { selectbutton } from './utils/ui/customDesign/selectbutton';
 import { toast } from './utils/ui/customDesign/toast';
 import { toolbar } from './utils/ui/customDesign/toolbar';
@@ -55,6 +58,8 @@ function App() {
       inputnumber: inputnumber,
       inputtext: inputtext,
       selectbutton: selectbutton,
+      menu: menu,
+      dataview: dataview,
       
     },
     { mergeSections: true, mergeProps: false },
@@ -65,7 +70,7 @@ function App() {
     <>
       <Router>
         <DarkModeProvider>
-      <PrimeReactProvider value={{ unstyled: true, pt: CustomTailwind, ripple: true }}>
+        <PrimeReactProvider value={{ unstyled: true, pt: CustomTailwind, ripple: false }}>
           <AuthProvider>
             <Navbar />
             <div className="mt-2">
@@ -85,6 +90,7 @@ function App() {
                   <Route path="/delivery" element={<Delivery />} />
                   <Route path="/auth-failure" element={<AuthFailurePage />} />
                   <Route path='/authorize-plugin/:id' element={<AuthorizePluginPage />} />
+                  <Route path='/profile' element={<ProfilePage />} />
                   <Route path="/" element={<Landingpage />} />
                   <Route path="*" element={<Navigate to="/" />} />
                 </Routes>

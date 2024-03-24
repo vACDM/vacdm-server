@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import mongoose from 'mongoose';
+import mongoose, { FilterQuery } from 'mongoose';
 
+import PluginToken from '../../shared/interfaces/plugin-token.interface';
 import { UtilsService } from '../utils/utils.service';
 
 import { PLUGINTOKEN_MODEL, PluginTokenDocument, PluginTokenModel } from './plugin-token.model';
@@ -79,5 +80,23 @@ export class PluginTokenService {
     const count = await this.pluginTokenModel.count({ _id: id });
 
     return count > 0;
+  }
+
+  async findTokens(filter: FilterQuery<PluginToken> = {}): Promise<PluginTokenDocument[]> {
+    const tokens = await this.pluginTokenModel.find(filter);
+
+    return tokens;
+  }
+
+  async findToken(filter: FilterQuery<PluginToken> = {}): Promise<PluginTokenDocument | null> {
+    const token = await this.pluginTokenModel.findOne(filter);
+
+    return token;
+  }
+
+  async deleteTokenById(id: string | mongoose.Types.ObjectId): Promise<PluginTokenDocument | null> {
+    const token = await this.pluginTokenModel.findOneAndDelete({ _id: id });
+
+    return token;
   }
 }
