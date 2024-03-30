@@ -94,8 +94,8 @@ export default function ProfilePage() {
                   'Last name': user.lastName,
                   'VATSIM CID': user.cid,
                   'vACDM User ID': user._id,
-                  'First Seen': user.createdAt,
-                  'Last updated': user.updatedAt,
+                  'First Seen': time.formatDateTime(user.createdAt),
+                  'Last updated': time.formatDateTime(user.updatedAt),
                 }).map(([label, value]) => <tr key={label}><th className='text-left pe-4' scope='row'>{label}</th><td>{value}</td></tr>)}
               </tbody>
             </table>
