@@ -84,7 +84,7 @@ export default function ProfilePage() {
       </div>
 
       <div className="flex flex-row w-full">
-        <Menu className='me-2 min-w-fit w-fit' model={Object.entries(tabs).map(([k, { ...data }]) => ({ ...data, command: () => setActiveTab(k as TTabId), className: activeTab == k ? 'bg-zinc-700' : undefined }))} />
+        <Menu className='me-2 min-w-fit w-fit' model={Object.entries(tabs).map(([k, { ...data }]) => ({ ...data, command: () => setActiveTab(k as TTabId), className: activeTab == k ? 'bg-zinc-300 dark:bg-zinc-700' : undefined }))} />
         <Card title={tabs[activeTab].label} pt={{ root: { className: 'w-full' } }}>
           {activeTab == 'details' && <div>
             <table>

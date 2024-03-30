@@ -20,7 +20,7 @@ export const menu = {
     className: classNames('text-gray-700 dark:text-white/80 py-3 px-5 select-none', 'cursor-pointer flex items-center no-underline overflow-hidden relative'),
   },
   menuitem: {
-    className: classNames('hover:bg-zinc-600'),
+    className: classNames('hover:bg-zinc-200 dark:hover:bg-zinc-600'),
   },
   icon: 'text-gray-600 dark:text-white/70 mr-2',
   submenuheader: {
