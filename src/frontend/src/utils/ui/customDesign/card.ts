@@ -3,8 +3,8 @@ import { classNames } from 'primereact/utils';
 export const card = {
   root: {
     className: classNames(
-      'bg-white text-black shadow-md rounded-md', // Background, text color, box shadow, and border radius.
-      'dark:bg-zinc-800 dark:text-white ', //dark
+      'bg-white text-black border border-zinc-200 shadow-md rounded-md', // Background, text color, box shadow, and border radius.
+      'dark:bg-zinc-800 dark:text-white dark:border-zinc-800', //dark
     ),
   },
   //body: 'p-4', // Padding.

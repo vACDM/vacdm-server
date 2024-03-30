@@ -14,7 +14,7 @@ export const button = {
         'text-white bg-gray-500 border border-gray-500 hover:bg-gray-600 hover:border-gray-600': props.severity === 'secondary' && !props.text && !props.outlined && !props.plain,
         'text-white bg-green-500 border border-green-500 hover:bg-green-600 hover:border-green-600': props.severity === 'success' && !props.text && !props.outlined && !props.plain,
         'text-white bg-blue-500 border border-blue-500 hover:bg-blue-600 hover:border-blue-600': props.severity === 'info' && !props.text && !props.outlined && !props.plain,
-        'text-white bg-yellow-700 border border-yellow-700 hover:bg-yellow-800 hover:border-yellow-800': props.severity === 'warning' && !props.text && !props.outlined && !props.plain,
+        'text-white bg-yellow-600 border border-yellow-600 hover:bg-yellow-700 hover:border-yellow-700': props.severity === 'warning' && !props.text && !props.outlined && !props.plain,
         'text-white bg-purple-500 border border-purple-500 hover:bg-purple-600 hover:border-purple-600': props.severity === 'help' && !props.text && !props.outlined && !props.plain,
         'text-white bg-red-500 border border-red-500 hover:bg-red-600 hover:border-red-600': props.severity === 'danger' && !props.text && !props.outlined && !props.plain,
       },

@@ -1,16 +1,16 @@
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 import { Column } from 'primereact/column';
-import { DataTable } from 'primereact/datatable/';;
-import { Dropdown } from 'primereact/dropdown';
+import { DataTable } from 'primereact/datatable/';
+import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
 import { useState, useEffect, useRef } from 'react';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
+import RunwayCapacityDialog from '../components/RunwayCapacityDialog';
 import TaxizoneDeleteDialog from '../components/TaxizoneDeleteDialog';
 import TaxizoneDialog from '../components/TaxizoneDialog';
-import RunwayCapacityDialog from '../components/RunwayCapacityDialog';
 import {
   IAirport,
   IAirportCapacity,
@@ -31,7 +31,7 @@ const AirpotDetailsTable = () => {
     _id: null,
     rwy_designator: '',
     capacity: 0,
-    alias: ''
+    alias: '',
   };
 
   const { icao } = useParams();
@@ -40,11 +40,12 @@ const AirpotDetailsTable = () => {
   const [rwyCapacityDialog, setRwyCapacityDialog] = useState(false);
   const [deleteTaxizoneDialog, setDeleteTaxizoneDialog] = useState(false);
   const [deleteRwyCapacityDialog, setDeleteRwyCapacityDialog] = useState(false);
+  const [selectedProfile, setSetselectedProfile] = useState<string | null>(null);
   const [airport, setAirport] = useState<IAirport>();
   const [taxizone, setTaxizone] = useState<IAirportTaxizone>(emptyTaxizone);
   const [rwyCapacity, setRwyCapacity] = useState<IAirportCapacity>(emptyCapacity);
   const [loading, setLoading] = useState(true);
-  
+
 
   async function fetchAirport() {
     if (icao) {
@@ -57,12 +58,12 @@ const AirpotDetailsTable = () => {
       );
     }
   }
-  
-  useEffect(() => { 
-    fetchAirport();   
+
+  useEffect(() => {
+    fetchAirport();
   }, []);
 
-  
+
 
   const openNewTaxizone = () => {
     setTaxizone(emptyTaxizone);
@@ -185,7 +186,7 @@ const AirpotDetailsTable = () => {
         <Card>
           <div>
             <DataTable
-            loading={loading}
+              loading={loading}
               size="small"
               value={airport?.taxizones}
               dataKey="_id"
@@ -202,7 +203,7 @@ const AirpotDetailsTable = () => {
           <Card>
             <div>
               <DataTable
-              loading={loading}
+                loading={loading}
                 size="small"
                 value={airport?.capacities}
                 dataKey="_id"
@@ -214,19 +215,26 @@ const AirpotDetailsTable = () => {
                 <Column header="Admin" body={actionBodyCapacityTemplate}></Column>
               </DataTable>
             </div>
+
           </Card>
           <div className="pt-4">
             <Card>
               <p className="text-lg">Airport Profiles</p>
+              <div className='flex flex-row gap-2'>
+                <Button label='Save profile as (INOP)' size='small' />
+                <Button label='Update profile (INOP)' severity='warning' size='small' />
+                <Button label='Delete profile (INOP)' severity='danger' size='small' />
+              </div>
               <div className="flex items-center flex-row  gap-2 pt-2">
                 <Dropdown
-                  value={'Profile1'}
-                  options={[{ name: 'Profile1' }]}
+                  value={selectedProfile}
+                  options={[{ name: 'Profile 1', value: 'Profile1' }]}
                   optionLabel="name"
                   placeholder="Select a Profile"
                   className="w-full md:w-14rem"
+                  onChange={(e: DropdownChangeEvent) => setSetselectedProfile(e.value)}
                 />
-                <Button label="Load" size='small' severity="success"></Button>
+                <Button label="Load (INOP)" size='small' severity="success"></Button>
                 <span>Current active Profile:</span>
               </div>
             </Card>
@@ -234,10 +242,10 @@ const AirpotDetailsTable = () => {
         </div>
       </div>
 
-      
-      <TaxizoneDialog        
-      airport={airport} taxizone={taxizone} visible={taxizoneDialog} onHide={hideTaxizoneDialog} />
-      
+
+      <TaxizoneDialog
+        airport={airport} taxizone={taxizone} visible={taxizoneDialog} onHide={hideTaxizoneDialog} />
+
       <RunwayCapacityDialog airport={airport} capacity={rwyCapacity} visible={rwyCapacityDialog} onHide={hideCapacityDialog} />
 
       <TaxizoneDeleteDialog airport={airport} taxizone={taxizone} visible={deleteTaxizoneDialog} onHide={hideTaxizoneDialog} />

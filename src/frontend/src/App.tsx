@@ -35,6 +35,7 @@ import { dataview } from './utils/ui/customDesign/dataview';
 import { dialog } from './utils/ui/customDesign/dialog';
 import { dropdown } from './utils/ui/customDesign/dropdown';
 import { global } from './utils/ui/customDesign/global';
+import { inputtextarea } from './utils/ui/customDesign/imputtextarea';
 import { inputnumber } from './utils/ui/customDesign/inputnumber';
 import { inputtext } from './utils/ui/customDesign/inputtext';
 import { menu } from './utils/ui/customDesign/menu';
@@ -60,6 +61,7 @@ function App() {
       selectbutton: selectbutton,
       menu: menu,
       dataview: dataview,
+      inputtextarea: inputtextarea,
       
     },
     { mergeSections: true, mergeProps: false },

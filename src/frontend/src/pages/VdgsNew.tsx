@@ -113,9 +113,9 @@ const Vdgs = () => {
       setWrongFormat('');
       setValidity(false);
       setinputTextValue(inputTextValue);
-      
+
       VdgsService.updateTobt(inputTextValue, pilot?.callsign)
-        .then(() => {       
+        .then(() => {
           setinputTextValue('');
         })
         .catch(() => {
@@ -124,60 +124,60 @@ const Vdgs = () => {
         .finally(() => setLoadingTobt(false));
 
     }
-  
+
   }
 
   return (
     <>
       <Toast ref={toast} />
-    
+
       <div className="grid grid-cols-12 gap-2 px-2">
-      <div className="col-span-12 lg:col-span-2"></div>
+        <div className="col-span-12 lg:col-span-2"></div>
         <div className="col-span-12 sm:col-span-6 lg:col-span-6">
-      <Card className='bg-zinc-800'>
-          <div className="vdgs-font text-xl md:text-3xl lg:text-4xl xl:text-5xl  text-center">
-            {loading ? (
-              <>
-                <p>SEARCHING FOR CALLSIGN...</p>
-                
+          <Card pt={{ root: { className: 'bg-zinc-800' } }}>
+            <div className="vdgs-font text-xl md:text-3xl lg:text-4xl xl:text-5xl  text-center">
+              {loading ? (
+                <>
+                  <p>SEARCHING FOR CALLSIGN...</p>
+
                 </>
-            ) : (
-              <div className="flex align-items-center justify-content-center">
-                <div className="inline-block mx-auto">
-                  <div className="text-center">{pilot?.callsign}</div>
-                  <div className="text-center">
-                     {isTobtConfirmed(pilot?.vacdm?.tobtState) ? 'TOBT ' + TimeUtils.formatTime(pilot?.vacdm?.tobt) + ' UTC' : 'NO TOBT' } 
+              ) : (
+                <div className="flex align-items-center justify-content-center">
+                  <div className="inline-block mx-auto">
+                    <div className="text-center">{pilot?.callsign}</div>
+                    <div className="text-center">
+                      {isTobtConfirmed(pilot?.vacdm?.tobtState) ? 'TOBT ' + TimeUtils.formatTime(pilot?.vacdm?.tobt) + ' UTC' : 'NO TOBT'}
+                    </div>
+                    <div className="text-center">
+                      {isTobtConfirmed(pilot?.vacdm?.tobtState) ? 'TSAT ' + TimeUtils.formatTime(pilot?.vacdm?.tsat) + ' UTC' : '-'}
+                    </div>
+                    <div className="text-center">
+                      <span className={vdgsColorController(pilot?.vacdm?.tsat)}>
+                        {isTobtConfirmed(pilot?.vacdm?.tobtState) ? TimeUtils.calculateVdgsDiff(pilot?.vacdm?.tsat) : '-'}
+                      </span>
+                    </div>
+                    <div className="text-center">
+                      PLANNED RWY {pilot?.clearance?.dep_rwy}
+                    </div>
+                    <div className="text-center">SID {pilot?.clearance?.sid}</div>
                   </div>
-                  <div className="text-center">
-                     {isTobtConfirmed(pilot?.vacdm?.tobtState) ? 'TSAT ' + TimeUtils.formatTime(pilot?.vacdm?.tsat) + ' UTC' : '-'}
-                  </div>
-                  <div className="text-center">
-                    <span className={vdgsColorController(pilot?.vacdm?.tsat)}>
-                      {isTobtConfirmed(pilot?.vacdm?.tobtState) ? TimeUtils.calculateVdgsDiff(pilot?.vacdm?.tsat) : '-'}
-                    </span>
-                  </div>
-                  <div className="text-center">
-                    PLANNED RWY {pilot?.clearance?.dep_rwy}
-                  </div>
-                  <div className="text-center">SID {pilot?.clearance?.sid}</div>
                 </div>
-              </div>
-            )}
-          </div>
-        </Card>
+              )}
+            </div>
+          </Card>
         </div>
         <div className="col-span-12 sm:col-span-6 lg:col-span-4">
           <Card className="text-sm md:text-base p-3">
             <div className="flex">
-            <h1 className="text-3xl min-w-[130px]">{clock}</h1>
-            <h1 className="text-3xl">UTC</h1>
+              <h1 className="text-3xl min-w-[130px]">{clock}</h1>
+              <h1 className="text-3xl">UTC</h1>
 
             </div>
 
             {tobtConfimationText()}
-            
+
             <h5 className="dark:text-zinc-500">Set TOBT (UTC-Time when ready for pushback)</h5>
-            
+
             <div className="flex flex-wrap gap-2">
               <div className="flex items-center gap-2">
                 <InputText
@@ -185,14 +185,14 @@ const Vdgs = () => {
                   aria-describedby="tobt-help"
                   className="min-h-[36px]"
                 ></InputText>
-              <Button
-              className="mb-auto"
-              size='small'
-                loading={loadingTobt}
-                onClick={updateTobt}
-                disabled={!pilot?.callsign  || pilot?.callsign === '' ? true : false}
+                <Button
+                  className="mb-auto"
+                  size='small'
+                  loading={loadingTobt}
+                  onClick={updateTobt}
+                  disabled={!pilot?.callsign || pilot?.callsign === '' ? true : false}
                 >Set TOBT</Button>
-                </div>
+              </div>
             </div>
             <p className="mt-4">
               <b>Info:</b> Your TOBT (Target Off-Block Time) is the time you are fully ready for pushback.
@@ -200,7 +200,7 @@ const Vdgs = () => {
               Once you "confirm" or "update" your TOBT in the field above, ATC is able to better plan a departure sequence.
             </p>
             <p className="mt-4">
-              Please always update the TOBT when the new TOBT differs from the current one by more than 5 minutes! 
+              Please always update the TOBT when the new TOBT differs from the current one by more than 5 minutes!
             </p>
           </Card>
         </div>
