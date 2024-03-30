@@ -12,8 +12,8 @@ export type PluginTokenDocument = HydratedDocument<PluginToken>;
 const PluginTokenSchema = new mongoose.Schema<PluginToken>({
   user: { type: String },
   label: { type: String, default: 'New token' },
-  pollingSecret: { type: String, required: true },
-  token: { type: String, required: true },
+  pollingSecret: { type: String, select: false },
+  token: { type: String, required: true, select: false },
   lastUsed: { type: Date, default: Date.now },
 }, { timestamps: true });
 

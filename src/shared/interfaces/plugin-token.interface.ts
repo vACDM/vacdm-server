@@ -10,6 +10,10 @@ interface PluginToken {
   token: string;
 
   lastUsed: Date;
+
+  createdAt: string;
+  updatedAt: string;
+  _id: string;
 }
 
 export default PluginToken;

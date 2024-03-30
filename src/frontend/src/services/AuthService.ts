@@ -26,7 +26,7 @@ export async function getConfig() {
 
 export async function logout() {
   try {
-    await axios.get('/api/auth/logout', {
+    await axios.post('/api/auth/logout', {
       withCredentials: true,
     });
     

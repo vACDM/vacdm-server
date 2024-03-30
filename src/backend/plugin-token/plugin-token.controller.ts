@@ -1,8 +1,11 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, NotFoundException, Param, Post, Res, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Query, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { Response } from 'express';
+import { FilterQuery } from 'mongoose';
 
+import PluginToken from '../../shared/interfaces/plugin-token.interface';
 import { User } from '../auth/auth.decorator';
+import { AuthGuard } from '../auth/auth.guard';
 import getAppConfig from '../config';
 import logger from '../logger';
 import { UserDocument } from '../user/user.model';
@@ -95,5 +98,33 @@ export class PluginTokenController {
       ready: !!token,
       token,
     };
+  }
+
+  @Get('')
+  @UseGuards(AuthGuard)
+  async getAllTokens(@User() user: UserDocument, @Query('scope') scope = 'own') {
+    let filter: FilterQuery<PluginToken> = { user: user._id };
+
+    if (scope == 'all' && user.admin) {
+      filter = {};
+    }
+    
+    const tokens = await this.pluginTokenService.findTokens(filter);
+
+    return tokens;
+  }
+
+  @Delete('/:id')
+  @UseGuards(AuthGuard)
+  async revokeToken(@User() user: UserDocument, @Param('id') id: string) {
+    const token = await this.pluginTokenService.findToken({ user: user._id, _id: id });
+
+    if (!token) {
+      throw new NotFoundException();
+    }
+
+    this.pluginTokenService.deleteTokenById(token._id);
+
+    return token;
   }
 }
