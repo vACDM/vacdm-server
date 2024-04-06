@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 
 import { Injectable } from '@nestjs/common';
+import dayjs from 'dayjs';
 import peggy, { Parser } from 'peggy';
 
 import logger from '../logger';
@@ -160,5 +161,9 @@ export class UtilsService {
     const newFilter = lines.join('\n');
 
     return peggy.generate(newFilter);
+  }
+
+  formatDateForHeader(date: Date | void): string {
+    return dayjs(date ?? new Date()).toString();
   }
 }

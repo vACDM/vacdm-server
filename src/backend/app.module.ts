@@ -21,6 +21,7 @@ import { PluginTokenModule } from './plugin-token/plugin-token.module';
 import { agendaProviders } from './schedule.module';
 import { UserModule } from './user/user.module';
 import { UtilsModule } from './utils/utils.module';
+import { VdgsModule } from './vdgs/vdgs.module';
 
 const { frontendProxy } = getAppConfig();
 
@@ -52,6 +53,7 @@ const { frontendProxy } = getAppConfig();
     AuthModule,
     ConfigModule,
     PluginTokenModule,
+    VdgsModule,
   ],
   providers: [...databaseProviders, ...agendaProviders],
   exports: [...databaseProviders],
