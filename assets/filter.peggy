@@ -1,8 +1,8 @@
 Filter
-	= ComparingFilter / CombiningFilter
+  = ComparingFilter / CombiningFilter
 
 Filters
-	= f:Filter _ fs:Filters {return [f, ...fs]}
+  = f:Filter _ fs:Filters {return [f, ...fs]}
   / f:Filter {return [f]}
 
 
@@ -31,8 +31,8 @@ Comparator "comparator"
   / "<" {return "$lt"}
 
 Combinator "combinator"
-	= "|" {return "$or"}
+  = "|" {return "$or"}
   / "&" {return "$and"}
 
 _ "whitespace"
-	= [ \t\n\r]*
+  = [ \t\n\r]*
