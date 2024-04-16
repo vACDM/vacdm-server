@@ -40,7 +40,7 @@ export class PluginTokenService {
       $set: {
         pollingSecret: null,
       },
-    });
+    }).select('+token');
 
     return pluginToken?.token;
   }
