@@ -63,6 +63,10 @@ export async function getAirportBlocks(req: Request, res: Response, next: NextFu
     });
 
     for (let pilot of pilots) {
+      if (!pilot?.vacdm?.block_rwy_designator || !pilot?.vacdm?.blockId) {
+        continue;
+      }
+
       blocksPilot.rwys[pilot.vacdm.block_rwy_designator][pilot.vacdm.blockId].push(pilot);
     }
 
