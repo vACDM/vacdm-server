@@ -10,6 +10,7 @@ export type AirportDocument = HydratedDocument<Airport>;
 
 const AirportSchema = new mongoose.Schema<Airport>({
   icao: { type: String, unique: true },
+  region: { type: String },
   standard_taxitime: { type: Number, required: true },
   taxizones: [
     {

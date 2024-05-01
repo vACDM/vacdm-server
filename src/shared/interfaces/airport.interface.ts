@@ -2,6 +2,8 @@ export interface Airport {
   id?: string;
   icao: string;
 
+  region: string;
+
   standard_taxitime: number;
 
   taxizones: AirportTaxizone[];
