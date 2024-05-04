@@ -7,7 +7,7 @@ import { PilotCallsignValidator } from '../pilot/pilot.dto';
 const TimeStringValidator = Joi.string().regex(/^(0[0-9]|1[0-9]|2[0-3])[0-5][0-9]$/);
 
 class BaseClientMessage {
-  @JoiSchema(PilotCallsignValidator.required())
+  @JoiSchema(PilotCallsignValidator('callsign').required())
     callsign: string;
 
   @JoiSchema(Joi.string().allow(MessageClass.Inbound, MessageClass.Internal))

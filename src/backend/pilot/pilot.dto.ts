@@ -4,7 +4,10 @@ import { JoiSchema, UPDATE, getTypeSchema } from 'nestjs-joi';
 import Pilot from '@/shared/interfaces/pilot.interface';
 import { ConvertForApis, NestedPartial } from '@/shared/utils/type.utils';
 
-export const PilotCallsignValidator = Joi.string().regex(/^[A-Z0-9]{1,12}$/).message('"callsign" must be between 1 and 12 letters between A and Z or digits between 0 and 9');
+const dateRegex = /(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z))/;
+
+export const PilotCallsignValidator = (field: string) => Joi.string().regex(/^[A-Z0-9]{1,12}$/).message(`"${field}" must be between 1 and 12 letters between A and Z or digits between 0 and 9`);
+export const TimeValidator = (field: string) => Joi.alternatives(Joi.number().strict(), Joi.string().regex(dateRegex).message(`"${field}" must either be a numeric unix timestamp in milliseconds or a valid iso string`));
 
 class PilotDtoPosition {
   @JoiSchema(Joi.number().required())
@@ -27,12 +30,12 @@ class PilotDtoFlightplan {
 }
 
 class PilotDtoVacdm {
-  @JoiSchema(Joi.number().required())
-  @JoiSchema([UPDATE], Joi.number().optional())
+  @JoiSchema(TimeValidator('eobt').required())
+  @JoiSchema([UPDATE], TimeValidator('eobt').optional())
     eobt: number;
 
-  @JoiSchema(Joi.number().required())
-  @JoiSchema([UPDATE], Joi.number().optional())
+  @JoiSchema(TimeValidator('tobt').required())
+  @JoiSchema([UPDATE], TimeValidator('tobt').optional())
     tobt: number;
 }
 
@@ -50,7 +53,7 @@ export class PilotDto implements NestedPartial<ConvertForApis<Pilot>> {
   @JoiSchema(Joi.string().optional())
     _id: string;
   
-  @JoiSchema(PilotCallsignValidator.required())
+  @JoiSchema(PilotCallsignValidator('callsign').required())
   @JoiSchema([UPDATE], Joi.forbidden())
     callsign: string;
   
