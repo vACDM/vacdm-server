@@ -32,6 +32,6 @@ const EcfmpMeasureSchema = new mongoose.Schema<EcfmpMeasure>({
 
 export const EcfmpMeasureProvider = {
   provide: ECFMP_MEASURE_MODEL,
-  useFactory: (connection: mongoose.Connection) => connection.model('EcfmpMeasure', EcfmpMeasureSchema),
+  useFactory: (connection: typeof mongoose) => connection.model('EcfmpMeasure', EcfmpMeasureSchema),
   inject: [DB_PROVIDER],
 };
