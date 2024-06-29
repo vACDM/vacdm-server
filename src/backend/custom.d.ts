@@ -1,9 +1,11 @@
-import User from '@/shared/interfaces/user.interface';
+import { UserDocument } from './user/user.model';
 
 declare global {
   namespace Express {
     interface Request {
-      user?: User;
+      webUser?: UserDocument;
+      pluginUser?: UserDocument;
+      user?: UserDocument;
     }
   }
 }

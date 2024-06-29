@@ -8,7 +8,7 @@
     "test": "jest",
     "paths": "resolve-tspaths --out \"dist\"",
     "start": "nest start",
-    "dev": "nest start --debug --watch",
+    "dev": "nest start --debug=0.0.0.0 --watch",
     "spa-dev": "vite --config=src/frontend/vite.config.ts --host",
     "spa-build": "vite --config=src/frontend/vite.config.ts build",
     "spa-preview": "vite --config=src/frontend/vite.config.ts preview"
