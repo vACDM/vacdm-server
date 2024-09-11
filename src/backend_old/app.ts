@@ -70,6 +70,7 @@ import errors from '@/shared/errors';
   }
 
   const app = express();
+  app.set('trust proxy', config().proxyTrust);
 
   app.use(bodyparser.json());
 
