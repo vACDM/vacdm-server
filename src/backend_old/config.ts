@@ -4,6 +4,7 @@ interface VacdmConfig {
   mongoUri: string;
   port: number;
   role: 'API' | 'WORKER';
+  proxyTrust: string;
 
   pluginSettings: PluginSettings;
   frontendSettings: FrontendSettings;
@@ -46,6 +47,7 @@ export default function config(): VacdmConfig {
     mongoUri: process.env.MONGO_URI || '',
     port: Number(process.env.PORT) || 3000,
     role: process.env.ROLE != 'WORKER' ? 'API' : 'WORKER',
+    proxyTrust: process.env.PROXY_TRUST || 'loopback',
 
     pluginSettings: {
       serverName: options.serverName,
