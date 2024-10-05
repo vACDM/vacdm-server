@@ -12,32 +12,44 @@ export class MessageController {
   ) {}
 
   @Post('/t-dpi-n')
-  processTargetDPINow(@Body() body: TargetDPINow) {
-    return this.messageService.handleTargetDPINow(body);
+  async processTargetDPINow(@Body() body: TargetDPINow) {
+    await this.messageService.writeMessageToDb(body);
+    const res = await this.messageService.handleTargetDPINow(body);
+    await this.messageService.writeMessageToDb(res);
   }
 
   @Post('/t-dpi-t')
-  processTargetDPITarget(@Body() body: TargetDPITarget) {
-    return this.messageService.handleTargetDPITarget(body);
+  async processTargetDPITarget(@Body() body: TargetDPITarget) {
+    await this.messageService.writeMessageToDb(body);
+    const res = await this.messageService.handleTargetDPITarget(body);
+    await this.messageService.writeMessageToDb(res);
   }
 
   @Post('/t-dpi-s')
-  processTargetDPISequenced(@Body() body: TargetDPISequenced) {
-    return this.messageService.handleTargetDPISequenced(body);
+  async processTargetDPISequenced(@Body() body: TargetDPISequenced) {
+    await this.messageService.writeMessageToDb(body);
+    const res = await this.messageService.handleTargetDPISequenced(body);
+    await this.messageService.writeMessageToDb(res);
   }
 
   @Post('/a-dpi')
-  processAtcDPI(@Body() body: AtcDPI) {
-    return this.messageService.handleAtcDPI(body);
+  async processAtcDPI(@Body() body: AtcDPI) {
+    await this.messageService.writeMessageToDb(body);
+    const res = await this.messageService.handleAtcDPI(body);
+    await this.messageService.writeMessageToDb(res);
   }
 
   @Post('/x-dpi-t')
-  processCustomDPITaxioutTime(@Body() body: CustomDPITaxioutTime) {
-    return this.messageService.handleCustomDPITaxioutTime(body);
+  async processCustomDPITaxioutTime(@Body() body: CustomDPITaxioutTime) {
+    await this.messageService.writeMessageToDb(body);
+    const res = await this.messageService.handleCustomDPITaxioutTime(body);
+    await this.messageService.writeMessageToDb(res);
   }
 
   @Post('/x-dpi-r')
-  processCustomDPIRequest(@Body() body: CustomDPIRequest) {
-    return this.messageService.handleCustomDPIRequest(body);
+  async processCustomDPIRequest(@Body() body: CustomDPIRequest) {
+    await this.messageService.writeMessageToDb(body);
+    const res = await this.messageService.handleCustomDPIRequest(body);
+    await this.messageService.writeMessageToDb(res);
   }
 }

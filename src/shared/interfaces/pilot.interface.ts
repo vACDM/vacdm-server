@@ -52,10 +52,7 @@ interface Pilot {
     sid: string;
   };
 
-  measures: {
-    ident: string;
-    value: number;
-  }[];
+  measures: string[];
   inactive: boolean;
 
   // mongoose fields

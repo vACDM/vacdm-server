@@ -1,4 +1,4 @@
-import mongoose, { HydratedDocument, Model } from 'mongoose';
+import mongoose, { HydratedDocument, Model, mongo } from 'mongoose';
 
 import { DB_PROVIDER } from '../database.module';
 
@@ -64,10 +64,7 @@ const PilotSchema = new mongoose.Schema<Pilot>({
     dep_rwy: { type: String, default: '' },
     sid: { type: String, default: '' },
   },
-  measures: [{
-    ident: { type: String, required: true },
-    value: { type: Number, default: -1 },
-  }],
+  measures: [{ type: mongo.ObjectId, ref: 'EcfmpMeasure' }],
   inactive: { type: Boolean, default: false },
 }, { timestamps: true });
 

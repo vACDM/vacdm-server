@@ -39,12 +39,8 @@ export class PilotService {
     return this.parser.parse(filter);
   }
 
-  getPilots(filter: FilterQuery<Pilot>): Promise<PilotDocument[]> {
+  getPilots(filter: FilterQuery<Pilot> = {}): Promise<PilotDocument[]> {
     return this.pilotModel.find(filter).exec();
-  }
-
-  getAllPilots(): Promise<PilotDocument[]> {
-    return this.getPilots({});
   }
 
   async getPilotFromCallsign(callsign: string): Promise<PilotDocument> {

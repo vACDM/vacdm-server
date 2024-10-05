@@ -1,5 +1,5 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
-import dayjs from 'dayjs';
+import { mongo } from 'mongoose';
 
 import { AirportService } from '../airport/airport.service';
 import logger from '../logger';
@@ -8,6 +8,11 @@ import { PilotService } from '../pilot/pilot.service';
 import { UtilsService } from '../utils/utils.service';
 
 import { AirportCapacity } from '@/shared/interfaces/airport.interface';
+
+interface IBlockAssignment {
+  finalBlock: number;
+  finalTtot: Date;
+}
 
 @Injectable()
 export class CdmService {
@@ -30,7 +35,12 @@ export class CdmService {
     }
   
     if (this.utilsService.isTimeEmpty(pilot.vacdm.tobt)) {
-      throw new Error('no time given!');
+      logger.debug('%s: determineInitialBlock > TOBT is empty after using EOBT, assuming now +30 min', pilot.callsign);
+
+      const nowPlus30 = new Date();
+      nowPlus30.setMinutes(nowPlus30.getMinutes() + 30);
+      pilot.vacdm.eobt = nowPlus30;
+      pilot.vacdm.tobt = nowPlus30;
     }
   
     const initialTtot = this.utilsService.addMinutes(pilot.vacdm.tobt, pilot.vacdm.exot);
@@ -42,19 +52,13 @@ export class CdmService {
     };
   }
 
-  async setTime(pilot: PilotDocument): Promise<{
-    finalBlock: number;
-    finalTtot: Date;
-  }> {
+  async setTime(pilot: PilotDocument): Promise<IBlockAssignment> {
     if (
       pilot.vacdm.tsat > pilot.vacdm.tobt ||
       this.utilsService.getBlockFromTime(pilot.vacdm.ttot) != pilot.vacdm.blockId
     ) {
       pilot.vacdm.ttot = this.utilsService.getTimeFromBlock(pilot.vacdm.blockId);
-      pilot.vacdm.tsat = this.utilsService.addMinutes(
-        pilot.vacdm.ttot,
-        -pilot.vacdm.exot,
-      );
+      pilot.vacdm.tsat = this.utilsService.addMinutes(pilot.vacdm.ttot, -pilot.vacdm.exot);
     }
   
     if (pilot.vacdm.tsat <= pilot.vacdm.tobt) {
@@ -65,10 +69,7 @@ export class CdmService {
     if (!this.utilsService.isTimeEmpty(pilot.vacdm.ctot)) {
       pilot.vacdm.blockId = this.utilsService.getBlockFromTime(pilot.vacdm.ctot);
       pilot.vacdm.ttot = pilot.vacdm.ctot;
-      pilot.vacdm.tsat = this.utilsService.addMinutes(
-        pilot.vacdm.ctot,
-        -pilot.vacdm.exot,
-      );
+      pilot.vacdm.tsat = this.utilsService.addMinutes(pilot.vacdm.ctot, -pilot.vacdm.exot);
     }
   
     // await pilotService.addLog({
@@ -87,20 +88,17 @@ export class CdmService {
   async putPilotIntoBlock(
     pilot: PilotDocument,
     allPilots: PilotDocument[] | void,
-  ): Promise<{ finalBlock: number; finalTtot: Date }> {
+  ): Promise<IBlockAssignment> {
     if (!allPilots) {
-      allPilots = await this.pilotService.getAllPilots();
+      allPilots = await this.pilotService.getPilots({
+        'flightplan.adep': pilot.flightplan.adep,
+        'vacdm.blockRwyDesignator': pilot.vacdm.blockRwyDesignator,
+        _id: { $ne: new mongo.ObjectId(pilot._id) },
+      });
     }
 
     // count all pilots in block
-    pilot.vacdm.ctot = this.utilsService.emptyDate;
-    const otherPilotsOnRunway = allPilots.filter(
-      (plt) =>
-        plt.flightplan.adep == pilot.flightplan.adep &&
-        plt.vacdm.blockRwyDesignator == pilot.vacdm.blockRwyDesignator &&
-        plt._id != pilot._id,
-    );
-    const otherPilotsInBlock = otherPilotsOnRunway.filter(plt => plt.vacdm.blockId == pilot.vacdm.blockId);
+    const otherPilotsInBlock = allPilots.filter(plt => plt.vacdm.blockId == pilot.vacdm.blockId);
   
     const cap: AirportCapacity = await this.airportService.getCapacityForRwyDesignator(
       pilot.flightplan.adep,
@@ -108,30 +106,6 @@ export class CdmService {
     );
   
     if (cap.capacity > otherPilotsInBlock.length) {
-      // pilot fits into block
-      // now we have to check if pilots in block have same measures and need a MDI therefore
-  
-      for (const measure of pilot.measures) {
-        const pilotsWithSameMeasures = otherPilotsOnRunway.filter(
-          (plt) =>
-            plt.measures.find((e) => e.ident === measure.ident) &&
-            plt.callsign != pilot.callsign,
-        );
-        if (pilotsWithSameMeasures.length > 0) {
-          for (const smp of pilotsWithSameMeasures) {
-            if (
-              dayjs(smp.vacdm.ttot).diff(pilot.vacdm.ttot, 'minute') <
-              Math.ceil(measure.value / 60)
-            ) {
-              pilot.vacdm.ctot = this.utilsService.addMinutes(
-                smp.vacdm.ttot,
-                Math.ceil(measure.value / 60),
-              );
-            }
-          }
-        }
-      }
-  
       return this.setTime(pilot);
     }
   
@@ -148,11 +122,8 @@ export class CdmService {
   
     pilotsThatCouldBeMoved.sort((pilotA, pilotB) => {
       return (
-        pilotA.vacdm.prio +
-          pilotA.vacdm.delay -
-          (pilotB.vacdm.prio + pilotB.vacdm.delay) ||
-        pilotB.vacdm.blockAssignment.valueOf() -
-          pilotA.vacdm.blockAssignment.valueOf()
+        (pilotA.vacdm.prio + pilotA.vacdm.delay) - (pilotB.vacdm.prio + pilotB.vacdm.delay) ||
+        pilotB.vacdm.blockAssignment.valueOf() - pilotA.vacdm.blockAssignment.valueOf()
       );
     });
   
@@ -178,7 +149,7 @@ export class CdmService {
     const currentBlockId = this.utilsService.getBlockFromTime(new Date());
     const allAirports = await this.airportService.getAllAirports();
   
-    const allPilots = await this.pilotService.getAllPilots();
+    const allPilots = await this.pilotService.getPilots();
   
     // const datafeedData = await datafeedService.getRawDatafeed();
   

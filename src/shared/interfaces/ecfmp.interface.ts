@@ -13,7 +13,6 @@ export interface EcfmpMeasure {
   starttime: Date;
   endtime: Date;
   withdrawn_at: Date | null;
-  notified_flight_information_regions: number[];
   measure: EcfmpMeasureAction;
   filters: EcfmpFilter[];
 }
