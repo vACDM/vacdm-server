@@ -23,10 +23,21 @@ export class AirportController {
       airports: airports,
     };
   }
-  
+
   @Get('/:icao')
   getAirport(@Param('icao', joiPipeAirportIcao) icao: string) {
     return this.airportService.getAirportFromIcao(icao);
+  }
+
+  @Get('/:icao/blocks')
+  getAirportBlockUtilization(@Param('icao', joiPipeAirportIcao) icao: string, @Param('count') count: string) {
+    let numberedCount: number | undefined = Number(count);
+
+    if (Number.isNaN(numberedCount)) {
+      numberedCount = undefined;
+    }
+
+    return this.airportService.getBlockUtilization(icao, numberedCount);
   }
 
   @Post('/')

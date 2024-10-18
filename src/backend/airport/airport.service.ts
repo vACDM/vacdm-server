@@ -173,7 +173,7 @@ export class AirportService {
   }
 
   // TODO: refactor this to aggregation at some point
-  async getBlockUtilization(icao: string): Promise<AirportBlocks> {
+  async getBlockUtilization(icao: string, count = 12): Promise<AirportBlocks> {
     const airport = await this.getAirportFromIcao(icao);
 
     const blocks: AirportBlocks = {
@@ -181,14 +181,21 @@ export class AirportService {
       rwys: {},
     };
 
+    const blockOffset = this.utilsService.getBlockFromTime(new Date());
+
+    const relevantBlocks = Array(count).fill(null).map((_, i) => i + blockOffset);
+    const blockArrays = relevantBlocks.map(blockId => [blockId, []]);
+
+    logger.debug('determined offset to be %d, generated relevant blocks: %o', blockOffset, relevantBlocks);
+
     for (const cap of airport.capacities) {
       const rwyDesignator = cap.alias || cap.rwy_designator;
 
-      blocks.rwys[rwyDesignator] = Object.fromEntries(Array(144).fill(null).map((_, i) => [i, []]));
+      blocks.rwys[rwyDesignator] = Object.fromEntries(blockArrays);
     }
 
     const pilots = await this.pilotService.getPilots({
-      'vacdm.blockId': { $not: { $eq: -1 } },
+      'vacdm.blockId': { $in: relevantBlocks },
       'flightplan.departure': icao,
     });
 

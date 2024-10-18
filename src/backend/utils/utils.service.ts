@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import dayjs from 'dayjs';
 import peggy, { Parser } from 'peggy';
 
-import logger from '../logger';
+import blockUtils from '../../shared/utils/block.utils';
 
 @Injectable()
 export class UtilsService {
@@ -88,30 +88,9 @@ export class UtilsService {
 
   emptyDate = new Date(-1);
 
-  getBlockFromTime(hhmm: Date): number {
-    const hh = hhmm.getUTCHours();
-    const mm = hhmm.getUTCMinutes();
-  
-    const block = (Number(hh) * 60 + Number(mm)) / 10;
-  
-    return Math.floor(block);
-  }
+  getBlockFromTime = blockUtils.getBlockFromTime;
 
-  getTimeFromBlock(blockId: number): Date {
-    if (blockId > 143) {
-      logger.warn('tried to get time from block > 143: %d', blockId);
-    }
-  
-    const minutes = blockId * 10;
-    const hour = Math.floor(minutes / 60);
-    const minutesInHour = minutes % 60;
-  
-    const plausibleDate = new Date();
-    plausibleDate.setUTCHours(hour);
-    plausibleDate.setUTCMinutes(minutesInHour);
-  
-    return plausibleDate;
-  }
+  getTimeFromBlock = blockUtils.getTimeFromBlock;
 
   generateRandomBytes(length = 32, encoding: BufferEncoding = 'base64') {
     return crypto.randomBytes(length).toString(encoding);
