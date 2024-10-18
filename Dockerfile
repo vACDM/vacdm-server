@@ -1,7 +1,7 @@
 # ################################################################
 # ###                        Base image                        ###
 # ################################################################
-FROM node:18-alpine as base
+FROM node:18-alpine AS base
 
 WORKDIR /opt
 
@@ -11,7 +11,7 @@ RUN apk update && \
     apk upgrade && \
     npm i npm@next-10 -g && \
     chown node:node -R /opt
-    
+
     # && \
     # apk add --no-cache bash && \
     # apk add --no-cache git && \
@@ -25,7 +25,7 @@ USER node
 # ###                        build image                       ###
 # ################################################################
 
-FROM base as build
+FROM base AS build
 
 COPY --chown=node:node . .
 
@@ -40,7 +40,7 @@ RUN tsc -p ./tsconfig.node.json && \
 # ###                      modules image                       ###
 # ################################################################
 
-FROM base as modules
+FROM base AS modules
 
 RUN npm install && npm cache clean --force
 
@@ -48,7 +48,7 @@ RUN npm install && npm cache clean --force
 # ###                     production image                     ###
 # ################################################################
 
-FROM base as production
+FROM base AS production
 
 COPY --from=build --chown=node:node /opt/dist ./dist
 COPY --from=modules --chown=node:node /opt/node_modules ./node_modules
