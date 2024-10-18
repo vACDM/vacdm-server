@@ -21,11 +21,11 @@ export class AuthMiddleware implements NestMiddleware {
         // do nothing
       }
     }
-    
+
     const pluginToken = request.headers.authorization;
-    
+
     const res = this.headerTokenRegex.exec(pluginToken || '');
-    
+
     if (res) {
       try {
         request.pluginUser = await this.userService.getUserFromPluginToken(res[1]);

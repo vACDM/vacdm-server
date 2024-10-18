@@ -13,7 +13,7 @@ type RunwayCapacityDialogProps = {
   airport: IAirport | undefined
   capacity: IAirportCapacity
   visible: boolean
-  onHide():  void 
+  onHide():  void
 };
 
 
@@ -27,7 +27,7 @@ const RunwayCapacityDialog = (props: RunwayCapacityDialogProps) => {
   useEffect(() => {
     //setVisible(props.visible);
     setRwyCapacity(props.capacity);
-    
+
     //setAirport(props.airport);
 
   }, [props.visible]);
@@ -83,7 +83,7 @@ const RunwayCapacityDialog = (props: RunwayCapacityDialogProps) => {
         header='Edit Capacity'
         className="p-fluid"
         onHide={props.onHide}
-       
+
       >
         <form>
         <div className="grid grid-cols-2 gap-6">
@@ -138,5 +138,5 @@ const RunwayCapacityDialog = (props: RunwayCapacityDialogProps) => {
         <Toast ref={toast} />
   </> );
 };
- 
+
 export default RunwayCapacityDialog;

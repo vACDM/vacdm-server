@@ -22,6 +22,6 @@ export class FrontendProxyMiddleware implements NestMiddleware {
       });
     }
 
-    return this.proxyMiddleware(req, res, next); 
+    return this.proxyMiddleware(req, res, next);
   }
 }

@@ -46,7 +46,7 @@ export class PilotService {
   async getPilotFromCallsign(callsign: string): Promise<PilotDocument> {
     logger.debug('trying to get an pilot with callsign "%s"', callsign);
     const arpt = await this.pilotModel.findOne({ icao: callsign });
-    
+
     if (!arpt) {
       logger.verbose('could not find pilot with callsign "%s"', callsign);
       throw new NotFoundException();
@@ -74,19 +74,19 @@ export class PilotService {
 
     try {
       const pilot = new this.pilotModel(createData);
-        
+
       // TODO: determine steps to take when pilot is created
       // 0. write history message
       // 1. determine departure runway and log it
       pilot.vacdm.blockRwyDesignator = await this.airportService.determineRunway(pilot);
-    
+
       // 2. determine taxi zone and log it
       ({
         exot: pilot.vacdm.exot,
         taxiout: pilot.vacdm.taxizoneIsTaxiout,
         taxizone: pilot.vacdm.taxizone,
       } = await this.airportService.determineTaxizone(pilot));
-    
+
       // 3. determine departure block and log it
       ({
         initialBlock: pilot.vacdm.blockId,
@@ -147,7 +147,7 @@ export class PilotService {
 
     if (resave) {
       await pilot.save();
-    } 
+    }
 
     return pilot;
   }
@@ -162,14 +162,14 @@ export class PilotService {
         ).getTime(),
       },
     });
-  
+
     logger.debug('pilotsToBeDeleted %o', pilotsToBeDeleted);
-  
+
     for (const pilot of pilotsToBeDeleted) {
       this.deletePilot(pilot.callsign);
       logger.debug('deleted inactive pilot %o', pilot.callsign);
     }
-  
+
     // deactivate long not seen pilots
     const pilotsToBeDeactivated = await this.getPilots({
       inactive: { $not: { $eq: true } },
@@ -179,12 +179,12 @@ export class PilotService {
         ).getTime(),
       },
     });
-  
+
     logger.debug('pilotsToBeDeactivated %o', pilotsToBeDeactivated);
-  
+
     for (const pilot of pilotsToBeDeactivated) {
       pilot.inactive = true;
-  
+
       // await this.pilotService.addLog({
       //   pilot: pilot.callsign,
       //   namespace: 'worker',
@@ -193,9 +193,9 @@ export class PilotService {
       //     updated: pilot.updatedAt,
       //   },
       // });
-  
+
       logger.debug('deactivating pilot %o', pilot.callsign);
-  
+
       await pilot.save();
     }
   }

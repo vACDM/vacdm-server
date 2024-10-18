@@ -17,7 +17,7 @@ type TaxizoneDialogProps = {
   airport: IAirport | undefined
   taxizone: IAirportTaxizone
   visible: boolean
-  onHide():  void 
+  onHide():  void
 };
 
 
@@ -37,7 +37,7 @@ const TaxizoneDialog = (props: TaxizoneDialogProps) => {
   useEffect(() => {
     //setVisible(props.visible);
     setTaxizone(props.taxizone);
-    
+
     //setAirport(props.airport);
 
   }, [props.visible]);
@@ -83,8 +83,8 @@ const TaxizoneDialog = (props: TaxizoneDialogProps) => {
   }
 
   function taxitimeTemplate(rowData, rowIndex: number) {
-    return (<InputText className='w-[4rem]' value={rowData.rwy_designator} 
-    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {        
+    return (<InputText className='w-[4rem]' value={rowData.rwy_designator}
+    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
       const newTxz = { ...taxizone };
       newTxz.taxitimes.map((c, i) => {
         if (i === rowIndex) {
@@ -95,12 +95,12 @@ const TaxizoneDialog = (props: TaxizoneDialogProps) => {
         }
       });
       setTaxizone(newTxz);
-    }}/>); 
+    }}/>);
   }
 
   function taxitimeMinutesTemplate(rowData, rowIndex: number) {
-    return (<InputText className='w-[4rem]' keyfilter="int" value={rowData.minutes} 
-    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {        
+    return (<InputText className='w-[4rem]' keyfilter="int" value={rowData.minutes}
+    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
       const newTxz = { ...taxizone };
       newTxz.taxitimes.map((c, i) => {
         if (i === rowIndex) {
@@ -111,9 +111,9 @@ const TaxizoneDialog = (props: TaxizoneDialogProps) => {
         }
       });
       setTaxizone(newTxz);
-    }}/>); 
-  } 
-  
+    }}/>);
+  }
+
   const taxitimesHeader = (
     <div className="flex flex-wrap items-center gap-2 align-items-center justify-content-between">
       <Button
@@ -124,7 +124,7 @@ const TaxizoneDialog = (props: TaxizoneDialogProps) => {
         onClick={() => {
           taxizone.taxitimes.push({ _id: null, rwy_designator: '', minutes: 0 });
           setTaxizone({ ...taxizone });
-        }} 
+        }}
       />
 
       <h4 className="m-0">Edit Taxitimes</h4>
@@ -140,7 +140,7 @@ const TaxizoneDialog = (props: TaxizoneDialogProps) => {
         header='Edit Taxizone'
         className="p-fluid"
         onHide={props.onHide}
-       
+
       >
         <form onSubmit={submitForm}>
         <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-6">
@@ -193,7 +193,7 @@ const TaxizoneDialog = (props: TaxizoneDialogProps) => {
             value={taxizone.taxitimes}
             key='_id'
             header={taxitimesHeader}
-            
+
             >
               <Column  header='Runway' body={(rowData, { rowIndex }) => taxitimeTemplate(rowData, rowIndex)} />
               <Column header='Minutes' body={(rowData, { rowIndex }) => taxitimeMinutesTemplate(rowData, rowIndex)} />
@@ -211,5 +211,5 @@ const TaxizoneDialog = (props: TaxizoneDialogProps) => {
         <Toast ref={toast} />
   </> );
 };
- 
+
 export default TaxizoneDialog;

@@ -136,7 +136,7 @@ const Debug = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex align-items-center justify-content-center ">
                       <div className="inline-block">
                         <div className="text-sm text-center">TTOT</div>
@@ -145,7 +145,7 @@ const Debug = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex align-items-center justify-content-center ">
                       <div className="inline-block">
                         <div className="text-sm text-center">ASAT</div>
@@ -208,7 +208,7 @@ const Debug = () => {
                   </div>
                 </div>
               </div>
-              
+
 
             </Card>
           </div>

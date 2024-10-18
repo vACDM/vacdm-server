@@ -25,7 +25,7 @@ export class MessageService {
   async writeMessageToDb(message: TargetDPINow | TargetDPISequenced | TargetDPITarget | AtcDPI | CustomDPITaxioutTime | CustomDPIRequest | AnyNetworkMessage) {
     // TODO: write to db somehow
   }
-  
+
   /** tobt now */
   async handleTargetDPINow(message: TargetDPINow): Promise<AnyNetworkMessage> {
     const pilot = await this.pilotService.getPilotFromCallsign(message.callsign);
@@ -38,10 +38,10 @@ export class MessageService {
     pilot.vacdm.tobt = new Date();
 
     this.cdmService.putPilotIntoBlock(pilot);
-    
+
     return ackMsg;
   }
-  
+
   /** set tobt */
   async handleTargetDPITarget(message: TargetDPITarget): Promise<AnyNetworkMessage> {
     const pilot = await this.pilotService.getPilotFromCallsign(message.callsign);
@@ -54,32 +54,32 @@ export class MessageService {
     pilot.vacdm.tobt = new Date(message.tobt);
 
     this.cdmService.putPilotIntoBlock(pilot);
-    
+
     return ackMsg;
   }
-  
+
   /** set asat */
   async handleTargetDPISequenced(message: TargetDPISequenced): Promise<AnyNetworkMessage> {
     const pilot = await this.pilotService.getPilotFromCallsign(message.callsign);
     pilot.vacdm.asat = new Date(message.asat);
 
     await pilot.save();
-    
+
     return ackMsg;
   }
-  
+
   /** set aobt */
   async handleAtcDPI(message: AtcDPI): Promise<AnyNetworkMessage> {
     const pilot = await this.pilotService.getPilotFromCallsign(message.callsign);
-    
+
     pilot.vacdm.aobt = new Date(message.aobt);
     pilot.vacdm.ttot = this.utilsService.addMinutes(pilot.vacdm.aobt, pilot.vacdm.exot);
 
     await pilot.save();
-    
+
     return ackMsg;
   }
-  
+
   /** set exot */
   async handleCustomDPITaxioutTime(message: CustomDPITaxioutTime): Promise<AnyNetworkMessage> {
     const pilot = await this.pilotService.getPilotFromCallsign(message.callsign);
@@ -91,7 +91,7 @@ export class MessageService {
     this.cdmService.putPilotIntoBlock(pilot);
 
     await pilot.save();
-    
+
     return ackMsg;
   }
 
@@ -107,7 +107,7 @@ export class MessageService {
     }
 
     await pilot.save();
-    
+
     return ackMsg;
   }
 }

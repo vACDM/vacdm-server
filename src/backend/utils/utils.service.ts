@@ -13,11 +13,11 @@ export class UtilsService {
 
   convertScopeCoordsToLatLonPair(scopeCoords: string): [number, number] {
     const result = UtilsService.scopeCoordsRegex.exec(scopeCoords);
-  
+
     if (result == null) {
       throw new Error('given coords do not match the necessary pattern');
     }
-  
+
     const [
       ,
       latSpace,
@@ -31,17 +31,17 @@ export class UtilsService {
       lonSec,
       lonDecSec,
     ] = result;
-  
+
     let latDecDeg = Number(latDeg) + Number(latMin) / 60;
     latDecDeg += Number(latSec) / (60 * 60);
     latDecDeg += Number(latDecSec) / (60 * 60 * 1000);
     latDecDeg *= latSpace == 'N' ? 1 : -1;
-  
+
     let lonDecDeg = Number(lonDeg) + Number(lonMin) / 60;
     lonDecDeg += Number(lonSec) / (60 * 60);
     lonDecDeg += Number(lonDecSec) / (60 * 60 * 1000);
     lonDecDeg *= lonSpace == 'E' ? 1 : -1;
-  
+
     return [latDecDeg, lonDecDeg];
   }
 
@@ -62,7 +62,7 @@ export class UtilsService {
       current[ownKey.join('.')] = nestedObject;
       return current;
     }
-  
+
     Object.entries(nestedObject).forEach(([key, value]) => {
       current = this.getDiffOps(
         value,
@@ -70,7 +70,7 @@ export class UtilsService {
         current,
       );
     });
-  
+
     return current;
   }
 
@@ -80,9 +80,9 @@ export class UtilsService {
 
   addMinutes(date: Date, minutes: number): Date {
     const dateNew = new Date(date);
-  
+
     dateNew.setUTCMinutes(date.getUTCMinutes() + minutes);
-  
+
     return dateNew;
   }
 

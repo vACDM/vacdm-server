@@ -35,24 +35,24 @@ export class UserService {
   async getUserFromId(id: string): Promise<UserDocument> {
     logger.debug('trying to get a user with id "%s"', id);
     const user = await this.userModel.findById(id);
-    
+
     if (!user) {
       logger.verbose('could not find user with id "%s"', id);
       throw new NotFoundException();
     }
-    
+
     return user;
   }
 
   async getUserFromCid(cid: number): Promise<UserDocument> {
     logger.debug('trying to get a user with cid "%s"', cid);
     const user = await this.userModel.findOne({ cid });
-    
+
     if (!user) {
       logger.verbose('could not find user with id "%s"', cid);
       throw new NotFoundException();
     }
-    
+
     return user;
   }
 
@@ -75,7 +75,7 @@ export class UserService {
 
   createTokenForUser(user: UserDocument): string {
     const { jwtSecret } = getAppConfig();
-    
+
     return jwt.sign({
       cid: user.cid,
     }, jwtSecret, {
@@ -85,7 +85,7 @@ export class UserService {
 
   getUserFromToken(token: string): Promise<UserDocument> {
     const { jwtSecret } = getAppConfig();
-    
+
     const tokenData = jwt.verify(token, jwtSecret);
 
     if (typeof tokenData != 'object') {

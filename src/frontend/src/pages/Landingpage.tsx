@@ -16,7 +16,7 @@ const Landingpage = () => {
   const [airports, setAirports] = useState<Airport[]>([]);
   const [pilots, setPilots] = useState<Pilot[]>();
   const [loading, setLoading] = useState(true);
-  
+
 
   useEffect(() => {
     async function loadData() {
@@ -25,12 +25,12 @@ const Landingpage = () => {
         setAirports(data);
         setLoading(false);
       });
-  
+
       PilotService.getPilots().then((data) => {
         setPilots(data);
       });
     }
-      
+
 
     const intervalId = setInterval(loadData, 30000);
 

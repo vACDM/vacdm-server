@@ -62,10 +62,10 @@ function App() {
       menu: menu,
       dataview: dataview,
       inputtextarea: inputtextarea,
-      
+
     },
     { mergeSections: true, mergeProps: false },
-   
+
   );
 
   return (

@@ -60,7 +60,7 @@ export class EtfmsService {
     if (measure.filters.some(f => !this.executeMeasureFilter(pilot, f))) {
       return false;
     }
-    
+
     return true;
   }
 

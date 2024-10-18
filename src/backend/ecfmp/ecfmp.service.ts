@@ -40,7 +40,7 @@ export class EcfmpService {
 
     } catch (error) {
       logger.error('Error on retrieving Measures from ECFMP %o', error);
-      throw error; 
+      throw error;
     }
   }
 
@@ -97,27 +97,27 @@ export class EcfmpService {
       const measures = await this.fetchMeasuresFromEcfmp();
 
       logger.debug(`${jobNameEnsureMeasureCurrency} > got %d measures from ecfmp`, measures.length);
-  
+
       const promises: Promise<unknown>[] = [];
       const measureIds: number[] = [];
-  
+
       const now = new Date();
-  
+
       for (const measure of measures) {
         if (!this.isMeasureRelevant(measure)) {
           continue;
         }
-  
+
         measureIds.push(measure.id);
         promises.push(this.upsertMeasure(measure));
       }
 
       logger.debug(`${jobNameEnsureMeasureCurrency} > encountered %d relevant measures, awaiting upsert...`, measureIds.length);
-  
+
       await Promise.allSettled(promises);
 
       logger.debug(`${jobNameEnsureMeasureCurrency} > all measures upserted, deleting old or irrelevant...`);
-  
+
       const { deletedCount } = await this.ecfmpMeasureModel.deleteMany({
         $or: [
           {

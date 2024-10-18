@@ -4,29 +4,29 @@ import { VacdmAppConfig } from '@/shared/interfaces/config.interface';
 
 interface VacdmConfigEnv {
   MONGO_URI: string;
-  
+
   SERVER_NAME: string;
-  
+
   VATSIM_AUTH_URL: string;
   CLIENT_ID: string;
   CLIENT_SECRET: string;
-  
+
   PORT: number;
-  
+
   ALLOW_SIM: string | void;
   ALLOW_OBS_MASTER: string | void;
-  
+
   TIME_LAST_SEEN: number;
   TIME_INACTIVE: number;
   TIME_LAST_LOGIN: number;
-  
+
   LOG_LEVEL_CONSOLE: string;
   LOG_LEVEL_FILE: string;
-  
+
   EVENT_URL: string | void;
   EVENT_PRIO: string;
   EVENT_PULL_INTERVAL: string;
-  
+
   PUBLIC_URL: string;
   JWT_SECRET: string;
   FRONTEND_PROXY: string | void;

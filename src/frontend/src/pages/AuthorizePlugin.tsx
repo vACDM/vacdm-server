@@ -15,7 +15,7 @@ export default function AuthorizePluginPage() {
 
   async function approve() {
     setState('load');
-    
+
     axios.post(`/api/plugin-token/authorize/${id}`, {
       confirm: 'yes',
       label,
@@ -64,7 +64,7 @@ export default function AuthorizePluginPage() {
       <form className="mt-10 w-full" onSubmit={approve}>
           <label htmlFor="inputLabel">Label</label>
           <InputText id='inputLabel' className='w-full' value={label} onChange={e => setLabel(e.target.value)} />
-          
+
           <Button className='mt-5 w-full' type='submit' label='Approve' />
       </form>
 

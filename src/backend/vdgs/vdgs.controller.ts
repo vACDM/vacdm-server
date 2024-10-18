@@ -33,11 +33,11 @@ export class VdgsController {
       airports: Object.fromEntries(airports.map(a => ([a.icao, [`${publicUrl}/api/vdgs/nool/${a.icao}`]]))),
     };
   }
-  
+
   @Get('/nool/:icao')
   async getNoolAirport(@Res({ passthrough: true }) res: Response, @Param('icao') icao: string) {
     const flights = await this.pilotService.getPilots({ 'flightplan.adep': icao });
-    
+
     this.setDateHeaders(res);
 
     return {

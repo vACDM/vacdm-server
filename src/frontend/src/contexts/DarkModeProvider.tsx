@@ -30,10 +30,10 @@ function getDarkModeState(): boolean {
 
 export const DarkModeProvider = ({ children }: { children: any }) => {
   const [darkMode, setDarkMode] = useState<boolean>(getDarkModeState());
-  
+
   useEffect(() => {
     setDarkMode(!darkMode);
-    
+
     const html = document.getElementById('dark-mode-selector');
     if (html == null) return;
 
@@ -47,7 +47,7 @@ export const DarkModeProvider = ({ children }: { children: any }) => {
   }, []);
 
   function changeDarkMode() {
-     
+
     setDarkMode(!darkMode);
 
     const html = document.getElementById('dark-mode-selector');

@@ -27,24 +27,24 @@ export class AirportService {
   async getAirportFromId(id: string): Promise<AirportDocument> {
     logger.debug('trying to get an airport with id "%s"', id);
     const arpt = await this.airportModel.findById(id);
-    
+
     if (!arpt) {
       logger.verbose('could not find airport with id "%s"', id);
       throw new NotFoundException();
     }
-    
+
     return arpt;
   }
 
   async getAirportFromIcao(icao: string): Promise<AirportDocument> {
     logger.debug('trying to get an airport with icao "%s"', icao);
     const arpt = await this.airportModel.findOne({ icao });
-    
+
     if (!arpt) {
       logger.verbose('could not find airport with icao "%s"', icao);
       throw new NotFoundException();
     }
-    
+
     logger.debug('found airport with icao "%s"', icao);
     return arpt;
   }
@@ -77,9 +77,9 @@ export class AirportService {
 
   async deleteAirport(icao: string): Promise<AirportDocument> {
     logger.verbose('deleting airport "%s"', icao);
-    
+
     const arpt = await this.airportModel.findOneAndRemove({ icao });
-    
+
     if (!arpt) {
       throw new NotFoundException();
     }

@@ -1,6 +1,6 @@
 interface PluginToken {
   user: string;
-  
+
   label: string;
 
   /** a secret for the plugin to poll with. when not set, token is active */

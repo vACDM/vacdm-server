@@ -22,7 +22,7 @@ export class CustomError extends Error {
 }
 
 export class APIError extends CustomError {
-  responseCode: number = 500;
+  responseCode = 500;
 
   constructor(msg: string, context: any, responseCode: number | void) {
     super(msg, context);

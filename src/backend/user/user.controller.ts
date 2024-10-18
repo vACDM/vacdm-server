@@ -15,7 +15,7 @@ export class UserController {
   @Get('/')
   async getAllUsers() {
     const users = await this.userService.getAllUsers();
-    
+
     return {
       count: users.length,
       users: users,
