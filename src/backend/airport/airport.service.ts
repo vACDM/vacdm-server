@@ -196,11 +196,17 @@ export class AirportService {
 
     const pilots = await this.pilotService.getPilots({
       'vacdm.blockId': { $in: relevantBlocks },
-      'flightplan.departure': icao,
+      'flightplan.adep': icao,
     });
 
     for (const pilot of pilots) {
       const { blockRwyDesignator: blockRwyDesignator, blockId } = pilot.vacdm;
+
+      if (!blocks.rwys[blockRwyDesignator]) {
+        logger.debug('invalid runway %s/%s for pilot %s', pilot.flightplan.adep, blockRwyDesignator, pilot.callsign);
+        continue;
+      }
+
       blocks.rwys[blockRwyDesignator][blockId].push(pilot);
     }
 
