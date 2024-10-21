@@ -9,8 +9,10 @@ import logger from '../logger';
 import { PilotDocument } from '../pilot/pilot.model';
 import { PilotService } from '../pilot/pilot.service';
 import { AGENDA_PROVIDER } from '../schedule.module';
+import { UtilsService } from '../utils/utils.service';
 
 const jobNameAssignMeasuresToPilots = 'ETFMS_assignMeasuresToPilots';
+const jobNameSetCtotsOnPilots = 'ETFMS_setCtotsOnPilots';
 
 @Injectable()
 export class EtfmsService {
@@ -18,9 +20,14 @@ export class EtfmsService {
     @Inject(AGENDA_PROVIDER) private agenda: Agenda,
     private ecfmpService: EcfmpService,
     private pilotService: PilotService,
+    private utilsService: UtilsService,
   ) {
     this.agenda.define(jobNameAssignMeasuresToPilots, this.assignMeasuresToPilots.bind(this));
     this.agenda.every('1 minute', jobNameAssignMeasuresToPilots);
+
+    this.agenda.define(jobNameSetCtotsOnPilots, this.setCtotsOnPilots.bind(this));
+
+    this.agenda.on(`success:${jobNameAssignMeasuresToPilots}`, () => this.agenda.now(jobNameSetCtotsOnPilots, {}));
   }
 
   private stringAirportMatcher(pilotField: string, measureValue: string): boolean {
@@ -97,11 +104,107 @@ export class EtfmsService {
     }
   }
 
-  async isRegulated(pilot: PilotDocument): Promise<boolean> {
-    return false;
+  private async processMeasureMdi(measure: EcfmpMeasureDocument, pilots: PilotDocument[]) {
+    if (typeof measure.measure.value !== 'number') {
+      return;
+    }
+
+    // sort pilots
+    const sortedPilots: PilotDocument[] = [];
+
+    // if there is a pilot, set the starttime to their ttot. this will reduce wasting time and generating useless delays
+    const startTime = sortedPilots.length ? sortedPilots[0].vacdm.ttot : measure.starttime;
+
+    const start = Math.floor(startTime.valueOf() / 1000);
+    const end = Math.floor(measure.endtime.valueOf() / 1000);
+    const interval = measure.measure.value;
+
+    // TODO: get airportdata, max slots per block somehow
+
+    // generate slotlist
+    const slotlist: Date[] = [];
+    for (let i = start; i <= end; i += interval) {
+      slotlist.push(new Date(i * 1000));
+    }
+
+    logger.info('%o', slotlist);
+
+    // for each slot in slotlist
+    // determine pilot that fits this slot best (is able to make it, then first sorted by delay + prio)
+    // assign slot as ctot and ttot
+
   }
 
-  async gimmeCtot(pilot: PilotDocument): Promise<Date | null> {
-    return null;
+  private async processMeasureGroundStop(measure: EcfmpMeasureDocument, pilots: PilotDocument[]) {
+    const { endtime } = measure;
+
+    const promises: Promise<unknown>[] = [];
+
+    const endtimeBlockId = this.utilsService.getBlockFromTime(endtime);
+
+    for (const pilot of pilots) {
+      pilot.vacdm.ctot = endtime;
+      pilot.vacdm.suspended = true;
+
+      const { blockId: oldBlockId } = pilot.vacdm;
+
+      const additionalDelay = endtimeBlockId - oldBlockId;
+
+      if (additionalDelay > 0) {
+        pilot.vacdm.delay += additionalDelay;
+      }
+
+      promises.push(pilot.save());
+    }
+
+    await Promise.allSettled(promises);
+  }
+
+  private async setCtotsOnPilots() {
+    const measures: EcfmpMeasureDocument[] = await this.ecfmpService.getMeasures();
+    const pilots: PilotDocument[] = await this.pilotService.getPilots({
+      measures: {
+        $exists: true,
+        $type: 'array',
+        $ne: [],
+      },
+    });
+
+    // TODO: cleanup <3
+
+    const groundStopIds: string[] = measures.filter(m => m.measure.type === 'ground_stop').map(m => String(m._id));
+
+    const promises: Promise<unknown>[] = [];
+
+    for (const measure of measures) {
+      const measureId = String(measure._id);
+
+      switch (measure.measure.type) {
+        case 'average_departure_interval':
+        case 'minimum_departure_interval': {
+          const pilotsThisMeasure = pilots.filter(p =>
+            p.measures.includes(measureId) &&
+            !p.measures.some(m => groundStopIds.includes(m)),
+          );
+
+          promises.push(this.processMeasureMdi(measure, pilotsThisMeasure));
+
+          break;
+        }
+
+        case 'ground_stop': {
+          const pilotsThisMeasure = pilots.filter(p => p.measures.includes(measureId));
+
+          promises.push(this.processMeasureGroundStop(measure, pilotsThisMeasure));
+          break;
+        }
+      }
+    }
+
+    await Promise.allSettled(promises);
+  }
+
+  async isRegulated(pilot: PilotDocument): Promise<boolean> {
+    return false;
   }
 }

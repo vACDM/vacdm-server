@@ -18,7 +18,7 @@ const EcfmpMeasureSchema = new mongoose.Schema<EcfmpMeasure>({
   endtime: { type: Date, default: -1 },
   withdrawn_at: { type: Date, default: -1 },
   measure: {
-    type: { type: String, default: '' },
+    type: { type: String, required: true },
     value: { type: Number, default: null },
   },
   filters: [

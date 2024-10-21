@@ -117,7 +117,8 @@ export class CdmService {
     const pilotsThatCouldBeMoved = otherPilotsInBlock.filter(
       (plt) =>
         plt.vacdm.tsat > nowPlusTen &&
-        plt.vacdm.prio + plt.vacdm.delay < pilot.vacdm.prio + pilot.vacdm.delay,
+        plt.vacdm.prio + plt.vacdm.delay < pilot.vacdm.prio + pilot.vacdm.delay &&
+        this.utilsService.isTimeEmpty(pilot.vacdm.ctot),
     );
 
     pilotsThatCouldBeMoved.sort((pilotA, pilotB) => {

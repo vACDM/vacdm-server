@@ -32,6 +32,7 @@ const PilotSchema = new mongoose.Schema<Pilot>({
 
     ctot: { type: Date, default: -1 },
     ttot: { type: Date, default: -1 },
+    suspended: { type: Boolean, default: false },
 
     asrt: { type: Date, default: -1 },
     aort: { type: Date, default: -1 },

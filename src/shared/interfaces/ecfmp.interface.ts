@@ -17,10 +17,23 @@ export interface EcfmpMeasure {
   filters: EcfmpFilter[];
 }
 
-export interface EcfmpMeasureAction {
-  type: string;
+export type EcfmpMeasureAction = {
+  type: 'minimum_departure_interval' | 'average_departure_interval';
+
+  /** The number of seconds applicable to this measure */
   value: number;
-}
+} | {
+  type: 'per_hour';
+
+  /** The number of flights per hour permitted */
+  value: number;
+} | {
+  type: 'ground_stop';
+  value: null;
+} | {
+  type: 'miles_in_trail' | 'max_ias' | 'max_mach' | 'ias_reduction' | 'mach_reduction' | 'prohibit' | 'mandatory_route';
+  value: unknown;
+};
 
 export type EcfmpFilter = {
   type: 'ADEP' | 'ADES' | 'waypoint',

@@ -18,6 +18,7 @@ interface Pilot {
 
     ctot: Date;
     ttot: Date;
+    suspended: boolean;
 
     asat: Date;
     aobt: Date;
