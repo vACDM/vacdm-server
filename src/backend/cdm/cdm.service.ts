@@ -1,18 +1,22 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import Agenda from 'agenda';
 import { mongo } from 'mongoose';
 
 import { AirportService } from '../airport/airport.service';
 import logger from '../logger';
 import { PilotDocument } from '../pilot/pilot.model';
 import { PilotService } from '../pilot/pilot.service';
+import { AGENDA_PROVIDER } from '../schedule.module';
 import { UtilsService } from '../utils/utils.service';
 
 import { AirportCapacity } from '@/shared/interfaces/airport.interface';
 
 interface IBlockAssignment {
-  finalBlock: number;
-  finalTtot: Date;
+  block: number;
+  ttot: Date;
 }
+
+const jobNameOptimizeBlockAssignments = 'CDM_optimizeBlockAssignments';
 
 @Injectable()
 export class CdmService {
@@ -20,12 +24,13 @@ export class CdmService {
     @Inject(forwardRef(() => AirportService)) private airportService: AirportService,
     @Inject(forwardRef(() => PilotService)) private pilotService: PilotService,
     private utilsService: UtilsService,
-  ) {}
+    @Inject(AGENDA_PROVIDER) private agenda: Agenda,
+  ) {
+    this.agenda.define(jobNameOptimizeBlockAssignments, this.optimizeBlockAssignments.bind(this));
+    this.agenda.every('2 minute', jobNameOptimizeBlockAssignments);
+  }
 
-  determineInitialBlock(pilot: PilotDocument): {
-    initialBlock: number;
-    initialTtot: Date;
-  } {
+  determineInitialBlock(pilot: PilotDocument): IBlockAssignment {
     if (
       this.utilsService.isTimeEmpty(pilot.vacdm.tobt) &&
       !this.utilsService.isTimeEmpty(pilot.vacdm.eobt)
@@ -47,12 +52,12 @@ export class CdmService {
     const initialBlock = this.utilsService.getBlockFromTime(initialTtot);
 
     return {
-      initialBlock,
-      initialTtot,
+      block: initialBlock,
+      ttot: initialTtot,
     };
   }
 
-  async setTime(pilot: PilotDocument): Promise<IBlockAssignment> {
+  private async setTime(pilot: PilotDocument): Promise<IBlockAssignment> {
     if (
       pilot.vacdm.tsat > pilot.vacdm.tobt ||
       this.utilsService.getBlockFromTime(pilot.vacdm.ttot) != pilot.vacdm.blockId
@@ -82,7 +87,7 @@ export class CdmService {
     // save pilot because it might take too long between selecting the block and actually saving
     await pilot.save();
 
-    return { finalBlock: pilot.vacdm.blockId, finalTtot: pilot.vacdm.ttot };
+    return { block: pilot.vacdm.blockId, ttot: pilot.vacdm.ttot };
   }
 
   async putPilotIntoBlock(
@@ -146,7 +151,7 @@ export class CdmService {
     return this.putPilotIntoBlock(pilot, allPilots);
   }
 
-  async optimizeBlockAssignments() {
+  private async optimizeBlockAssignments(): Promise<void> {
     const currentBlockId = this.utilsService.getBlockFromTime(new Date());
     const allAirports = await this.airportService.getAllAirports();
 
@@ -220,7 +225,7 @@ export class CdmService {
             secondBlockCounter < 7;
             secondBlockCounter++
           ) {
-            const otherBlockId = (firstBlockId + secondBlockCounter) % 144;
+            const otherBlockId = firstBlockId + secondBlockCounter;
 
             const sortedMovablePilotsThisBlock = pilotsThisRwy
               .filter(
@@ -228,25 +233,17 @@ export class CdmService {
                   pilot.vacdm.blockId == otherBlockId &&
                   pilot.vacdm.delay >= secondBlockCounter,
               )
-              .sort(
-                (pilotA, pilotB) =>
-                  pilotA.vacdm.prio +
-                  pilotA.vacdm.delay -
-                  (pilotB.vacdm.prio + pilotB.vacdm.delay),
-              );
+              .sort((pilotA, pilotB) => (pilotA.vacdm.prio + pilotA.vacdm.delay) - (pilotB.vacdm.prio + pilotB.vacdm.delay));
 
             sortedMovablePilots.push(...sortedMovablePilotsThisBlock);
           }
 
-          const pilotsToMove = sortedMovablePilots.slice(
-            0,
-            capacityThisRunway.capacity - pilotsInThisBlock,
-          );
+          const pilotsToMove = sortedMovablePilots.slice(0, capacityThisRunway.capacity - pilotsInThisBlock);
 
           // move pilots to current block
 
           for (const pilot of pilotsToMove) {
-            pilot.vacdm.delay -= (144 + pilot.vacdm.blockId - firstBlockId) % 144;
+            pilot.vacdm.delay -= (pilot.vacdm.blockId - firstBlockId);
             pilot.vacdm.blockId = firstBlockId;
 
             logger.debug('==========>> setting pilot times %o', pilot.callsign);

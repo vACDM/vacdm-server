@@ -19,7 +19,7 @@ export class EcfmpService {
     @Inject(AGENDA_PROVIDER) private agenda: Agenda,
   ) {
     this.agenda.define(jobNameEnsureMeasureCurrency, this.ensureMeasureCurrency.bind(this));
-    this.agenda.every('1 minute', jobNameEnsureMeasureCurrency);
+    this.agenda.every('10 minute', jobNameEnsureMeasureCurrency);
   }
 
   acceptedMeasureTypes = ['minimum_departure_interval', 'average_departure_interval', 'ground_stop', 'mandatory_route'];

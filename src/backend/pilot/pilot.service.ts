@@ -89,8 +89,8 @@ export class PilotService {
 
       // 3. determine departure block and log it
       ({
-        initialBlock: pilot.vacdm.blockId,
-        initialTtot: pilot.vacdm.ttot,
+        block: pilot.vacdm.blockId,
+        ttot: pilot.vacdm.ttot,
       } = await this.cdmService.determineInitialBlock(pilot));
 
       await this.cdmService.putPilotIntoBlock(pilot);

@@ -3,6 +3,7 @@ import Agenda from 'agenda';
 import dayjs from 'dayjs';
 
 import { EcfmpFilter } from '../../shared/interfaces/ecfmp.interface';
+import { CdmService } from '../cdm/cdm.service';
 import { EcfmpMeasureDocument } from '../ecfmp/ecfmp-measure.model';
 import { EcfmpService } from '../ecfmp/ecfmp.service';
 import logger from '../logger';
@@ -12,7 +13,7 @@ import { AGENDA_PROVIDER } from '../schedule.module';
 import { UtilsService } from '../utils/utils.service';
 
 const jobNameAssignMeasuresToPilots = 'ETFMS_assignMeasuresToPilots';
-const jobNameSetCtotsOnPilots = 'ETFMS_setCtotsOnPilots';
+const jobNameHandleMeasures = 'ETFMS_handleMeasures';
 
 @Injectable()
 export class EtfmsService {
@@ -21,13 +22,14 @@ export class EtfmsService {
     private ecfmpService: EcfmpService,
     private pilotService: PilotService,
     private utilsService: UtilsService,
+    private cdmService: CdmService,
   ) {
     this.agenda.define(jobNameAssignMeasuresToPilots, this.assignMeasuresToPilots.bind(this));
     this.agenda.every('1 minute', jobNameAssignMeasuresToPilots);
 
-    this.agenda.define(jobNameSetCtotsOnPilots, this.setCtotsOnPilots.bind(this));
+    this.agenda.define(jobNameHandleMeasures, this.handleMeasures.bind(this));
 
-    this.agenda.on(`success:${jobNameAssignMeasuresToPilots}`, () => this.agenda.now(jobNameSetCtotsOnPilots, {}));
+    this.agenda.on(`success:${jobNameAssignMeasuresToPilots}`, () => this.agenda.now(jobNameHandleMeasures, {}));
   }
 
   private stringAirportMatcher(pilotField: string, measureValue: string): boolean {
@@ -109,35 +111,12 @@ export class EtfmsService {
       return;
     }
 
-    // sort pilots
-    const sortedPilots: PilotDocument[] = [];
-
-    // if there is a pilot, set the starttime to their ttot. this will reduce wasting time and generating useless delays
-    const startTime = sortedPilots.length ? sortedPilots[0].vacdm.ttot : measure.starttime;
+    const startTime = measure.starttime;
 
     const start = Math.floor(startTime.valueOf() / 1000);
     const end = Math.floor(measure.endtime.valueOf() / 1000);
     const interval = measure.measure.value;
 
-    // TODO: get airportdata, max slots per block somehow
-
-    // generate slotlist
-    const slotlist: Date[] = [];
-    const slottedPilots: string[] = [];
-    for (let i = start; i <= end; i += interval) {
-      const slotTime = new Date(i * 1000);
-      slotlist.push(slotTime);
-
-      const eligiblePilots = sortedPilots.filter(p => p.vacdm.ttot >= slotTime && !slottedPilots.includes(p.callsign));
-
-
-    }
-
-    logger.info('%o', slotlist);
-
-    // for each slot in slotlist
-    // determine pilot that fits this slot best (is able to make it, then first sorted by delay + prio)
-    // assign slot as ctot and ttot
 
   }
 
@@ -166,7 +145,7 @@ export class EtfmsService {
     await Promise.allSettled(promises);
   }
 
-  private async setCtotsOnPilots() {
+  private async handleMeasures() {
     const measures: EcfmpMeasureDocument[] = await this.ecfmpService.getMeasures();
     const pilots: PilotDocument[] = await this.pilotService.getPilots({
       measures: {
@@ -209,7 +188,15 @@ export class EtfmsService {
     await Promise.allSettled(promises);
   }
 
-  async isRegulated(pilot: PilotDocument): Promise<boolean> {
-    return false;
+  async getRegulation(pilot: PilotDocument, loadMeasures = false): Promise<boolean> {
+    if (loadMeasures) {
+      const measures = await this.getMeasuresApplyingToPilot(pilot);
+
+      pilot.measures = measures.map(m => String(m._id));
+
+      await pilot.save();
+    }
+
+    return !!pilot.measures.length;
   }
 }
