@@ -123,8 +123,14 @@ export class EtfmsService {
 
     // generate slotlist
     const slotlist: Date[] = [];
+    const slottedPilots: string[] = [];
     for (let i = start; i <= end; i += interval) {
-      slotlist.push(new Date(i * 1000));
+      const slotTime = new Date(i * 1000);
+      slotlist.push(slotTime);
+
+      const eligiblePilots = sortedPilots.filter(p => p.vacdm.ttot >= slotTime && !slottedPilots.includes(p.callsign));
+
+
     }
 
     logger.info('%o', slotlist);
@@ -188,7 +194,6 @@ export class EtfmsService {
           );
 
           promises.push(this.processMeasureMdi(measure, pilotsThisMeasure));
-
           break;
         }
 
