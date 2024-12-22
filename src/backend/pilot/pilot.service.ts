@@ -134,7 +134,7 @@ export class PilotService {
       pilot.vacdm.blockRwyDesignator = await this.airportService.determineRunway(pilot);
     }
 
-    if (pilot.vacdm.asat.valueOf() === -1 && (diff.position?.lat || diff.position?.lon || diff.clearance?.dep_rwy)) {
+    if (this.utilsService.isTimeEmpty(pilot.vacdm.asat) && (diff.position?.lat || diff.position?.lon || diff.clearance?.dep_rwy)) {
       resave = true;
       ({
         exot: pilot.vacdm.exot,
