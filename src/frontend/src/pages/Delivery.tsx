@@ -63,18 +63,34 @@ const Delivery = () => {
   const tobtBodyTemplate = (rowData: Pilot) => {
     const tobtClassName = (dayjs().diff(dayjs(rowData.vacdm.tobt).second(0), 'minute') > 5 || dayjs(rowData.vacdm.asat).unix() !== -1) ? 'text-gray-500' : '';
 
-    return <div className={tobtClassName}>{dayjs(rowData.vacdm.tobt).format('HH:mm')}</div>;
+    return <div className={tobtClassName}>{dayjs(rowData.vacdm.tobt).utc().format('HH:mm')}</div>;
   };
 
   const tsatBodyTemplate = (rowData: Pilot) => {
+    const diff = dayjs().diff(dayjs(rowData.vacdm.tsat).second(0), 'minute');
+
     const tsatClassName = classNames('', {
       'text-gray-500' : dayjs(rowData.vacdm.asat).unix() !== -1,
-      'bg-green-800' : dayjs().diff(dayjs(rowData.vacdm.tsat).second(0), 'minutes') >= -5 && dayjs().diff(dayjs(rowData.vacdm.tsat).second(0), 'minutes') <= 5,
-      'text-amber-500' : dayjs().diff(dayjs(rowData.vacdm.tsat).second(0), 'minute') > 5,
-      'text-green-300' : dayjs().diff(dayjs(rowData.vacdm.tsat).second(0), 'minute') < -5,
+      'bg-green-800' : diff >= -5 && diff <= 5,
+      'text-amber-500' : diff > 5,
+      'text-green-300' : diff < -5,
     });
-    return <div className={tsatClassName}>{dayjs(rowData.vacdm.tsat).format('HH:mm')}</div>;
+    return <div className={tsatClassName}>{dayjs(rowData.vacdm.tsat).utc().format('HH:mm')}</div>;
   };
+
+  function mkFormat(getValue: (pilot: Pilot) => Date) {
+    return (rowData) => {
+      const val = getValue(rowData);
+
+      const day = dayjs(val).utc();
+
+      if (day.unix() === -1) {
+        return '-';
+      }
+
+      return day.format('HH:mm');
+    };
+  }
 
   const sidRwyBodyTemplate = (rowData: Pilot) => {
     return <div>{rowData.clearance.sid + ' (' + rowData.clearance.dep_rwy + ')'}</div>;
@@ -100,16 +116,18 @@ const Delivery = () => {
         loading={loading}
         >
           <Column field='callsign' header='Callsign'></Column>
-          <Column header='EOBT' body={(rowData) => dayjs(rowData.vacdm.eobt).format('HH:mm')}></Column>
+          <Column header='EOBT' body={mkFormat(pilot => pilot.vacdm.eobt)}></Column>
           <Column header='TOBT' body={tobtBodyTemplate}></Column>
           <Column header='TSAT' body={tsatBodyTemplate}></Column>
-          <Column header='ASAT' body={(rowData) => dayjs(rowData.vacdm.asat).format('HH:mm')}></Column>
+          <Column header='ASAT' body={mkFormat(pilot => pilot.vacdm.asat)}></Column>
           <Column header='EXOT' field='vacdm.exot'></Column>
-          <Column header='TTOT' body={(rowData) => dayjs(rowData.vacdm.ttot).format('HH:mm')}></Column>
-          <Column header='CTOT' body={(rowData) => dayjs(rowData.vacdm.ctot).format('HH:mm')}></Column>
-          <Column header='ADEP' field='flightplan.departure'></Column>
+          <Column header='TTOT' body={mkFormat(pilot => pilot.vacdm.ttot)}></Column>
+          <Column header='CTOT' body={mkFormat(pilot => pilot.vacdm.ctot)}></Column>
+          <Column header='ADEP' field='flightplan.adep'></Column>
+          <Column header='Prio' field='vacdm.prio'></Column>
+          <Column header='Delay' field='vacdm.delay'></Column>
           <Column header='SID-RWY' body={sidRwyBodyTemplate}></Column>
-          <Column header='ADES' field='flightplan.arrival'></Column>
+          <Column header='ADES' field='flightplan.ades'></Column>
           <Column header='Taxizone' field='vacdm.taxizone'></Column>
           <Column header='Debug' body={debugBodyTemplate}></Column>
         </DataTable>

@@ -29,7 +29,7 @@ export class EtfmsService {
 
     this.agenda.define(jobNameHandleMeasures, this.handleMeasures.bind(this));
 
-    this.agenda.on(`success:${jobNameAssignMeasuresToPilots}`, () => this.agenda.now(jobNameHandleMeasures, {}));
+    this.agenda.on(`success:${jobNameAssignMeasuresToPilots}`, () => this.agenda.jobs({ name: jobNameHandleMeasures }).then(jobs => { if (jobs[0]) { jobs[0].run(); } else { agenda.now(jobNameHandleMeasures, {}); } }));
   }
 
   private stringAirportMatcher(pilotField: string, measureValue: string): boolean {
@@ -48,7 +48,7 @@ export class EtfmsService {
       }
       default: {
         // disregard every other filter
-        // pretend everything else matches pilot, so it behaves, as if the filter was not set
+        // pretend everything else matches pilot, so it behaves, as if the filter was not set asasa
         return true;
       }
     }
@@ -107,17 +107,84 @@ export class EtfmsService {
   }
 
   private async processMeasureMdi(measure: EcfmpMeasureDocument, pilots: PilotDocument[]) {
-    if (typeof measure.measure.value !== 'number') {
+    if (
+      (
+        measure.measure.type !== 'average_departure_interval'
+        && measure.measure.type !== 'minimum_departure_interval'
+      ) || typeof measure.measure.value !== 'number'
+    ) {
       return;
     }
 
-    const startTime = measure.starttime;
+    const { starttime, endtime } = measure;
 
-    const start = Math.floor(startTime.valueOf() / 1000);
-    const end = Math.floor(measure.endtime.valueOf() / 1000);
-    const interval = measure.measure.value;
+    const interval = measure.measure.value * 1000;
+
+    let lastTtot = -interval;
+
+    function compare(pilot: PilotDocument): number {
+      return pilot.vacdm.tobt.valueOf() + (pilot.vacdm.exot * 60000);
+    }
+
+    pilots.sort((p1, p2) => compare(p1) - compare(p2));
+
+    for (const pilot of pilots) {
+      if (pilot.vacdm.ttot < starttime || pilot.vacdm.ttot >= endtime) {
+        continue;
+      }
+
+      const nextAllowableTtot = lastTtot + interval;
+
+      // if space in block of nextAlloweableTtot and pilot able
+      // da rein
+      // else platz im block von pilot able
+      // da rein
+
+      const blockNextAllowableTtot = this.utilsService.getBlockFromTime(new Date(nextAllowableTtot));
+      const blockPilotTobt = this.utilsService.getBlockFromTime(pilot.vacdm.tobt);
 
 
+
+      if (
+        pilot.vacdm.ttot.valueOf() < nextAllowableTtot
+        || (
+          pilot.vacdm.tobt.valueOf() <= (nextAllowableTtot - pilot.vacdm.exot * 60000)
+          && await this.cdmService.isSpaceAvailInBlock(pilot.flightplan.adep, pilot.vacdm.blockRwyDesignator, blockNextAllowableTtot)
+        )
+      ) {
+        if (nextAllowableTtot) {
+          pilot.vacdm.ttot = new Date(nextAllowableTtot);
+        }
+
+        const oldBlockId = pilot.vacdm.blockId;
+        const newBlockId = this.utilsService.getBlockFromTime(pilot.vacdm.ttot);
+
+        const additionalDelay = newBlockId - oldBlockId;
+
+        if (additionalDelay > 0) {
+          pilot.vacdm.delay += additionalDelay;
+        }
+
+        pilot.vacdm.blockId = newBlockId;
+        pilot.vacdm.tsat = new Date(pilot.vacdm.ttot.valueOf() - pilot.vacdm.exot * 60000);
+      } else if (
+        pilot.vacdm.tobt.valueOf() >= (nextAllowableTtot - pilot.vacdm.exot * 60000)
+        && await this.cdmService.isSpaceAvailInBlock(pilot.flightplan.adep, pilot.vacdm.blockRwyDesignator, blockPilotTobt)
+      ) {
+        pilot.vacdm.ttot = new Date(pilot.vacdm.tobt.valueOf() + pilot.vacdm.exot * 60000);
+
+        pilot.vacdm.delay = 0;
+
+        pilot.vacdm.blockId = blockPilotTobt;
+        pilot.vacdm.tsat = new Date(pilot.vacdm.ttot.valueOf() - pilot.vacdm.exot * 60000);
+      }
+
+      // ttot also festtackern when no change is necessary
+      pilot.vacdm.ctot = pilot.vacdm.ttot;
+      pilot.save();
+
+      lastTtot = pilot.vacdm.ttot.valueOf();
+    }
   }
 
   private async processMeasureGroundStop(measure: EcfmpMeasureDocument, pilots: PilotDocument[]) {
@@ -146,6 +213,7 @@ export class EtfmsService {
   }
 
   private async handleMeasures() {
+    logger.verbose(`${jobNameHandleMeasures} > running...`);
     const measures: EcfmpMeasureDocument[] = await this.ecfmpService.getMeasures();
     const pilots: PilotDocument[] = await this.pilotService.getPilots({
       measures: {
@@ -153,9 +221,12 @@ export class EtfmsService {
         $type: 'array',
         $ne: [],
       },
+      inactive: false,
     });
 
-    // TODO: cleanup <3
+    /* TODO: cleanup <3
+      - remove suspended flag from pilots
+    */
 
     const groundStopIds: string[] = measures.filter(m => m.measure.type === 'ground_stop').map(m => String(m._id));
 

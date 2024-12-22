@@ -254,4 +254,16 @@ export class CdmService {
       }
     }
   }
+
+  async isSpaceAvailInBlock(adep: string, rwyDesignator: string, blockId: number): Promise<boolean> {
+    const cap: AirportCapacity = await this.airportService.getCapacityForRwyDesignator(adep, rwyDesignator);
+
+    const count = await this.pilotService.countPilots({
+      'flightplan.adep': adep,
+      'vacdm.blockRwyDesignator': rwyDesignator,
+      'vacdm.blockId': blockId,
+    });
+
+    return cap.capacity > count;
+  }
 }

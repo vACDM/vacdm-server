@@ -43,6 +43,10 @@ export class PilotService {
     return this.pilotModel.find(filter).exec();
   }
 
+  countPilots(filter: FilterQuery<Pilot> = {}): Promise<number> {
+    return this.pilotModel.count(filter).exec();
+  }
+
   async getPilotFromCallsign(callsign: string): Promise<PilotDocument> {
     logger.debug('trying to get an pilot with callsign "%s"', callsign);
     const arpt = await this.pilotModel.findOne({ icao: callsign });
