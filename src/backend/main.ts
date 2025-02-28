@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import { Request } from 'express';
@@ -7,14 +8,17 @@ import morgan from 'morgan';
 import { WinstonModule } from 'nest-winston';
 
 import { AppModule } from './app.module';
+import getAppConfig from './config';
 import logger from './logger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: WinstonModule.createLogger({
       instance: logger,
     }),
   });
+
+  app.set('trust proxy', getAppConfig().trustedProxy);
 
   const logMiddleware = morgan('short', {
     stream: { write: m => logger.http(m.trim()) },
