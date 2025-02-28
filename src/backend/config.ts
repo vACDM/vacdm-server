@@ -33,6 +33,8 @@ interface VacdmConfigEnv {
   PUBLIC_URL: string;
   JWT_SECRET: string;
   FRONTEND_PROXY: string | void;
+
+  TRUSTED_PROXY: string;
 }
 
 const configValidationResult = Joi.object<VacdmConfigEnv>({
@@ -67,6 +69,8 @@ const configValidationResult = Joi.object<VacdmConfigEnv>({
   PUBLIC_URL: Joi.string().required(),
   JWT_SECRET: Joi.string().default('super-secret-secret'),
   FRONTEND_PROXY: Joi.string().optional(),
+
+  TRUSTED_PROXY: Joi.string().default('loopback, uniquelocal'),
 }).unknown(true).validate(process.env);
 const validatedEnv: VacdmConfigEnv = configValidationResult.value;
 
@@ -125,5 +129,7 @@ export default function getAppConfig(): VacdmAppConfig {
     jwtSecret: validatedEnv.JWT_SECRET ?? 'super-secret-secret!',
 
     frontendProxy: validatedEnv.FRONTEND_PROXY ?? '',
+
+    trustedProxy: validatedEnv.TRUSTED_PROXY,
   };
 }

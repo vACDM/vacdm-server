@@ -30,6 +30,8 @@ export interface VacdmAppConfig {
   publicUrl: string;
   jwtSecret: string;
   frontendProxy: string;
+
+  trustedProxy: string;
 }
 
 export interface FrontendSettings {

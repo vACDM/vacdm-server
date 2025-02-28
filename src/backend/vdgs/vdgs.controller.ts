@@ -1,4 +1,5 @@
 import { Controller, Get, Param, Res } from '@nestjs/common';
+import { ApiDefaultResponse, ApiHeaders, ApiProperty, ApiTags } from '@nestjs/swagger';
 import dayjs from 'dayjs';
 import { Response } from 'express';
 
@@ -9,6 +10,17 @@ import { UtilsService } from '../utils/utils.service';
 
 const { publicUrl } = getAppConfig();
 
+class NoolVdgsBase {
+  @ApiProperty()
+    version: 1;
+}
+
+class NoolVdgsServer extends NoolVdgsBase {
+  @ApiProperty({ example: { EDDF: [`${publicUrl}/api/vdgs/nool/EDDF`], EGLL: [`${publicUrl}/api/vdgs/nool/EGLL`] } })
+    airports: Record<string, string[]>;
+}
+
+@ApiTags('vdgs')
 @Controller('/api/vdgs')
 export class VdgsController {
   constructor(
@@ -22,8 +34,17 @@ export class VdgsController {
     res.setHeader('Last-Modified', this.utilsService.formatDateForHeader(date));
   }
 
+  @ApiHeaders([{
+    name: 'Date',
+    description: 'The current date',
+  }, {
+    name: 'Last-Modified',
+    description: 'The date at which the document was modified for the last time',
+  }])
+  
+  @ApiDefaultResponse({ type: NoolVdgsServer, description: 'Gets the nool server config file. Includes the URLs for the airport specific feeds' })
   @Get('/nool')
-  async getNoolAirportList(@Res({ passthrough: true }) res: Response) {
+  async getNoolAirportList(@Res({ passthrough: true }) res: Response): Promise<NoolVdgsServer> {
     const airports = await this.airportService.getAllAirports();
 
     this.setDateHeaders(res);
