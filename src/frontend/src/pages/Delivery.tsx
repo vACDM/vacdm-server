@@ -88,7 +88,7 @@ const Delivery = () => {
         return '-';
       }
 
-      return day.format('HH:mm');
+      return <div title={day.format('YYYY-MM-DDTHH:mm:ss[Z]')}>{day.format('HH:mm')}</div> ;
     };
   }
 
@@ -125,7 +125,7 @@ const Delivery = () => {
           <Column header='CTOT' body={mkFormat(pilot => pilot.vacdm.ctot)}></Column>
           <Column header='ADEP' field='flightplan.adep'></Column>
           <Column header='Prio' field='vacdm.prio'></Column>
-          <Column header='Delay' field='vacdm.delay'></Column>
+          <Column header='Delay' body={(pilot: Pilot) => Math.round(pilot.vacdm.delay / 60000)}></Column>
           <Column header='SID-RWY' body={sidRwyBodyTemplate}></Column>
           <Column header='ADES' field='flightplan.ades'></Column>
           <Column header='Taxizone' field='vacdm.taxizone'></Column>

@@ -40,7 +40,6 @@ const PilotSchema = new mongoose.Schema<Pilot>({
     asat: { type: Date, default: -1 },
     aobt: { type: Date, default: -1 },
 
-    delay: { type: Number, default: 0 },
     prio: { type: Number, default: 0 },
 
     sug: { type: Date, default: -1 },
@@ -67,7 +66,11 @@ const PilotSchema = new mongoose.Schema<Pilot>({
   },
   measures: [{ type: mongo.ObjectId, ref: 'EcfmpMeasure' }],
   inactive: { type: Boolean, default: false },
-}, { timestamps: true });
+}, { timestamps: true, toJSON: { virtuals: ['vacdm.delay'] } });
+
+PilotSchema.virtual('vacdm.delay').get(function (this: PilotDocument) {
+  return this.vacdm.tsat.valueOf() - this.vacdm.tobt.valueOf();
+});
 
 export const PilotProvider = {
   provide: PILOT_MODEL,

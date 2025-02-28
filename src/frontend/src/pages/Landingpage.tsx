@@ -55,7 +55,7 @@ const Landingpage = () => {
       for (const pilot of number) {
         delay = delay + pilot.vacdm.delay;
       }
-      return number.length === 0 ? '' : Math.ceil(delay / number.length) + ' Minutes';
+      return number.length === 0 ? '' : Math.round((delay / 60000) / number.length) + ' Minutes';
     }
   };
 
