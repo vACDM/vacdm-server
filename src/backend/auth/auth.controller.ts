@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Query, Res } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { Response } from 'express';
 import Joi from 'joi';
@@ -7,8 +7,7 @@ import { JoiPipe } from 'nestjs-joi';
 import logger from '../logger';
 import { UserDocument } from '../user/user.model';
 
-import { User } from './auth.decorator';
-import { AuthGuard } from './auth.guard';
+import { Auth, User } from './auth.decorator';
 import { AuthService } from './auth.service';
 
 export const COOKIE_NAME_VACDM_TOKEN = 'vacdm_token';
@@ -48,7 +47,7 @@ export class AuthController {
   }
 
   @Get('/profile')
-  @UseGuards(AuthGuard)
+  @Auth('any')
   getProfile(@User() user: UserDocument) {
     return user;
   }

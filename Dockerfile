@@ -27,11 +27,9 @@ USER node
 
 FROM base as build
 
-ENV NODE_ENV development
-
 COPY --chown=node:node . .
 
-RUN npm install && npm cache clean --force
+RUN npm install --include=dev && npm cache clean --force
 ENV PATH /opt/node_modules/.bin:$PATH
 
 RUN tsc -p ./tsconfig.node.json && \

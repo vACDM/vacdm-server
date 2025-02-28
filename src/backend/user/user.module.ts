@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { DatabaseModule } from '../database.module';
+import { PluginTokenModule } from '../plugin-token/plugin-token.module';
 import { ScheduleModule } from '../schedule.module';
 
 import { UserController } from './user.controller';
@@ -11,6 +12,7 @@ import { UserService } from './user.service';
   imports: [
     DatabaseModule,
     ScheduleModule,
+    PluginTokenModule,
   ],
   providers: [UserService, UserProvider],
   exports: [UserService],

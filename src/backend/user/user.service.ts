@@ -5,6 +5,7 @@ import { FilterQuery } from 'mongoose';
 
 import getAppConfig from '../config';
 import logger from '../logger';
+import { PluginTokenService } from '../plugin-token/plugin-token.service';
 import { AGENDA_PROVIDER } from '../schedule.module';
 
 import { USER_MODEL, UserDocument, UserModel } from './user.model';
@@ -17,6 +18,7 @@ export class UserService {
   constructor(
     @Inject(USER_MODEL) private userModel: UserModel,
     @Inject(AGENDA_PROVIDER) private agenda: Agenda,
+    private pluginTokenService: PluginTokenService,
   ) {
     this.agenda.define('USER_cleanupUsers', this.cleanupUsers.bind(this));
     this.agenda.every('10 minutes', 'USER_cleanupUsers');
@@ -92,6 +94,18 @@ export class UserService {
     }
 
     return this.getUserFromCid(tokenData.cid);
+  }
+
+  async getUserFromPluginToken(token: string): Promise<UserDocument> {
+    const userId = await this.pluginTokenService.attemptPluginAuthentication(token);
+
+    if (typeof userId === 'undefined') {
+      throw new NotFoundException();
+    }
+
+    const user = await this.getUserFromId(userId);
+
+    return user;
   }
 
   async cleanupUsers() {

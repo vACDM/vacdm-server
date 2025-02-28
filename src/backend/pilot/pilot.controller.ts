@@ -7,7 +7,7 @@ import logger from '../logger';
 import { PilotDto, PilotCallsignValidator } from './pilot.dto';
 import { PilotService } from './pilot.service';
 
-const joiPipeCallSign = new JoiPipe(PilotCallsignValidator.required());
+const joiPipeCallSign = new JoiPipe(PilotCallsignValidator('callsign').required());
 
 @ApiTags('pilots')
 @Controller('api/v1/pilots')
