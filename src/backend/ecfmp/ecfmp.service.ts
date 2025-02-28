@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import { FilterQuery } from 'mongoose';
 
 import { EcfmpMeasure, EcfmpPlugin } from '../../shared/interfaces/ecfmp.interface';
+import getAppConfig from '../config';
 import logger from '../logger';
 import { AGENDA_PROVIDER } from '../schedule.module';
 

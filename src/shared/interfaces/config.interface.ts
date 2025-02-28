@@ -17,6 +17,8 @@ export interface VacdmAppConfig {
     levelFile: string;
   };
 
+  ecfmpPluginUrl: string;
+
   eventUrl: string;
   eventPrio: number;
   eventPullInterval: number;
