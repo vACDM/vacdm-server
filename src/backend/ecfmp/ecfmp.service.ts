@@ -23,7 +23,12 @@ export class EcfmpService {
     this.agenda.every('1 minute', jobNameEnsureMeasureCurrency);
   }
 
-  acceptedMeasureTypes = ['minimum_departure_interval', 'average_departure_interval', 'ground_stop', 'mandatory_route'];
+  acceptedMeasureTypes: EcfmpMeasure['measure']['type'][] = [
+    'minimum_departure_interval',
+    'average_departure_interval',
+    'ground_stop',
+    'mandatory_route',
+  ];
 
   async getMeasures(query: FilterQuery<EcfmpMeasureDocument> = {}): Promise<EcfmpMeasureDocument[]> {
     const measures = await this.ecfmpMeasureModel.find(query);
