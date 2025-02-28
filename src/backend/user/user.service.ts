@@ -33,7 +33,7 @@ export class UserService {
   }
 
   async getUserFromId(id: string): Promise<UserDocument> {
-    logger.debug('trying to get a user with id "%s"', id);
+    logger.silly('trying to get a user with id "%s"', id);
     const user = await this.userModel.findById(id);
 
     if (!user) {
@@ -45,7 +45,7 @@ export class UserService {
   }
 
   async getUserFromCid(cid: number): Promise<UserDocument> {
-    logger.debug('trying to get a user with cid "%s"', cid);
+    logger.silly('trying to get a user with cid "%s"', cid);
     const user = await this.userModel.findOne({ cid });
 
     if (!user) {

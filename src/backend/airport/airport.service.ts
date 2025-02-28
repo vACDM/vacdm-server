@@ -25,7 +25,7 @@ export class AirportService {
   }
 
   async getAirportFromId(id: string): Promise<AirportDocument> {
-    logger.debug('trying to get an airport with id "%s"', id);
+    logger.silly('trying to get an airport with id "%s"', id);
     const arpt = await this.airportModel.findById(id);
 
     if (!arpt) {
@@ -37,7 +37,7 @@ export class AirportService {
   }
 
   async getAirportFromIcao(icao: string): Promise<AirportDocument> {
-    logger.debug('trying to get an airport with icao "%s"', icao);
+    logger.silly('trying to get an airport with icao "%s"', icao);
     const arpt = await this.airportModel.findOne({ icao });
 
     if (!arpt) {
@@ -45,7 +45,7 @@ export class AirportService {
       throw new NotFoundException();
     }
 
-    logger.debug('found airport with icao "%s"', icao);
+    logger.silly('found airport with icao "%s"', icao);
     return arpt;
   }
 
