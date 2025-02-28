@@ -142,7 +142,6 @@ export class CdmService {
       const pilotThatWillBeMoved = pilotsThatCouldBeMoved[0];
 
       pilotThatWillBeMoved.vacdm.blockId += 1;
-      pilotThatWillBeMoved.vacdm.delay += 1;
 
       await this.putPilotIntoBlock(pilotThatWillBeMoved, allPilots);
 
@@ -151,7 +150,6 @@ export class CdmService {
 
     // no pilot could be moved to make space
     pilot.vacdm.blockId += 1;
-    pilot.vacdm.delay += 1;
 
     return this.putPilotIntoBlock(pilot, allPilots);
   }
@@ -248,7 +246,6 @@ export class CdmService {
           // move pilots to current block
 
           for (const pilot of pilotsToMove) {
-            pilot.vacdm.delay -= (pilot.vacdm.blockId - firstBlockId);
             pilot.vacdm.blockId = firstBlockId;
 
             logger.debug('==========>> setting pilot times %o', pilot.callsign);

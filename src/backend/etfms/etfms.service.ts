@@ -154,17 +154,10 @@ export class EtfmsService {
           pilot.vacdm.ttot = new Date(nextAllowableTtot);
         }
 
-        const oldBlockId = pilot.vacdm.blockId;
         const newBlockId = this.utilsService.getBlockFromTime(pilot.vacdm.ttot);
 
-        const additionalDelay = newBlockId - oldBlockId;
-
-        if (additionalDelay > 0) {
-          pilot.vacdm.delay += additionalDelay;
-        }
-
         pilot.vacdm.blockId = newBlockId;
-        // pilot.vacdm.tsat = new Date(pilot.vacdm.ttot.valueOf() - pilot.vacdm.exot * 60000);
+        pilot.vacdm.tsat = new Date(pilot.vacdm.ttot.valueOf() - pilot.vacdm.exot * 60000);
 
       } else if (
         pilot.vacdm.tobt.valueOf() >= (nextAllowableTtot - pilot.vacdm.exot * 60000)
@@ -172,10 +165,8 @@ export class EtfmsService {
       ) {
         pilot.vacdm.ttot = new Date(pilot.vacdm.tobt.valueOf() + pilot.vacdm.exot * 60000);
 
-        pilot.vacdm.delay = 0;
-
         pilot.vacdm.blockId = blockPilotTobt;
-        // pilot.vacdm.tsat = new Date(pilot.vacdm.ttot.valueOf() - pilot.vacdm.exot * 60000);
+        pilot.vacdm.tsat = new Date(pilot.vacdm.ttot.valueOf() - pilot.vacdm.exot * 60000);
       }
 
       await this.cdmService.putPilotIntoBlock(pilot, undefined, nextAllowableTtot);
@@ -193,19 +184,9 @@ export class EtfmsService {
 
     const promises: Promise<unknown>[] = [];
 
-    const endtimeBlockId = this.utilsService.getBlockFromTime(endtime);
-
     for (const pilot of pilots) {
       pilot.vacdm.ctot = endtime;
       pilot.vacdm.suspended = true;
-
-      const { blockId: oldBlockId } = pilot.vacdm;
-
-      const additionalDelay = endtimeBlockId - oldBlockId;
-
-      if (additionalDelay > 0) {
-        pilot.vacdm.delay += additionalDelay;
-      }
 
       promises.push(pilot.save());
     }
