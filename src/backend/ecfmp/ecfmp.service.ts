@@ -31,10 +31,8 @@ export class EcfmpService {
   }
 
   private async fetchMeasuresFromEcfmp(): Promise<EcfmpMeasure[]> {
-    const ecfmpUrl = 'https://flow-dev.ecfmp.net/api/v1/plugin';
-
     try {
-      const ecfmpMeasures = await axios.get<EcfmpPlugin>(ecfmpUrl);
+      const ecfmpMeasures = await axios.get<EcfmpPlugin>(getAppConfig().ecfmpPluginUrl);
 
       return ecfmpMeasures.data.flow_measures;
 

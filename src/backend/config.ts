@@ -23,6 +23,9 @@ interface VacdmConfigEnv {
   LOG_LEVEL_CONSOLE: string;
   LOG_LEVEL_FILE: string;
 
+  ECFMP_PLUGIN_URL: string;
+
+  // TODO: do we need this still? should be managed in the frontend at some point
   EVENT_URL: string | void;
   EVENT_PRIO: string;
   EVENT_PULL_INTERVAL: string;
@@ -54,6 +57,9 @@ const configValidationResult = Joi.object<VacdmConfigEnv>({
   LOG_LEVEL_CONSOLE: Joi.string().default('http'),
   LOG_LEVEL_FILE: Joi.string().default('info'),
 
+  ECFMP_PLUGIN_URL: Joi.string().default('https://ecfmp.vatsim.net/api/v1/plugin'),
+
+  // TODO: do we need this still? should be managed in the frontend at some point
   EVENT_URL: Joi.string().optional(),
   EVENT_PRIO: Joi.string().default(5),
   EVENT_PULL_INTERVAL: Joi.string().default(5),
@@ -83,8 +89,8 @@ export default function getAppConfig(): VacdmAppConfig {
 
     pluginSettings: {
       serverName: options.serverName,
-      allowSimSession: validatedEnv.ALLOW_SIM == 'true' ?? false,
-      allowObsMaster: validatedEnv.ALLOW_OBS_MASTER == 'true' ?? false,
+      allowSimSession: validatedEnv.ALLOW_SIM == 'true',
+      allowObsMaster: validatedEnv.ALLOW_OBS_MASTER == 'true',
     },
 
     frontendSettings: {
@@ -104,6 +110,9 @@ export default function getAppConfig(): VacdmAppConfig {
       levelFile: validatedEnv.LOG_LEVEL_FILE || 'info',
     },
 
+    ecfmpPluginUrl: validatedEnv.ECFMP_PLUGIN_URL,
+
+    // TODO: do we need this still? should be managed in the frontend at some point
     eventUrl: validatedEnv.EVENT_URL || 'https://slots.vatsim-germany.org/api/events/',
     eventPrio: Number(validatedEnv.EVENT_PRIO) || 5,
     eventPullInterval: Number(validatedEnv.EVENT_PULL_INTERVAL || 5),
