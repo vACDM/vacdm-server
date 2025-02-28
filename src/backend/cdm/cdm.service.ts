@@ -57,7 +57,7 @@ export class CdmService {
     };
   }
 
-  private async setTime(pilot: PilotDocument): Promise<IBlockAssignment> {
+  private async setTime(pilot: PilotDocument, earliestAllowableTtot: Date | number | void): Promise<IBlockAssignment> {
     if (
       pilot.vacdm.tsat > pilot.vacdm.tobt ||
       this.utilsService.getBlockFromTime(pilot.vacdm.ttot) != pilot.vacdm.blockId
@@ -69,6 +69,10 @@ export class CdmService {
     if (pilot.vacdm.tsat <= pilot.vacdm.tobt) {
       pilot.vacdm.tsat = pilot.vacdm.tobt;
       pilot.vacdm.ttot = this.utilsService.addMinutes(pilot.vacdm.tsat, pilot.vacdm.exot);
+    }
+
+    if (earliestAllowableTtot) {
+      pilot.vacdm.ctot = new Date(earliestAllowableTtot);
     }
 
     if (!this.utilsService.isTimeEmpty(pilot.vacdm.ctot)) {
@@ -93,6 +97,7 @@ export class CdmService {
   async putPilotIntoBlock(
     pilot: PilotDocument,
     allPilots: PilotDocument[] | void,
+    earliestAllowableTtot: Date | number | void,
   ): Promise<IBlockAssignment> {
     if (!allPilots) {
       allPilots = await this.pilotService.getPilots({
@@ -111,7 +116,7 @@ export class CdmService {
     );
 
     if (cap.capacity > otherPilotsInBlock.length) {
-      return this.setTime(pilot);
+      return this.setTime(pilot, earliestAllowableTtot);
     }
 
     // pilot does not fit into block
@@ -141,7 +146,7 @@ export class CdmService {
 
       await this.putPilotIntoBlock(pilotThatWillBeMoved, allPilots);
 
-      return this.setTime(pilot);
+      return this.setTime(pilot, earliestAllowableTtot);
     }
 
     // no pilot could be moved to make space

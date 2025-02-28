@@ -25,7 +25,7 @@ export class EtfmsService {
     private cdmService: CdmService,
   ) {
     this.agenda.define(jobNameAssignMeasuresToPilots, this.assignMeasuresToPilots.bind(this));
-    this.agenda.every('1 minute', jobNameAssignMeasuresToPilots);
+    // this.agenda.every('1 minute', jobNameAssignMeasuresToPilots);
 
     this.agenda.define(jobNameHandleMeasures, this.handleMeasures.bind(this));
 
@@ -143,8 +143,6 @@ export class EtfmsService {
       const blockNextAllowableTtot = this.utilsService.getBlockFromTime(new Date(nextAllowableTtot));
       const blockPilotTobt = this.utilsService.getBlockFromTime(pilot.vacdm.tobt);
 
-
-
       if (
         pilot.vacdm.ttot.valueOf() < nextAllowableTtot
         || (
@@ -166,7 +164,8 @@ export class EtfmsService {
         }
 
         pilot.vacdm.blockId = newBlockId;
-        pilot.vacdm.tsat = new Date(pilot.vacdm.ttot.valueOf() - pilot.vacdm.exot * 60000);
+        // pilot.vacdm.tsat = new Date(pilot.vacdm.ttot.valueOf() - pilot.vacdm.exot * 60000);
+
       } else if (
         pilot.vacdm.tobt.valueOf() >= (nextAllowableTtot - pilot.vacdm.exot * 60000)
         && await this.cdmService.isSpaceAvailInBlock(pilot.flightplan.adep, pilot.vacdm.blockRwyDesignator, blockPilotTobt)
@@ -176,12 +175,14 @@ export class EtfmsService {
         pilot.vacdm.delay = 0;
 
         pilot.vacdm.blockId = blockPilotTobt;
-        pilot.vacdm.tsat = new Date(pilot.vacdm.ttot.valueOf() - pilot.vacdm.exot * 60000);
+        // pilot.vacdm.tsat = new Date(pilot.vacdm.ttot.valueOf() - pilot.vacdm.exot * 60000);
       }
+
+      await this.cdmService.putPilotIntoBlock(pilot, undefined, nextAllowableTtot);
 
       // ttot also festtackern when no change is necessary
       pilot.vacdm.ctot = pilot.vacdm.ttot;
-      pilot.save();
+      await pilot.save();
 
       lastTtot = pilot.vacdm.ttot.valueOf();
     }
