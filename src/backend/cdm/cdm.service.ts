@@ -71,7 +71,7 @@ export class CdmService {
       pilot.vacdm.ttot = this.utilsService.addMinutes(pilot.vacdm.tsat, pilot.vacdm.exot);
     }
 
-    if (earliestAllowableTtot) {
+    if (earliestAllowableTtot && pilot.vacdm.ttot <= earliestAllowableTtot) {
       pilot.vacdm.ctot = new Date(earliestAllowableTtot);
     }
 
