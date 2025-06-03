@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   function authenticate() {
     window.location.replace('/api/auth');
   }
-  
+
   async function logout() {
     await authService.logout();
 

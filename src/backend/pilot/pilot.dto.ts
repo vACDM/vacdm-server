@@ -20,12 +20,12 @@ class PilotDtoPosition {
 }
 
 class PilotDtoFlightplan {
-  @JoiSchema(Joi.string().required())
-  @JoiSchema([UPDATE], Joi.string().optional())
+  @JoiSchema(Joi.string().uppercase().required())
+  @JoiSchema([UPDATE], Joi.string().uppercase().optional())
     adep: string;
 
-  @JoiSchema(Joi.string().required())
-  @JoiSchema([UPDATE], Joi.string().optional())
+  @JoiSchema(Joi.string().uppercase().required())
+  @JoiSchema([UPDATE], Joi.string().uppercase().optional())
     ades: string;
 }
 
@@ -52,11 +52,11 @@ class PilotDtoClearance {
 export class PilotDto implements NestedPartial<ConvertForApis<Pilot>> {
   @JoiSchema(Joi.string().optional())
     _id: string;
-  
+
   @JoiSchema(PilotCallsignValidator('callsign').required())
   @JoiSchema([UPDATE], Joi.forbidden())
     callsign: string;
-  
+
   @JoiSchema(Joi.boolean().optional().default(false))
     inactive: boolean;
 

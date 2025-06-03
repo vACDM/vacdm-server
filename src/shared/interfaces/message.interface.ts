@@ -23,6 +23,7 @@ export interface NetworkMessage {
 export interface HistoryMessage {
   messageClass: MessageClass.History;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 
@@ -71,9 +72,13 @@ export interface LogicalAcknowledgementMessage extends NetworkMessage {
   messageType: 'LAM';
 }
 
+export interface LogicalRejectionMessage extends NetworkMessage {
+  messageType: 'LRM';
+}
+
 
 export type AnyDPI = EarlyDPI | TargetDPINow | TargetDPITarget | TargetDPISequenced | AtcDPI | XDPITaxioutTime;
-export type AnyNetworkMessage = LogicalAcknowledgementMessage;
+export type AnyNetworkMessage = LogicalAcknowledgementMessage | LogicalRejectionMessage;
 
 export type AnyInboundMessage = AnyDPI;
 export type AnyOutboundMessage = AnyNetworkMessage;

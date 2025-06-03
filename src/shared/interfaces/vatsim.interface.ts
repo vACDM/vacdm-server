@@ -126,7 +126,7 @@ export interface VatsimConnectUserResponseData {
     subdivision: VatsimDivision;
   }
 }
-  
+
 export interface VatsimConnectUserResponse {
   data: VatsimConnectUserResponseData
 }

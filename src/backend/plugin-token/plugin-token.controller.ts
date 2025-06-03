@@ -33,9 +33,9 @@ export class PluginTokenController {
 
   /**
    * Endpoint for user to actually authorize plugin token
-   * @param tokenId 
-   * @param user 
-   * @returns 
+   * @param tokenId
+   * @param user
+   * @returns
    */
   @HttpCode(200)
   @Post('/authorize/:id')
@@ -63,10 +63,10 @@ export class PluginTokenController {
 
   /**
    * Endpoint for plugin to redirect user to, redirects to either frontend or authentication endpoints
-   * @param id 
-   * @param res 
-   * @param user 
-   * @returns 
+   * @param id
+   * @param res
+   * @param user
+   * @returns
    */
   @Get('/authorize/:id')
   async startAuthorizePluginToken(@Param('id') id: string, @Res() res: Response, @User() user: UserDocument) {
@@ -108,7 +108,7 @@ export class PluginTokenController {
     if (scope == 'all' && user.admin) {
       filter = {};
     }
-    
+
     const tokens = await this.pluginTokenService.findTokens(filter);
 
     return tokens;

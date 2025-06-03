@@ -17,14 +17,14 @@ export function Auth(usertype: AcceptedUserTypes = 'any') {
 export const User = createParamDecorator<AcceptedUserTypes | undefined>(
   function getRequestUserDecorator(data: AcceptedUserTypes | undefined, ctx: ExecutionContext): UserDocument | undefined {
     const request = ctx.switchToHttp().getRequest<Request>();
-    
+
     if (data === 'web') {
       return request.webUser;
     }
     if (data === 'plugin') {
       return request.pluginUser;
     }
-    
+
     return request.user || request.webUser || request.pluginUser;
   },
 );

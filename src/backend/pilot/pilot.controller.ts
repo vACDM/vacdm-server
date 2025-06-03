@@ -30,7 +30,7 @@ export class PilotController {
     }
 
     const pilots = await this.pilotService.getPilots(parsedFilter);
-    
+
     return {
       count: pilots.length,
       pilots: pilots,

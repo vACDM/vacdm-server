@@ -14,7 +14,7 @@ type TaxizoneDeleteDialogProps = {
   airport: IAirport | undefined
   taxizone: IAirportTaxizone
   visible: boolean
-  onHide():  void 
+  onHide():  void
 };
 
 
@@ -34,13 +34,13 @@ const TaxizoneDeleteDialog = (props: TaxizoneDeleteDialogProps) => {
   useEffect(() => {
     setVisible(props.visible);
     setTaxizone(props.taxizone);
-    
+
     setAirport(props.airport);
 
   }, []);
 
   const deleteTaxizone = async () => {
-    
+
     const apt = { ...airport };
     const txz = { ...taxizone };
 
@@ -96,5 +96,5 @@ const TaxizoneDeleteDialog = (props: TaxizoneDeleteDialogProps) => {
         <Toast ref={toast} />
   </> );
 };
- 
+
 export default TaxizoneDeleteDialog;

@@ -14,12 +14,12 @@ export class ConfigService {
     patch: -1,
     prerelease: '',
   };
-  
+
   constructor(
     private airportService: AirportService,
   ) {
     const packageString = fs.readFileSync('./package.json');
-    
+
     if (packageString) {
       const packageJson = JSON.parse(packageString.toString());
 
@@ -43,14 +43,14 @@ export class ConfigService {
   getPluginConfig() {
     return getAppConfig().pluginSettings;
   }
-  
+
   getFrontendConfig() {
     return getAppConfig().frontendSettings;
   }
 
   async getExtendedPluginConfig() {
     const airports = await this.airportService.getKnownAirportIcaos();
-    
+
     return {
       version: this.versionResponse,
       config: this.getPluginConfig(),

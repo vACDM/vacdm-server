@@ -22,7 +22,7 @@ export class AuthController {
   @Get()
   initializeConnectFlow(@Res() res: Response, @Query('state') state: string | undefined) {
     const url = this.authService.getVatsimConnectUrl(state);
-    
+
     res.redirect(url);
   }
 
@@ -31,7 +31,7 @@ export class AuthController {
     if (!code && message) {
       return res.redirect('/auth-failure');
     }
-    
+
     const { token, user } = await this.authService.processConnectCallback(code);
 
     logger.debug('user login (%s) %o', state, user);

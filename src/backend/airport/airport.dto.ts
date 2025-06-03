@@ -8,7 +8,7 @@ export const AirportIcaoValidator = Joi.string().regex(/^[A-Z0-9]{4}$/).message(
 class AirportDtoTaxizoneTaxitime {
   @JoiSchema(Joi.string().optional())
     _id: string;
-  
+
   @JoiSchema(Joi.string().required())
   @JoiSchema([UPDATE], Joi.string().optional())
     rwy_designator: string;
@@ -21,7 +21,7 @@ class AirportDtoTaxizoneTaxitime {
 class AirportDtoTaxizone {
   @JoiSchema(Joi.string().optional())
     _id: string;
-  
+
   @JoiSchema(Joi.string().required())
   @JoiSchema([UPDATE], Joi.string().optional())
     label: string;
@@ -33,7 +33,7 @@ class AirportDtoTaxizone {
   @JoiSchema(Joi.array().items(Joi.string()).min(3).required())
   @JoiSchema([UPDATE], Joi.array().items(Joi.string().regex(UtilsService.scopeCoordsRegex)).min(3).optional())
     polygon: string[];
-  
+
   @JoiSchema(Joi.array().items(getTypeSchema(AirportDtoTaxizoneTaxitime)).required())
   @JoiSchema([UPDATE], Joi.array().items(getTypeSchema(AirportDtoTaxizoneTaxitime)).optional())
     taxitimes!: AirportDtoTaxizoneTaxitime[];
@@ -42,8 +42,8 @@ class AirportDtoTaxizone {
 class AirportDtoCapacity {
   @JoiSchema(Joi.string().optional())
     _id: string;
-  
-  
+
+
   @JoiSchema(Joi.string().required())
   @JoiSchema([UPDATE], Joi.string().optional())
     rwy_designator: string;
@@ -60,8 +60,8 @@ class AirportDtoCapacity {
 export class AirportDto {
   @JoiSchema(Joi.string().optional())
     _id: string;
-  
-  
+
+
   @JoiSchema(AirportIcaoValidator.required())
   @JoiSchema([UPDATE], Joi.forbidden())
     icao!: string;

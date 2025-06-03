@@ -1,7 +1,7 @@
 import { Card } from 'primereact/card';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import AirportService from '../services/AirportService';
 import PilotService from '../services/PilotService';
@@ -11,26 +11,20 @@ import Pilot from '@/shared/interfaces/pilot.interface';
 
 
 
-const Landingpage = () => {
+function LandingPage() {
 
   const [airports, setAirports] = useState<Airport[]>([]);
   const [pilots, setPilots] = useState<Pilot[]>();
   const [loading, setLoading] = useState(true);
-  
+
 
   useEffect(() => {
-    async function loadData() {
-
-      AirportService.getAirports().then((data) =>{
-        setAirports(data);
-        setLoading(false);
-      });
-  
-      PilotService.getPilots().then((data) => {
-        setPilots(data);
-      });
+    function loadData() {
+      Promise.allSettled([
+        AirportService.getAirports().then(data => setAirports(data)),
+        PilotService.getPilots().then(data => setPilots(data)),
+      ]).then(() => setLoading(false));
     }
-      
 
     const intervalId = setInterval(loadData, 30000);
 
@@ -41,30 +35,42 @@ const Landingpage = () => {
     };
   }, []);
 
-  const numberOfPilotsTemplate = (rowData) => {
-    if (pilots) {
-      const number = pilots.filter((value) => value.flightplan.adep === rowData.icao);
-      return number.length;
+  function templateAirportStatus(rowData: Airport): React.ReactNode {
+    if (!pilots) {
+      return '';
     }
-  };
 
-  const avgStartupDelayTemplate = (rowData) => {
-    if (pilots) {
-      let delay = 0;
-      const number = pilots.filter((pilot) => pilot.flightplan.adep === rowData.icao);
-      for (const pilot of number) {
-        delay = delay + pilot.vacdm.delay;
-      }
-      return number.length === 0 ? '' : Math.ceil(delay / number.length) + ' Minutes';
-    }
-  };
+    return pilots.some((value) => value.flightplan.adep === rowData.icao)
+      ? <span className='text-green-500'>CDM in operation</span>
+      : <span className='text-gray-500'>no CDM operation</span>;
+  }
 
-  const statusTemplate = (rowData) => {
-    if (pilots) {
-      const number = pilots.filter((value) => value.flightplan.adep === rowData.icao);
-      return (number.length !== 0 ? <span className='text-green-500'>CDM in operation</span> : <span className='text-gray-500'>no CDM operation</span>);
+  function templateNumberOfPilots(rowData: Airport): React.ReactNode {
+    if (!pilots) {
+      return '';
     }
-  };
+
+    return String(pilots.filter((value) => value.flightplan.adep === rowData.icao).length);
+  }
+
+  function templateAverageStartupDelay(rowData: Airport): React.ReactNode {
+    if (!pilots) {
+      return '';
+    }
+
+    const { overallDelay, pilotCount } = pilots
+      .filter((pilot) => pilot.flightplan.adep === rowData.icao)
+      .reduce<{ overallDelay: number, pilotCount: number }>(
+      (pv, pilot) => ({ overallDelay: pv.overallDelay + pilot.vacdm.delay, pilotCount: pv.pilotCount + 1 }),
+      { overallDelay: 0, pilotCount: 0 },
+    );
+
+    if (pilotCount === 0) {
+      return '';
+    }
+
+    return `${Math.round((overallDelay / 60000) / pilotCount)} Minutes`;
+  }
 
   return (
     <>
@@ -83,15 +89,15 @@ const Landingpage = () => {
             sortOrder={1}
             >
               <Column field='icao' sortable header='ICAO'></Column>
-              <Column header='Status' body={statusTemplate}></Column>
-              <Column header='# Pilots' body={numberOfPilotsTemplate}></Column>
-              <Column header='Avg. Startup Delay' body={avgStartupDelayTemplate} ></Column>
+              <Column header='Status' body={templateAirportStatus}></Column>
+              <Column header='# Pilots' body={templateNumberOfPilots}></Column>
+              <Column header='Avg. Startup Delay' body={templateAverageStartupDelay} ></Column>
             </DataTable>
           </Card>
         </div>
       </div>
     </>
   );
-};
+}
 
-export default Landingpage;
+export default LandingPage;

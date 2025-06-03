@@ -18,6 +18,7 @@ interface Pilot {
 
     ctot: Date;
     ttot: Date;
+    suspended: boolean;
 
     asat: Date;
     aobt: Date;
@@ -52,10 +53,7 @@ interface Pilot {
     sid: string;
   };
 
-  measures: {
-    ident: string;
-    value: number;
-  }[];
+  measures: string[];
   inactive: boolean;
 
   // mongoose fields

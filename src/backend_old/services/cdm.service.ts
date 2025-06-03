@@ -110,11 +110,11 @@ export async function putPilotIntoBlock(
           plt.measures.find((e) => e.ident === measure.ident) &&
           plt.callsign != pilot.callsign,
       );
+      
       if (pilotsWithSameMeasures.length > 0) {
         for (const smp of pilotsWithSameMeasures) {
           if (
-            dayjs(smp.vacdm.ttot).diff(pilot.vacdm.ttot, 'minute') <
-            Math.ceil(measure.value / 60)
+            dayjs(smp.vacdm.ttot).diff(pilot.vacdm.ttot, 'minute') < Math.ceil(measure.value / 60)
           ) {
             pilot.vacdm.ctot = timeUtils.addMinutes(
               smp.vacdm.ttot,

@@ -23,7 +23,7 @@ async function getAirport(icao: string): Promise<Airport> {
 }
 
 async function updateAirport(icao: string, body: object): Promise<void> {
-  try {       
+  try {
     await axios.patch('/api/v1/airports/' + icao, body);
     return;
   } catch (error) {
@@ -44,6 +44,6 @@ async function createAirport(body: object): Promise<Airport> {
 export default {
   getAirports,
   getAirport,
-  updateAirport, 
+  updateAirport,
   createAirport,
 };

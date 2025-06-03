@@ -1,5 +1,3 @@
-version: '2.4'
-
 services:
   server:
     build:
@@ -26,10 +24,19 @@ services:
       - ALLOW_OBS_MASTER=true
       - LOG_LEVEL_CONSOLE=debug
       - LOG_LEVEL_FILE=none
+      - ECFMP_PLUGIN_URL=https://flow-dev.ecfmp.net/api/v1/plugin
       - FRONTEND_PROXY=http://frontend:5173/
   frontend:
-    image: node:18-alpine
-    working_dir: /app
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: build
+      args:
+        - NODE_ENV=development
     command: npm run spa-dev
     volumes:
-      - .:/app:delegated
+      - .:/opt:delegated
+      - node_modules:/opt/node_modules:delegated
+
+volumes:
+  node_modules:

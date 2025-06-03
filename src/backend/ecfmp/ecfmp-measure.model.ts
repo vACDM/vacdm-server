@@ -17,9 +17,8 @@ const EcfmpMeasureSchema = new mongoose.Schema<EcfmpMeasure>({
   starttime: { type: Date, default: -1 },
   endtime: { type: Date, default: -1 },
   withdrawn_at: { type: Date, default: -1 },
-  notified_flight_information_regions: [Number],
   measure: {
-    type: { type: String, default: '' },
+    type: { type: String, required: true },
     value: { type: Number, default: null },
   },
   filters: [

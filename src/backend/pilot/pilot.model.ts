@@ -1,4 +1,4 @@
-import mongoose, { HydratedDocument, Model } from 'mongoose';
+import mongoose, { HydratedDocument, Model, mongo } from 'mongoose';
 
 import { DB_PROVIDER } from '../database.module';
 
@@ -32,6 +32,7 @@ const PilotSchema = new mongoose.Schema<Pilot>({
 
     ctot: { type: Date, default: -1 },
     ttot: { type: Date, default: -1 },
+    suspended: { type: Boolean, default: false },
 
     asrt: { type: Date, default: -1 },
     aort: { type: Date, default: -1 },
@@ -39,7 +40,6 @@ const PilotSchema = new mongoose.Schema<Pilot>({
     asat: { type: Date, default: -1 },
     aobt: { type: Date, default: -1 },
 
-    delay: { type: Number, default: 0 },
     prio: { type: Number, default: 0 },
 
     sug: { type: Date, default: -1 },
@@ -64,12 +64,13 @@ const PilotSchema = new mongoose.Schema<Pilot>({
     dep_rwy: { type: String, default: '' },
     sid: { type: String, default: '' },
   },
-  measures: [{
-    ident: { type: String, required: true },
-    value: { type: Number, default: -1 },
-  }],
+  measures: [{ type: mongo.ObjectId, ref: 'EcfmpMeasure' }],
   inactive: { type: Boolean, default: false },
-}, { timestamps: true });
+}, { timestamps: true, toJSON: { virtuals: ['vacdm.delay'] } });
+
+PilotSchema.virtual('vacdm.delay').get(function (this: PilotDocument) {
+  return this.vacdm.tsat.valueOf() - this.vacdm.tobt.valueOf();
+});
 
 export const PilotProvider = {
   provide: PILOT_MODEL,

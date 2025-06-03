@@ -46,7 +46,7 @@ const DepartureBlocks = () => {
   };
 
   function getBlockNumbers() {
-    const blockNumberFromTime = blockUtils.getBlockFromTime(new Date());   
+    const blockNumberFromTime = blockUtils.getBlockFromTime(new Date());
     return [
       blockUtils.getTimeFromBlock(blockNumberFromTime),
       blockUtils.getTimeFromBlock(blockNumberFromTime + 1),
@@ -57,7 +57,7 @@ const DepartureBlocks = () => {
   async function departureBlocksToBarFormat(departureBlocks: any) {
     const labels: any = getBlockNumbers();
 
-      
+
 
     const datasetArray: any = [];
     const niceLabels: any = [];
@@ -70,7 +70,7 @@ const DepartureBlocks = () => {
       labels.forEach((entry: any) => {
         console.log('entry', entry);
 
-        
+
 
         datasetObject.data.push(departureBlocks.rwys[key][blockUtils.getBlockFromTime(entry)].length);
       });
@@ -79,7 +79,7 @@ const DepartureBlocks = () => {
       datasetArray.push(datasetObject);
 
       console.log('dataset', datasetObject);
-      
+
     }
 
     labels.forEach((entry: any) => {
@@ -101,7 +101,7 @@ const DepartureBlocks = () => {
 
         setBasicData(chartData);
         setLoading(false);
-        
+
       } catch (e) {
         // disregard :)
       }

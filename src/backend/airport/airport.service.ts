@@ -25,27 +25,27 @@ export class AirportService {
   }
 
   async getAirportFromId(id: string): Promise<AirportDocument> {
-    logger.debug('trying to get an airport with id "%s"', id);
+    logger.silly('trying to get an airport with id "%s"', id);
     const arpt = await this.airportModel.findById(id);
-    
+
     if (!arpt) {
       logger.verbose('could not find airport with id "%s"', id);
       throw new NotFoundException();
     }
-    
+
     return arpt;
   }
 
   async getAirportFromIcao(icao: string): Promise<AirportDocument> {
-    logger.debug('trying to get an airport with icao "%s"', icao);
+    logger.silly('trying to get an airport with icao "%s"', icao);
     const arpt = await this.airportModel.findOne({ icao });
-    
+
     if (!arpt) {
       logger.verbose('could not find airport with icao "%s"', icao);
       throw new NotFoundException();
     }
-    
-    logger.debug('found airport with icao "%s"', icao);
+
+    logger.silly('found airport with icao "%s"', icao);
     return arpt;
   }
 
@@ -77,9 +77,9 @@ export class AirportService {
 
   async deleteAirport(icao: string): Promise<AirportDocument> {
     logger.verbose('deleting airport "%s"', icao);
-    
+
     const arpt = await this.airportModel.findOneAndRemove({ icao });
-    
+
     if (!arpt) {
       throw new NotFoundException();
     }
@@ -173,7 +173,7 @@ export class AirportService {
   }
 
   // TODO: refactor this to aggregation at some point
-  async getBlockUtilization(icao: string): Promise<AirportBlocks> {
+  async getBlockUtilization(icao: string, count = 12): Promise<AirportBlocks> {
     const airport = await this.getAirportFromIcao(icao);
 
     const blocks: AirportBlocks = {
@@ -181,19 +181,32 @@ export class AirportService {
       rwys: {},
     };
 
+    const blockOffset = this.utilsService.getBlockFromTime(new Date());
+
+    const relevantBlocks = Array(count).fill(null).map((_, i) => i + blockOffset);
+    const blockArrays = relevantBlocks.map(blockId => [blockId, []]);
+
+    logger.debug('determined offset to be %d, generated relevant blocks: %o', blockOffset, relevantBlocks);
+
     for (const cap of airport.capacities) {
       const rwyDesignator = cap.alias || cap.rwy_designator;
 
-      blocks.rwys[rwyDesignator] = Object.fromEntries(Array(144).fill(null).map((_, i) => [i, []]));
+      blocks.rwys[rwyDesignator] = Object.fromEntries(blockArrays);
     }
 
     const pilots = await this.pilotService.getPilots({
-      'vacdm.blockId': { $not: { $eq: -1 } },
-      'flightplan.departure': icao,
+      'vacdm.blockId': { $in: relevantBlocks },
+      'flightplan.adep': icao,
     });
 
     for (const pilot of pilots) {
       const { blockRwyDesignator: blockRwyDesignator, blockId } = pilot.vacdm;
+
+      if (!blocks.rwys[blockRwyDesignator]) {
+        logger.debug('invalid runway %s/%s for pilot %s', pilot.flightplan.adep, blockRwyDesignator, pilot.callsign);
+        continue;
+      }
+
       blocks.rwys[blockRwyDesignator][blockId].push(pilot);
     }
 

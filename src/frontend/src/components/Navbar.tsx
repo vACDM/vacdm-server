@@ -64,7 +64,7 @@ export default function NavbarWithDropdown() {
         (item.permission ? item.permission : () => true)(auth.user),
       ),
     );
-    
+
     // AuthService.getConfig()
     //   .then((data) => {
     //     setConfig(data);

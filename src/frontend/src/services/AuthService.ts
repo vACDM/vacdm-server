@@ -29,7 +29,7 @@ export async function logout() {
     await axios.post('/api/auth/logout', {
       withCredentials: true,
     });
-    
+
   } catch (error) {
     console.error(error);
     throw error;
