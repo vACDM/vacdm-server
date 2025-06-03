@@ -96,6 +96,7 @@ export class EtfmsService {
         const measuresApplyingToPilot: EcfmpMeasureDocument[] = await this.getMeasuresApplyingToPilot(pilot, measures);
 
         pilot.measures = measuresApplyingToPilot.map(m => String(m._id));
+        pilot.vacdm.suspended = measuresApplyingToPilot.some(m => m.measure.type === 'ground_stop');
 
         promises.push(pilot.save());
       }
@@ -206,12 +207,6 @@ export class EtfmsService {
       inactive: false,
     });
 
-    /* TODO: cleanup <3
-      - remove suspended flag from pilots
-    */
-
-    const groundStopIds: string[] = measures.filter(m => m.measure.type === 'ground_stop').map(m => String(m._id));
-
     const promises: Promise<unknown>[] = [];
 
     for (const measure of measures) {
@@ -222,7 +217,7 @@ export class EtfmsService {
         case 'minimum_departure_interval': {
           const pilotsThisMeasure = pilots.filter(p =>
             p.measures.includes(measureId) &&
-            !p.measures.some(m => groundStopIds.includes(m)),
+            !p.vacdm.suspended,
           );
 
           promises.push(this.processMeasureMdi(measure, pilotsThisMeasure));
