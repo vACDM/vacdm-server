@@ -18,6 +18,7 @@ import { FrontendProxyModule } from './frontend-proxy/frontend-proxy.module';
 import { MessageModule } from './message/message.module';
 import { PilotModule } from './pilot/pilot.module';
 import { PluginTokenModule } from './plugin-token/plugin-token.module';
+import { ScheduleModule } from './schedule/schedule.module';
 import { agendaProviders } from './schedule.module';
 import { UserModule } from './user/user.module';
 import { UtilsModule } from './utils/utils.module';
@@ -54,6 +55,7 @@ const { frontendProxy } = getAppConfig();
     ConfigModule,
     PluginTokenModule,
     VdgsModule,
+    ScheduleModule,
   ],
   providers: [...databaseProviders, ...agendaProviders],
   exports: [...databaseProviders],

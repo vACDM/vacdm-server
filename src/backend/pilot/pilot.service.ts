@@ -7,6 +7,7 @@ import { AirportService } from '../airport/airport.service';
 import { CdmService } from '../cdm/cdm.service';
 import getAppConfig from '../config';
 import logger from '../logger';
+import { Schedule } from '../schedule/schedule.decorator';
 import { AGENDA_PROVIDER } from '../schedule.module';
 import { UtilsService } from '../utils/utils.service';
 
@@ -156,6 +157,7 @@ export class PilotService {
     return pilot;
   }
 
+  @Schedule({ id: 'pilotService:cleanupPilots', interval: '' })
   async cleanupPilots() {
     // delete long inactive pilots
     const pilotsToBeDeleted = await this.getPilots({
