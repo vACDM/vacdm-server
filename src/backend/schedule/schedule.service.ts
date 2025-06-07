@@ -5,6 +5,8 @@ import logger from '../logger';
 
 import { SCHEDULED_METADATA_KEY, TScheduleOptions } from './schedule.decorator';
 
+export interface IScheduleRunDetails {}
+
 @Injectable()
 export class ScheduleService implements OnModuleInit {
   constructor(
@@ -14,7 +16,11 @@ export class ScheduleService implements OnModuleInit {
     // private readonly userService: UserService, // This can be any DB service
   ) {}
 
+  private methodMap: Map<string, { method: (details: IScheduleRunDetails) => void }> = new Map();
+
   onModuleInit() {
+    logger.info('Loading scheduled methods');
+
     const providers = this.discoveryService.getProviders();
 
     for (const wrapper of providers) {
@@ -34,9 +40,14 @@ export class ScheduleService implements OnModuleInit {
           continue;
         }
 
-        logger.debug('found scheduled method %s/%s', wrapperName, methodName);
+        logger.info('Loaded scheduled method %s/%s', wrapperName, methodName);
       }
     }
+
+    logger.info('Loaded scheduled methods');
   }
 
+  private check() {}
+
+  private executeMethod(methodId: string) {}
 }
