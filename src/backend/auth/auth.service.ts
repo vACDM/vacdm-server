@@ -82,11 +82,11 @@ export class AuthService {
       throw new Error('payload was somehow string...');
     }
 
-    if (new Date(payload.exp ?? 0) >= new Date(Date.now() + (30 * 60 * 1000))) {
+    if (new Date((payload.exp ?? 0) * 1000) >= new Date(Date.now() + (30 * 60 * 1000))) {
       return null;
     }
 
-    logger.info('Generating nwe token for user %s', payload.cid);
+    logger.info('Generating new token for user %s', payload.cid);
     const user = await this.userService.getUserFromCid(payload.cid);
 
     const newToken = this.userService.createTokenForUser(user);
