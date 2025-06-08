@@ -1,36 +1,23 @@
-import { Inject, Injectable } from '@nestjs/common';
-import Agenda from 'agenda';
+import { Injectable } from '@nestjs/common';
 import dayjs from 'dayjs';
 
 import { EcfmpFilter } from '../../shared/interfaces/ecfmp.interface';
 import { CdmService } from '../cdm/cdm.service';
 import { EcfmpMeasureDocument } from '../ecfmp/ecfmp-measure.model';
 import { EcfmpService } from '../ecfmp/ecfmp.service';
-import logger from '../logger';
 import { PilotDocument } from '../pilot/pilot.model';
 import { PilotService } from '../pilot/pilot.service';
-import { AGENDA_PROVIDER } from '../schedule.module';
+import { Schedule } from '../schedule/schedule.decorator';
 import { UtilsService } from '../utils/utils.service';
-
-const jobNameAssignMeasuresToPilots = 'ETFMS_assignMeasuresToPilots';
-const jobNameHandleMeasures = 'ETFMS_handleMeasures';
 
 @Injectable()
 export class EtfmsService {
   constructor(
-    @Inject(AGENDA_PROVIDER) private agenda: Agenda,
     private ecfmpService: EcfmpService,
     private pilotService: PilotService,
     private utilsService: UtilsService,
     private cdmService: CdmService,
-  ) {
-    this.agenda.define(jobNameAssignMeasuresToPilots, this.assignMeasuresToPilots.bind(this));
-    this.agenda.every('1 minute', jobNameAssignMeasuresToPilots);
-
-    this.agenda.define(jobNameHandleMeasures, this.handleMeasures.bind(this));
-
-    this.agenda.on(`success:${jobNameAssignMeasuresToPilots}`, () => this.agenda.jobs({ name: jobNameHandleMeasures }).then(jobs => { if (jobs[0]) { jobs[0].run(); } else { agenda.now(jobNameHandleMeasures, {}); } }));
-  }
+  ) {}
 
   private stringAirportMatcher(pilotField: string, measureValue: string): boolean {
     const regexifiedValue = measureValue.replace(/\*/g, '.');
@@ -83,28 +70,23 @@ export class EtfmsService {
     return applyingMeasures;
   }
 
-  private async assignMeasuresToPilots() {
-    logger.verbose(`${jobNameAssignMeasuresToPilots} > running...`);
+  @Schedule({ nextJob: 'EtfmsService:handleMeasures' })
+  async assignMeasuresToPilots() {
+    const measures: EcfmpMeasureDocument[] = await this.ecfmpService.getMeasures();
+    const pilots: PilotDocument[] = await this.pilotService.getPilots();
 
-    try {
-      const measures: EcfmpMeasureDocument[] = await this.ecfmpService.getMeasures();
-      const pilots: PilotDocument[] = await this.pilotService.getPilots();
+    const promises: Promise<unknown>[] = [];
 
-      const promises: Promise<unknown>[] = [];
+    for (const pilot of pilots) {
+      const measuresApplyingToPilot: EcfmpMeasureDocument[] = await this.getMeasuresApplyingToPilot(pilot, measures);
 
-      for (const pilot of pilots) {
-        const measuresApplyingToPilot: EcfmpMeasureDocument[] = await this.getMeasuresApplyingToPilot(pilot, measures);
+      pilot.measures = measuresApplyingToPilot.map(m => String(m._id));
+      pilot.vacdm.suspended = measuresApplyingToPilot.some(m => m.measure.type === 'ground_stop');
 
-        pilot.measures = measuresApplyingToPilot.map(m => String(m._id));
-        pilot.vacdm.suspended = measuresApplyingToPilot.some(m => m.measure.type === 'ground_stop');
-
-        promises.push(pilot.save());
-      }
-
-      await Promise.allSettled(promises);
-    } catch (error) {
-      logger.error(`${jobNameAssignMeasuresToPilots} > failed: %o`, error);
+      promises.push(pilot.save());
     }
+
+    await Promise.allSettled(promises);
   }
 
   private async processMeasureMdi(measure: EcfmpMeasureDocument, pilots: PilotDocument[]) {
@@ -195,8 +177,8 @@ export class EtfmsService {
     await Promise.allSettled(promises);
   }
 
-  private async handleMeasures() {
-    logger.verbose(`${jobNameHandleMeasures} > running...`);
+  @Schedule({ nextJob: 'CdmService:optimizeBlockAssignments' })
+  async handleMeasures() {
     const measures: EcfmpMeasureDocument[] = await this.ecfmpService.getMeasures();
     const pilots: PilotDocument[] = await this.pilotService.getPilots({
       measures: {

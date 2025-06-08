@@ -1,12 +1,11 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
-import Agenda from 'agenda';
 import { mongo } from 'mongoose';
 
 import { AirportService } from '../airport/airport.service';
 import logger from '../logger';
 import { PilotDocument } from '../pilot/pilot.model';
 import { PilotService } from '../pilot/pilot.service';
-import { AGENDA_PROVIDER } from '../schedule.module';
+import { Schedule } from '../schedule/schedule.decorator';
 import { UtilsService } from '../utils/utils.service';
 
 import { AirportCapacity } from '@/shared/interfaces/airport.interface';
@@ -16,19 +15,13 @@ interface IBlockAssignment {
   ttot: Date;
 }
 
-const jobNameOptimizeBlockAssignments = 'CDM_optimizeBlockAssignments';
-
 @Injectable()
 export class CdmService {
   constructor(
     @Inject(forwardRef(() => AirportService)) private airportService: AirportService,
     @Inject(forwardRef(() => PilotService)) private pilotService: PilotService,
     private utilsService: UtilsService,
-    @Inject(AGENDA_PROVIDER) private agenda: Agenda,
-  ) {
-    this.agenda.define(jobNameOptimizeBlockAssignments, this.optimizeBlockAssignments.bind(this));
-    this.agenda.every('30 seconds', jobNameOptimizeBlockAssignments);
-  }
+  ) {}
 
   determineInitialBlock(pilot: PilotDocument): IBlockAssignment {
     if (
@@ -158,6 +151,7 @@ export class CdmService {
     return this.putPilotIntoBlock(pilot, allPilots);
   }
 
+  @Schedule()
   private async optimizeBlockAssignments(): Promise<void> {
     logger.debug('optimizer rein');
     const currentBlockId = this.utilsService.getBlockFromTime(new Date());

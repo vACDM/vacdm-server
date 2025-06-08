@@ -1,5 +1,4 @@
 import { ConflictException, Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
-import Agenda from 'agenda';
 import { FilterQuery } from 'mongoose';
 import { Parser } from 'peggy';
 
@@ -7,7 +6,7 @@ import { AirportService } from '../airport/airport.service';
 import { CdmService } from '../cdm/cdm.service';
 import getAppConfig from '../config';
 import logger from '../logger';
-import { AGENDA_PROVIDER } from '../schedule.module';
+import { Schedule } from '../schedule/schedule.decorator';
 import { UtilsService } from '../utils/utils.service';
 
 import { PilotDto } from './pilot.dto';
@@ -21,12 +20,8 @@ export class PilotService {
     @Inject(PILOT_MODEL) private pilotModel: PilotModel,
     private utilsService: UtilsService,
     @Inject(forwardRef(() => AirportService)) private airportService: AirportService,
-    @Inject(AGENDA_PROVIDER) private agenda: Agenda,
     @Inject(forwardRef(() => CdmService)) private cdmService: CdmService,
   ) {
-    this.agenda.define('PILOT_cleanupPilots', this.cleanupPilots.bind(this));
-    this.agenda.every('10 minutes', 'PILOT_cleanupPilots');
-
     this.parser = this.utilsService.generateFilter({
       adep: 'flightplan.adep',
       ades: 'flightplan.ades',
@@ -156,6 +151,9 @@ export class PilotService {
     return pilot;
   }
 
+  @Schedule({
+    interval: '10 minutes',
+  })
   async cleanupPilots() {
     // delete long inactive pilots
     const pilotsToBeDeleted = await this.getPilots({
