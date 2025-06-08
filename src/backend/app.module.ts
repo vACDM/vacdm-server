@@ -19,7 +19,6 @@ import { MessageModule } from './message/message.module';
 import { PilotModule } from './pilot/pilot.module';
 import { PluginTokenModule } from './plugin-token/plugin-token.module';
 import { ScheduleModule } from './schedule/schedule.module';
-import { agendaProviders } from './schedule.module';
 import { UserModule } from './user/user.module';
 import { UtilsModule } from './utils/utils.module';
 import { VdgsModule } from './vdgs/vdgs.module';
@@ -57,7 +56,7 @@ const { frontendProxy } = getAppConfig();
     VdgsModule,
     ScheduleModule,
   ],
-  providers: [...databaseProviders, ...agendaProviders],
+  providers: [...databaseProviders],
   exports: [...databaseProviders],
 })
 export class AppModule implements NestModule {
