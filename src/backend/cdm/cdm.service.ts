@@ -264,7 +264,7 @@ export class CdmService {
           for (const pilot of pilotsToMove) {
             pilot.vacdm.blockId = targetBlockId;
 
-            logger.debug('optimizing pilot %s', pilot.callsign);
+            // logger.debug('optimizing pilot %s', pilot.callsign);
 
             await this.setTime(pilot);
           }
