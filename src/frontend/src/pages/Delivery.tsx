@@ -9,6 +9,7 @@ import { classNames } from 'primereact/utils';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import blockUtils from '../../../shared/utils/block.utils';
 import PilotService from '../services/PilotService';
 
 import Pilot from '@/shared/interfaces/pilot.interface';
@@ -30,17 +31,15 @@ const Delivery = () => {
         const filteredPilots: Pilot[] = [];
 
         data.forEach((element: Pilot) => {
-          if (!element.inactive) {
-            filteredPilots.push(element);
-            const { adep, ades } = element.flightplan;
+          filteredPilots.push(element);
+          const { adep, ades } = element.flightplan;
 
-            if (departureAirports.findIndex((aerodrome) => aerodrome.name === adep) === -1) {
-              departureAirports.push({ name: adep, value: adep });
-            }
+          if (departureAirports.findIndex((aerodrome) => aerodrome.name === adep) === -1) {
+            departureAirports.push({ name: adep, value: adep });
+          }
 
-            if (arrivalAirports.findIndex((aerodrome) => aerodrome.name === ades) === -1) {
-              arrivalAirports.push({ name: ades, value: ades });
-            }
+          if (arrivalAirports.findIndex((aerodrome) => aerodrome.name === ades) === -1) {
+            arrivalAirports.push({ name: ades, value: ades });
           }
         });
 
@@ -92,6 +91,12 @@ const Delivery = () => {
     };
   }
 
+  function mkRawTemplate(getValue: (pilot: Pilot) => string) {
+    return (rowData) => {
+      return <div>{getValue(rowData)}</div> ;
+    };
+  }
+
   const sidRwyBodyTemplate = (rowData: Pilot) => {
     return <div>{rowData.clearance.sid + ' (' + rowData.clearance.dep_rwy + ')'}</div>;
   };
@@ -111,21 +116,27 @@ const Delivery = () => {
     <div>
       <Card>
         <DataTable
-        value={pilots}
-        size='small'
-        loading={loading}
+          value={pilots}
+          size='small'
+          loading={loading}
+          sortMode="multiple"
+          sortField="vacdm.tsat"
+          sortOrder={-1}
         >
-          <Column field='callsign' header='Callsign'></Column>
+          <Column header='' body={mkRawTemplate(p => p.inactive ? '💤' : '')}></Column>
+          <Column header='Callsign' sortable field='callsign'></Column>
           <Column header='EOBT' body={mkFormat(pilot => pilot.vacdm.eobt)}></Column>
-          <Column header='TOBT' body={tobtBodyTemplate}></Column>
-          <Column header='TSAT' body={tsatBodyTemplate}></Column>
-          <Column header='ASAT' body={mkFormat(pilot => pilot.vacdm.asat)}></Column>
-          <Column header='EXOT' field='vacdm.exot'></Column>
-          <Column header='TTOT' body={mkFormat(pilot => pilot.vacdm.ttot)}></Column>
-          <Column header='CTOT' body={mkFormat(pilot => pilot.vacdm.ctot)}></Column>
+          <Column header='TOBT' sortable field="vacdm.tobt" body={tobtBodyTemplate}></Column>
+          <Column header='TSAT' sortable field="vacdm.tsat" body={tsatBodyTemplate}></Column>
+          <Column header='ASAT' sortable field="vacdm.asat" body={mkFormat(pilot => pilot.vacdm.asat)}></Column>
+          <Column header='EXOT' sortable field='vacdm.exot'></Column>
+          <Column header='TTOT' sortable field="vacdm.ttot" body={mkFormat(pilot => pilot.vacdm.ttot)}></Column>
+          <Column header='CTOT' sortable field="vacdm.ctot" body={mkFormat(pilot => pilot.vacdm.ctot)}></Column>
           <Column header='ADEP' field='flightplan.adep'></Column>
-          <Column header='Prio' field='vacdm.prio'></Column>
-          <Column header='Delay' body={(pilot: Pilot) => Math.round(pilot.vacdm.delay / 60000)}></Column>
+          <Column header='Prio' sortable field='vacdm.prio'></Column>
+          <Column header='Delay' sortable field="vacdm.delay" body={(pilot: Pilot) => Math.ceil(pilot.vacdm.delay / 60000)}></Column>
+          <Column header='Block ID' sortable field="vacdm.blockId" body={mkRawTemplate(p => String(p.vacdm.blockId))}></Column>
+          <Column header='Block Time' body={mkRawTemplate(p => dayjs(blockUtils.getTimeFromBlock(p.vacdm.blockId)).utc().format('HH:mm'))}></Column>
           <Column header='SID-RWY' body={sidRwyBodyTemplate}></Column>
           <Column header='ADES' field='flightplan.ades'></Column>
           <Column header='Taxizone' field='vacdm.taxizone'></Column>

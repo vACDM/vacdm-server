@@ -4,10 +4,14 @@ import { Request, Response, NextFunction } from 'express';
 import { UserService } from '../user/user.service';
 
 import { COOKIE_NAME_VACDM_TOKEN } from './auth.controller';
+import { AuthService } from './auth.service';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private authService: AuthService,
+  ) {}
 
   private headerTokenRegex = /^Bearer (.+)$/;
 
@@ -17,6 +21,12 @@ export class AuthMiddleware implements NestMiddleware {
     if (cookieToken) {
       try {
         request.webUser = await this.userService.getUserFromToken(cookieToken);
+
+        const newToken = await this.authService.getNewTokenIfOldTokenExpiresSoon(cookieToken);
+
+        if (newToken) {
+          response.cookie(COOKIE_NAME_VACDM_TOKEN, newToken);
+        }
       } catch (_) {
         // do nothing
       }

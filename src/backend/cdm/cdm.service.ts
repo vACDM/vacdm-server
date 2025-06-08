@@ -21,8 +21,7 @@ export class CdmService {
     @Inject(forwardRef(() => AirportService)) private airportService: AirportService,
     @Inject(forwardRef(() => PilotService)) private pilotService: PilotService,
     private utilsService: UtilsService,
-  ) {
-  }
+  ) {}
 
   determineInitialBlock(pilot: PilotDocument): IBlockAssignment {
     if (
@@ -93,16 +92,14 @@ export class CdmService {
     allPilots: PilotDocument[] | void,
     earliestAllowableTtot: Date | number | void,
   ): Promise<IBlockAssignment> {
-    if (!allPilots) {
-      allPilots = await this.pilotService.getPilots({
-        'flightplan.adep': pilot.flightplan.adep,
-        'vacdm.blockRwyDesignator': pilot.vacdm.blockRwyDesignator,
-        _id: { $ne: new mongo.ObjectId(pilot._id) },
-      });
-    }
+    allPilots ??= await this.pilotService.getPilots({
+      'flightplan.adep': pilot.flightplan.adep,
+      'vacdm.blockRwyDesignator': pilot.vacdm.blockRwyDesignator,
+      _id: { $ne: new mongo.ObjectId(pilot._id) },
+    });
 
     // count all pilots in block
-    const otherPilotsInBlock = allPilots.filter(plt => plt.vacdm.blockId == pilot.vacdm.blockId);
+    const otherPilotsInBlock = allPilots.filter(otherPilot => String(otherPilot._id) !== String(pilot._id) && otherPilot.vacdm.blockId === pilot.vacdm.blockId);
 
     const cap: AirportCapacity = await this.airportService.getCapacityForRwyDesignator(
       pilot.flightplan.adep,
@@ -118,17 +115,21 @@ export class CdmService {
     // check if other pilot could be moved out of block
     const nowPlusTen = this.utilsService.addMinutes(new Date(), 10);
 
+    const currentPilotDelay = this.utilsService.getBlockFromTime(pilot.vacdm.ttot) !== pilot.vacdm.blockId
+      ? this.utilsService.getTimeFromBlock(pilot.vacdm.blockId).valueOf() - (pilot.vacdm.exot * 60000) - pilot.vacdm.tobt.valueOf()
+      : 0;
+
     const pilotsThatCouldBeMoved = otherPilotsInBlock.filter(
-      (plt) =>
-        plt.vacdm.tsat > nowPlusTen &&
-        plt.vacdm.prio + plt.vacdm.delay < pilot.vacdm.prio + pilot.vacdm.delay &&
+      (otherPilot) =>
+        otherPilot.vacdm.tsat > nowPlusTen &&
+        otherPilot.vacdm.prio + otherPilot.vacdm.delay < pilot.vacdm.prio + currentPilotDelay &&
         this.utilsService.isTimeEmpty(pilot.vacdm.ctot),
     );
 
     pilotsThatCouldBeMoved.sort((pilotA, pilotB) => {
       return (
         (pilotA.vacdm.prio + pilotA.vacdm.delay) - (pilotB.vacdm.prio + pilotB.vacdm.delay) ||
-        pilotB.vacdm.blockAssignment.valueOf() - pilotA.vacdm.blockAssignment.valueOf()
+        pilotA.vacdm.blockAssignment.valueOf() - pilotB.vacdm.blockAssignment.valueOf()
       );
     });
 
@@ -136,6 +137,7 @@ export class CdmService {
       const pilotThatWillBeMoved = pilotsThatCouldBeMoved[0];
 
       pilotThatWillBeMoved.vacdm.blockId += 1;
+      await pilotThatWillBeMoved.save();
 
       await this.putPilotIntoBlock(pilotThatWillBeMoved, allPilots);
 
@@ -144,12 +146,14 @@ export class CdmService {
 
     // no pilot could be moved to make space
     pilot.vacdm.blockId += 1;
+    await pilot.save();
 
     return this.putPilotIntoBlock(pilot, allPilots);
   }
 
   @Schedule()
   private async optimizeBlockAssignments(): Promise<void> {
+    logger.debug('optimizer rein');
     const currentBlockId = this.utilsService.getBlockFromTime(new Date());
     const allAirports = await this.airportService.getAllAirports();
 
@@ -202,15 +206,25 @@ export class CdmService {
           firstBlockCounter < 60;
           firstBlockCounter++
         ) {
-          const firstBlockId = (currentBlockId + firstBlockCounter) % 144;
+          const targetBlockId = currentBlockId + firstBlockCounter;
 
-          const pilotsInThisBlock = pilotsThisRwy.filter(
-            (pilot) => pilot.vacdm.blockId == firstBlockId,
-          ).length;
+          const pilotsInThisBlock = pilotsThisRwy.filter((pilot) => pilot.vacdm.blockId == targetBlockId);
 
-          // check for available space
-          if (capacityThisRunway.capacity <= pilotsInThisBlock) {
-            // no space avail
+          const additionalSpace = capacityThisRunway.capacity - pilotsInThisBlock.length;
+
+          if (additionalSpace < 0) {
+            // block is overprovisioned
+
+            const pilotsToMoveOut = pilotsInThisBlock.slice(additionalSpace);
+
+            for (const pilot of pilotsToMoveOut) {
+              logger.debug('de-optimizing pilot %s', pilot.callsign);
+
+              await this.putPilotIntoBlock(pilot);
+            }
+
+            continue;
+          } else if (additionalSpace === 0) {
             continue;
           }
 
@@ -223,27 +237,28 @@ export class CdmService {
             secondBlockCounter < 7;
             secondBlockCounter++
           ) {
-            const otherBlockId = firstBlockId + secondBlockCounter;
+            const otherBlockId = targetBlockId + secondBlockCounter;
 
             const sortedMovablePilotsThisBlock = pilotsThisRwy
               .filter(
                 (pilot) =>
-                  pilot.vacdm.blockId == otherBlockId &&
-                  pilot.vacdm.delay >= secondBlockCounter,
+                  pilot.vacdm.blockId === otherBlockId &&
+                  pilot.vacdm.delay >= secondBlockCounter &&
+                  this.utilsService.getBlockFromTime(this.utilsService.addMinutes(pilot.vacdm.tobt, pilot.vacdm.exot)) <=  targetBlockId,
               )
-              .sort((pilotA, pilotB) => (pilotA.vacdm.prio + pilotA.vacdm.delay) - (pilotB.vacdm.prio + pilotB.vacdm.delay));
+              .sort((pilotB, pilotA) => (pilotA.vacdm.prio + pilotA.vacdm.delay) - (pilotB.vacdm.prio + pilotB.vacdm.delay));
 
             sortedMovablePilots.push(...sortedMovablePilotsThisBlock);
           }
 
-          const pilotsToMove = sortedMovablePilots.slice(0, capacityThisRunway.capacity - pilotsInThisBlock);
+          const pilotsToMove = sortedMovablePilots.slice(0, additionalSpace);
 
           // move pilots to current block
 
           for (const pilot of pilotsToMove) {
-            pilot.vacdm.blockId = firstBlockId;
+            pilot.vacdm.blockId = targetBlockId;
 
-            logger.debug('==========>> setting pilot times %o', pilot.callsign);
+            // logger.debug('optimizing pilot %s', pilot.callsign);
 
             await this.setTime(pilot);
           }
