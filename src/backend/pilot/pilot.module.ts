@@ -3,7 +3,6 @@ import { Module, forwardRef } from '@nestjs/common';
 import { AirportModule } from '../airport/airport.module';
 import { CdmModule } from '../cdm/cdm.module';
 import { DatabaseModule } from '../database.module';
-import { ScheduleModule } from '../schedule.module';
 import { UtilsModule } from '../utils/utils.module';
 
 import { PilotController } from './pilot.controller';
@@ -15,7 +14,6 @@ import { PilotService } from './pilot.service';
     DatabaseModule,
     UtilsModule,
     forwardRef(() => AirportModule),
-    ScheduleModule,
     CdmModule,
   ],
   providers: [PilotService, PilotProvider],

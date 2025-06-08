@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import Agenda from 'agenda';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { FilterQuery } from 'mongoose';
@@ -7,7 +6,7 @@ import { FilterQuery } from 'mongoose';
 import { EcfmpMeasure, EcfmpPlugin } from '../../shared/interfaces/ecfmp.interface';
 import getAppConfig from '../config';
 import logger from '../logger';
-import { AGENDA_PROVIDER } from '../schedule.module';
+import { Schedule } from '../schedule/schedule.decorator';
 
 import { ECFMP_MEASURE_MODEL, EcfmpMeasureDocument, EcfmpMeasureModel } from './ecfmp-measure.model';
 
@@ -17,10 +16,7 @@ const jobNameEnsureMeasureCurrency = 'ECFMP_ensureMeasureCurrency';
 export class EcfmpService {
   constructor(
     @Inject(ECFMP_MEASURE_MODEL) private ecfmpMeasureModel: EcfmpMeasureModel,
-    @Inject(AGENDA_PROVIDER) private agenda: Agenda,
   ) {
-    this.agenda.define(jobNameEnsureMeasureCurrency, this.ensureMeasureCurrency.bind(this));
-    this.agenda.every('1 minute', jobNameEnsureMeasureCurrency);
   }
 
   acceptedMeasureTypes: EcfmpMeasure['measure']['type'][] = [
@@ -94,6 +90,7 @@ export class EcfmpService {
    * - upserts measures into vacdm database
    * - clears all expired or deleted measures
    */
+  @Schedule({ interval: '1 minute', nextJob: 'EtfmsService:assignMeasuresToPilots' })
   private async ensureMeasureCurrency() {
     logger.verbose(`${jobNameEnsureMeasureCurrency} > running...`);
 
