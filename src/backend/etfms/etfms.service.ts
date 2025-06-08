@@ -25,7 +25,7 @@ export class EtfmsService {
     private cdmService: CdmService,
   ) {
     this.agenda.define(jobNameAssignMeasuresToPilots, this.assignMeasuresToPilots.bind(this));
-    // this.agenda.every('1 minute', jobNameAssignMeasuresToPilots);
+    this.agenda.every('1 minute', jobNameAssignMeasuresToPilots);
 
     this.agenda.define(jobNameHandleMeasures, this.handleMeasures.bind(this));
 
