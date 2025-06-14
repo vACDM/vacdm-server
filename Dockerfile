@@ -9,12 +9,7 @@ ENV NODE_ENV=production
 
 RUN apk update; \
     apk upgrade; \
-    npm i npm@next-10 -g; \
-    apkArch="$(apk --print-arch)"; \
-    case "$apkArch" in \
-        aarch64) echo arm64; npm install -g @esbuild/linux-arm64 ;; \
-        x86_64) echo x64; npm install -g @esbuild/linux-x64 ;; \
-    esac; \
+    npm i npm@next-11 -g; \
     chown node:node -R /opt
 
     #; \
@@ -34,9 +29,8 @@ FROM base AS build
 
 COPY --chown=node:node . .
 
-RUN npm install --include=dev; \
-    npm cache clean --force; \
-    ls -la node_modules/.bin
+RUN npm ci --include=dev --include=optional; \
+    npm cache clean --force
 
 ENV PATH=/opt/node_modules/.bin:$PATH
 
