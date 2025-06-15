@@ -56,6 +56,8 @@ interface Pilot {
   measures: string[];
   inactive: boolean;
 
+  operationalLog: OperationaLogEntry[];
+
   // mongoose fields
   createdAt: Date;
   updatedAt: Date;
@@ -81,6 +83,13 @@ export interface AirportBlocks {
       [key: number]: Pilot[];
     };
   };
+}
+
+export interface OperationaLogEntry {
+  time?: Date;
+  logType: 'IM' | 'OM' | 'HI';
+  event: string;
+  content: string;
 }
 
 export default Pilot;

@@ -12,7 +12,7 @@ import { UtilsService } from '../utils/utils.service';
 import { PilotDto } from './pilot.dto';
 import { PILOT_MODEL, PilotDocument, PilotModel } from './pilot.model';
 
-import Pilot from '@/shared/interfaces/pilot.interface';
+import Pilot, { OperationaLogEntry } from '@/shared/interfaces/pilot.interface';
 
 @Injectable()
 export class PilotService {
@@ -78,6 +78,7 @@ export class PilotService {
       // 0. write history message
       // 1. determine departure runway and log it
       pilot.vacdm.blockRwyDesignator = await this.airportService.determineRunway(pilot);
+      pilot.operationalLog.push({ logType: 'HI', event: 'determine runway', content: pilot.vacdm.blockRwyDesignator });
 
       // 2. determine taxi zone and log it
       ({
@@ -86,13 +87,18 @@ export class PilotService {
         taxizone: pilot.vacdm.taxizone,
       } = await this.airportService.determineTaxizone(pilot));
 
+      pilot.operationalLog.push({ logType: 'HI', event: 'determine taxi zone', content: pilot.vacdm.taxizone });
+
       // 3. determine departure block and log it
       ({
         block: pilot.vacdm.blockId,
         ttot: pilot.vacdm.ttot,
       } = await this.cdmService.determineInitialBlock(pilot));
 
+      pilot.operationalLog.push({ logType: 'HI', event: 'determine initial block', content: `Block: ${pilot.vacdm.blockId}, TTOT: ${pilot.vacdm.ttot.getUTCHours()}${pilot.vacdm.ttot.getUTCMinutes()}` });
+
       await this.cdmService.putPilotIntoBlock(pilot);
+
       await pilot.save();
 
       return pilot;
@@ -120,7 +126,7 @@ export class PilotService {
   async updatePilot(callsign: string, diff: Partial<PilotDto>): Promise<PilotDocument> {
     const diffOps = this.utilsService.getDiffOps(diff);
 
-    const pilot = await this.pilotModel.findOneAndUpdate({ callsign }, { $set: diffOps }, { new: true });
+    const pilot = await this.pilotModel.findOneAndUpdate({ callsign }, { $set: diffOps }, { new: true }).select('+operationalLog');
 
     let resave = false;
 
@@ -131,6 +137,8 @@ export class PilotService {
     if (diff.clearance?.dep_rwy) {
       resave = true;
       pilot.vacdm.blockRwyDesignator = await this.airportService.determineRunway(pilot);
+      pilot.operationalLog.push({ logType: 'HI', event: 'determine runway update', content: pilot.vacdm.blockRwyDesignator });
+
     }
 
     if (this.utilsService.isTimeEmpty(pilot.vacdm.asat) && (diff.position?.lat || diff.position?.lon || diff.clearance?.dep_rwy)) {
@@ -140,13 +148,17 @@ export class PilotService {
         taxiout: pilot.vacdm.taxizoneIsTaxiout,
         taxizone: pilot.vacdm.taxizone,
       } = await this.airportService.determineTaxizone(pilot));
+      pilot.operationalLog.push({ logType: 'HI', event: 'determine taxizone update', content: pilot.vacdm.taxizone });
     }
 
     // TODO: run through calculation steps again based on tobt state (last DPI message)
 
     if (resave) {
       await pilot.save();
+      return pilot;
     }
+
+
 
     return pilot;
   }
@@ -168,6 +180,7 @@ export class PilotService {
     logger.debug('pilotsToBeDeleted %o', pilotsToBeDeleted);
 
     for (const pilot of pilotsToBeDeleted) {
+      // TODO: Save pilot in the archive collection before deleting.
       this.deletePilot(pilot.callsign);
       logger.debug('deleted inactive pilot %o', pilot.callsign);
     }
@@ -187,18 +200,24 @@ export class PilotService {
     for (const pilot of pilotsToBeDeactivated) {
       pilot.inactive = true;
 
-      // await this.pilotService.addLog({
-      //   pilot: pilot.callsign,
-      //   namespace: 'worker',
-      //   action: 'deactivated pilot',
-      //   data: {
-      //     updated: pilot.updatedAt,
-      //   },
-      // });
-
       logger.debug('deactivating pilot %o', pilot.callsign);
 
       await pilot.save();
+      await this.addOperationalLog(pilot.callsign, { logType: 'HI', event: 'Pilot deactivation', content: 'Set Pilot inactive' });
     }
+  }
+
+  async addOperationalLog(callsign: string, logObject: OperationaLogEntry) {
+    const tempPilot = await this.pilotModel.findOne({ callsign }).select('+operationalLog');
+
+    if (!tempPilot) {
+      return;
+    }
+
+    tempPilot.operationalLog.push(logObject);
+
+    await tempPilot.save();
+
+    return tempPilot;
   }
 }

@@ -1,11 +1,13 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
+import { PilotLoggingInterceptor } from './interceptors/opsLog.interceptor';
 import { TargetDPINow, TargetDPITarget, TargetDPISequenced, AtcDPI, CustomDPITaxioutTime, CustomDPIRequest } from './message.dto';
 import { MessageService } from './message.service';
 
 @ApiTags('messages')
 @Controller('api/v1/messages')
+@UseInterceptors(PilotLoggingInterceptor)
 export class MessageController {
   constructor(
     private messageService: MessageService,

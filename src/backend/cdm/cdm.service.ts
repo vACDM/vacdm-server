@@ -137,7 +137,9 @@ export class CdmService {
       const pilotThatWillBeMoved = pilotsThatCouldBeMoved[0];
 
       pilotThatWillBeMoved.vacdm.blockId += 1;
+      // pilotThatWillBeMoved.operationalLog.push({ logType: 'HI', event: 'move to next block', content: `New block Id: ${pilotThatWillBeMoved.vacdm.blockId}` });
       await pilotThatWillBeMoved.save();
+      await this.pilotService.addOperationalLog(pilotThatWillBeMoved.callsign, { logType: 'HI', event: 'move to next block', content: `New block Id: ${pilotThatWillBeMoved.vacdm.blockId}` });
 
       await this.putPilotIntoBlock(pilotThatWillBeMoved, allPilots);
 
@@ -146,7 +148,10 @@ export class CdmService {
 
     // no pilot could be moved to make space
     pilot.vacdm.blockId += 1;
+
+    // pilot.operationalLog.push({ logType: 'HI', event: 'move to next block', content: `New block Id: ${pilot.vacdm.blockId}` });
     await pilot.save();
+    await this.pilotService.addOperationalLog(pilot.callsign, { logType: 'HI', event: 'move to next block', content: `New block Id: ${pilot.vacdm.blockId}` });
 
     return this.putPilotIntoBlock(pilot, allPilots);
   }
@@ -219,6 +224,7 @@ export class CdmService {
 
             for (const pilot of pilotsToMoveOut) {
               logger.debug('de-optimizing pilot %s', pilot.callsign);
+              await this.pilotService.addOperationalLog(pilot.callsign, { logType: 'HI', event: 'de-optimizing', content: 'Block has not enough space.' });
 
               await this.putPilotIntoBlock(pilot);
             }
@@ -258,7 +264,8 @@ export class CdmService {
           for (const pilot of pilotsToMove) {
             pilot.vacdm.blockId = targetBlockId;
 
-            // logger.debug('optimizing pilot %s', pilot.callsign);
+            logger.debug('optimizing pilot %s', pilot.callsign);
+            await this.pilotService.addOperationalLog(pilot.callsign, { logType: 'HI', event: 'optimisation', content: `New block Id: ${pilot.vacdm.blockId}` });
 
             await this.setTime(pilot);
           }

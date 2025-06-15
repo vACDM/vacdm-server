@@ -43,6 +43,7 @@
     "nestjs-joi": "1.10.0",
     "peggy": "4.0.2",
     "point-in-polygon": "^1.1.0",
+    "rxjs": "^7.8.2",
     "winston": "3.11.0"
   },
   "devDependencies": {

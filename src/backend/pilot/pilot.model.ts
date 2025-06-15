@@ -8,6 +8,16 @@ export const PILOT_MODEL = 'PILOT_MODEL';
 export type PilotModel = Model<Pilot>;
 export type PilotDocument = HydratedDocument<Pilot>;
 
+const operationalLogSchema = new mongoose.Schema({
+  time: { type: Date, default: () => new Date() },
+  logType: {
+    type: String,
+    enum: ['IM', 'OM', 'HI'],
+  },
+  event: { type: String, default: '' },
+  content: { type: String, default: '' },
+});
+
 const PilotSchema = new mongoose.Schema<Pilot>({
   callsign: { type: String, unique: true },
 
@@ -66,6 +76,12 @@ const PilotSchema = new mongoose.Schema<Pilot>({
   },
   measures: [{ type: mongo.ObjectId, ref: 'EcfmpMeasure' }],
   inactive: { type: Boolean, default: false },
+
+  operationalLog: {
+    type: [operationalLogSchema],
+    select: false,
+    default: [],
+  },
 }, { timestamps: true, toJSON: { virtuals: ['vacdm.delay'] } });
 
 PilotSchema.virtual('vacdm.delay').get(function (this: PilotDocument) {
