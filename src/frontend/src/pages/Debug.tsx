@@ -1,17 +1,16 @@
 import { Card } from 'primereact/card';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import PilotService from '../services/PilotService';
 
-import Pilot, { PilotLog } from '@/shared/interfaces/pilot.interface';
+import Pilot from '@/shared/interfaces/pilot.interface';
 
 const Debug = () => {
   const { callsign } = useParams();
   const [pilot, setPilot] = useState<Pilot>();
-  const [logs, setLogs] = useState<PilotLog[]>();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,8 +20,6 @@ const Debug = () => {
 
         setPilot(data);
         setLoading(false);
-        const newLogs = await PilotService.getPilotLogs(callsign);
-        setLogs(newLogs);
       } catch (e) {
         // disregard :)
       }
@@ -33,12 +30,6 @@ const Debug = () => {
 
     return () => clearInterval(intervalId);
   }, []);
-
-  const logDataTemplate = (rowData: any) => {
-    return <pre>{JSON.stringify(rowData.data, null, 2)}</pre>;
-  };
-
-
 
   if (loading || !pilot) {
     return <div>Loading</div>;
@@ -65,7 +56,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">ADEP</div>
                         <div className="text-2xl text-center">
-                          {pilot.flightplan.departure}
+                          {pilot.flightplan.adep}
                         </div>
                       </div>
                     </div>
@@ -73,7 +64,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">ADES</div>
                         <div className="text-2xl text-center">
-                          {pilot.flightplan.arrival}
+                          {pilot.flightplan.ades}
                         </div>
                       </div>
                     </div>
@@ -90,22 +81,6 @@ const Debug = () => {
                         <div className="text-sm text-center">SID</div>
                         <div className="text-2xl text-center">
                           {pilot.clearance.sid}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex align-items-center justify-content-center ">
-                      <div className="inline-block">
-                        <div className="text-sm text-center">Initial Climb</div>
-                        <div className="text-2xl text-center">
-                          {pilot.clearance.initial_climb}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex align-items-center justify-content-center ">
-                      <div className="inline-block">
-                        <div className="text-sm text-center">Flightrule</div>
-                        <div className="text-2xl text-center">
-                          {pilot.flightplan.flight_rules}
                         </div>
                       </div>
                     </div>
@@ -199,7 +174,7 @@ const Debug = () => {
                     </div>
                     <div className="flex align-items-center justify-content-center  ">
                       <div className="inline-block">
-                        <div className="text-sm text-center">Insactive</div>
+                        <div className="text-sm text-center">Inactive</div>
                         <div className="text-2xl text-center">
                         {pilot.inactive ? 'true' : 'false'}
                         </div>
@@ -213,11 +188,11 @@ const Debug = () => {
             </Card>
           </div>
           <div className="col">
-            <DataTable value={logs}>
+            <DataTable value={pilot.operationalLog}>
               <Column field="time" header="Time" />
-              <Column field="namespace" header="Namespace" />
-              <Column field="action" header="Action" />
-              <Column field="data" header="Data" body={logDataTemplate} />
+              <Column field="logType" header="Log Type" />
+              <Column field="event" header="Event" />
+              <Column field="content" header="Content" />
             </DataTable>
           </div>
         </div>

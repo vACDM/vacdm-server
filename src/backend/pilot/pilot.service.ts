@@ -44,14 +44,14 @@ export class PilotService {
 
   async getPilotFromCallsign(callsign: string): Promise<PilotDocument> {
     logger.silly('trying to get an pilot with callsign "%s"', callsign);
-    const arpt = await this.pilotModel.findOne({ icao: callsign });
+    const pilot = await this.pilotModel.findOne({ callsign }).select('+operationalLog');
 
-    if (!arpt) {
+    if (!pilot) {
       logger.verbose('could not find pilot with callsign "%s"', callsign);
       throw new NotFoundException();
     }
 
-    return arpt;
+    return pilot;
   }
 
   async doesPilotExist(callsign): Promise<boolean> {
