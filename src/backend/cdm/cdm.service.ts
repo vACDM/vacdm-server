@@ -137,7 +137,6 @@ export class CdmService {
       const pilotThatWillBeMoved = pilotsThatCouldBeMoved[0];
 
       pilotThatWillBeMoved.vacdm.blockId += 1;
-      // pilotThatWillBeMoved.operationalLog.push({ logType: 'HI', event: 'move to next block', content: `New block Id: ${pilotThatWillBeMoved.vacdm.blockId}` });
       await pilotThatWillBeMoved.save();
       await this.pilotService.addOperationalLog(pilotThatWillBeMoved.callsign, { logType: 'HI', event: 'move to next block', content: `New block Id: ${pilotThatWillBeMoved.vacdm.blockId}` });
 
@@ -149,7 +148,6 @@ export class CdmService {
     // no pilot could be moved to make space
     pilot.vacdm.blockId += 1;
 
-    // pilot.operationalLog.push({ logType: 'HI', event: 'move to next block', content: `New block Id: ${pilot.vacdm.blockId}` });
     await pilot.save();
     await this.pilotService.addOperationalLog(pilot.callsign, { logType: 'HI', event: 'move to next block', content: `New block Id: ${pilot.vacdm.blockId}` });
 
