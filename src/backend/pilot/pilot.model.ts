@@ -18,7 +18,7 @@ const operationalLogSchema = new mongoose.Schema({
   content: { type: String, default: '' },
 });
 
-const PilotSchema = new mongoose.Schema<Pilot>({
+export const PilotSchema = new mongoose.Schema<Pilot>({
   callsign: { type: String, unique: true },
 
   position: {

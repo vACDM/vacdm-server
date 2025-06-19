@@ -63,19 +63,6 @@ interface Pilot {
   updatedAt: Date;
 }
 
-export interface PilotLog {
-  pilot: string;
-  time: Date;
-  namespace: string;
-  action: string;
-  data: object
-}
-
-export interface Archive {
-  pilot: Pilot,
-  logs: PilotLog[]
-}
-
 export interface AirportBlocks {
   icao: string;
   rwys: {

@@ -5,6 +5,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { JoiPipeModule } from 'nestjs-joi';
 
 import { AirportModule } from './airport/airport.module';
+import { ArchiveModule } from './archive/archive.module';
 import { AuthMiddleware } from './auth/auth.middleware';
 import { AuthModule } from './auth/auth.module';
 import { CdmModule } from './cdm/cdm.module';
@@ -55,6 +56,7 @@ const { frontendProxy } = getAppConfig();
     PluginTokenModule,
     VdgsModule,
     ScheduleModule,
+    ArchiveModule,
   ],
   providers: [...databaseProviders],
   exports: [...databaseProviders],

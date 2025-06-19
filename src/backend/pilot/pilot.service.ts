@@ -3,6 +3,7 @@ import { FilterQuery } from 'mongoose';
 import { Parser } from 'peggy';
 
 import { AirportService } from '../airport/airport.service';
+import { ArchiveService } from '../archive/archive.service';
 import { CdmService } from '../cdm/cdm.service';
 import getAppConfig from '../config';
 import logger from '../logger';
@@ -21,6 +22,7 @@ export class PilotService {
     private utilsService: UtilsService,
     @Inject(forwardRef(() => AirportService)) private airportService: AirportService,
     @Inject(forwardRef(() => CdmService)) private cdmService: CdmService,
+    @Inject(forwardRef(() => ArchiveService)) private archiveService: ArchiveService,
   ) {
     this.parser = this.utilsService.generateFilter({
       adep: 'flightplan.adep',
@@ -42,9 +44,21 @@ export class PilotService {
     return this.pilotModel.count(filter).exec();
   }
 
-  async getPilotFromCallsign(callsign: string): Promise<PilotDocument> {
+  async getPilotFromCallsignWithLog(callsign: string): Promise<PilotDocument> {
     logger.silly('trying to get an pilot with callsign "%s"', callsign);
     const pilot = await this.pilotModel.findOne({ callsign }).select('+operationalLog');
+
+    if (!pilot) {
+      logger.verbose('could not find pilot with callsign "%s"', callsign);
+      throw new NotFoundException();
+    }
+
+    return pilot;
+  }
+
+  async getPilotFromCallsign(callsign: string): Promise<PilotDocument> {
+    logger.silly('trying to get an pilot with callsign "%s"', callsign);
+    const pilot = await this.pilotModel.findOne({ callsign });
 
     if (!pilot) {
       logger.verbose('could not find pilot with callsign "%s"', callsign);
@@ -180,8 +194,8 @@ export class PilotService {
     logger.debug('pilotsToBeDeleted %o', pilotsToBeDeleted);
 
     for (const pilot of pilotsToBeDeleted) {
-      // TODO: Save pilot in the archive collection before deleting.
-      this.deletePilot(pilot.callsign);
+      await this.archiveService.archivePilot(pilot.callsign);
+      await this.deletePilot(pilot.callsign);
       logger.debug('deleted inactive pilot %o', pilot.callsign);
     }
 
