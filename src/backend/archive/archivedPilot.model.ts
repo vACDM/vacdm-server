@@ -7,10 +7,16 @@ import { PilotSchema } from '../pilot/pilot.model';
 export const ARCHIVEDPILOT_MODEL = 'ARCHIVEDPILOT_MODEL';
 export type ArchivedPilotModel = Model<ArchivedPilot>;
 
-const ArchivedPilotSchema = PilotSchema.clone() as Schema;
+// wild way to clone the schema and remove unique index on callsign
+const ArchivedPilotSchema = new Schema({
+  ...PilotSchema.obj,
+  callsign: {
+    ...(typeof PilotSchema.obj.callsign !== 'object' ? { type: String } : PilotSchema.obj.callsign),
+    unique: false,
+  },
+});
 
-ArchivedPilotSchema.path('callsign').options.unique = false;
-
+// ts is a piece of trash and doesn't like it in the constructor above
 ArchivedPilotSchema.add({
   archivedAt: { type: Date, default: Date.now },
 });
