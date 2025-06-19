@@ -7,6 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Observable, tap } from 'rxjs';
 
+import { EOpLogType } from '../../../shared/interfaces/pilot.interface';
 import { PilotService } from '../../pilot/pilot.service';
 
 @Injectable()
@@ -24,7 +25,7 @@ export class PilotLoggingInterceptor implements NestInterceptor {
         await this.pilotService.addOperationalLog(
           req.body.callsign,
           {
-            logType: 'IM',
+            logType: EOpLogType.Incoming,
             event: req.body.messageType,
             content: JSON.stringify(req.body),
           },

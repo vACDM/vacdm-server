@@ -1,3 +1,24 @@
+export enum EOpLogType {
+  Incoming = 'IM',
+  Outgoing = 'OM',
+  History = 'HI',
+}
+
+export enum EOpLogEvent {
+  MoveToNextBlock = 'CdmService_MoveToNextBlock',
+  DeOptimizeOverProvisionedBlock = 'CdmService_DeOptimizeOverProvisionedBlock',
+  Optimized = 'CdmService_Optimized',
+
+  DetermineRunway = 'PilotService_DetermineRunway',
+  DetermineTaxiZone = 'PilotService_DetermineTaxiZone',
+  DetermineInitialBlock = 'PilotService_DetermineInitialBlock',
+
+  DetermineRunwayUpdate = 'PilotService_DetermineRunwayUpdate',
+  DetermineTaxiZoneUpdate = 'PilotService_DetermineTaxiZoneUpdate',
+
+  Deactivation = 'PilotService_deactivation',
+}
+
 interface Pilot {
   callsign: string;
 
@@ -56,7 +77,7 @@ interface Pilot {
   measures: string[];
   inactive: boolean;
 
-  operationalLog: OperationaLogEntry[];
+  operationalLog: OperationalLogEntry[];
 
   // mongoose fields
   createdAt: Date;
@@ -72,10 +93,29 @@ export interface AirportBlocks {
   };
 }
 
-export interface OperationaLogEntry {
+// TODO: we should to define OpLogEntry type like this
+// export type OpLogEntry = {
+//   time?: Date
+// } & (
+//   {
+//     logType: EOpLogType.History
+//   } & (
+//     {
+//       event: EOpLogEvent.DeOptimizeOverProvisionedBlock | EOpLogEvent.Deactivation
+//     } | {
+//       event: EOpLogEvent.DetermineInitialBlock;
+//       content: {
+//         blockId: number;
+//         ttot: Date;
+//       };
+//     }
+//   )
+// );
+
+export interface OperationalLogEntry {
   time?: Date;
-  logType: 'IM' | 'OM' | 'HI';
-  event: string;
+  logType: EOpLogType;
+  event: EOpLogEvent;
   content: string;
 }
 

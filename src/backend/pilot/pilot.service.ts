@@ -13,7 +13,7 @@ import { UtilsService } from '../utils/utils.service';
 import { PilotDto } from './pilot.dto';
 import { PILOT_MODEL, PilotDocument, PilotModel } from './pilot.model';
 
-import Pilot, { OperationaLogEntry } from '@/shared/interfaces/pilot.interface';
+import Pilot, { EOpLogEvent, EOpLogType, OperationalLogEntry } from '@/shared/interfaces/pilot.interface';
 
 @Injectable()
 export class PilotService {
@@ -92,7 +92,7 @@ export class PilotService {
       // 0. write history message
       // 1. determine departure runway and log it
       pilot.vacdm.blockRwyDesignator = await this.airportService.determineRunway(pilot);
-      pilot.operationalLog.push({ logType: 'HI', event: 'determine runway', content: pilot.vacdm.blockRwyDesignator });
+      pilot.operationalLog.push({ logType: EOpLogType.History, event: EOpLogEvent.DetermineRunway, content: pilot.vacdm.blockRwyDesignator });
 
       // 2. determine taxi zone and log it
       ({
@@ -101,7 +101,7 @@ export class PilotService {
         taxizone: pilot.vacdm.taxizone,
       } = await this.airportService.determineTaxizone(pilot));
 
-      pilot.operationalLog.push({ logType: 'HI', event: 'determine taxi zone', content: pilot.vacdm.taxizone });
+      pilot.operationalLog.push({ logType: EOpLogType.History, event: EOpLogEvent.DetermineTaxiZone, content: pilot.vacdm.taxizone });
 
       // 3. determine departure block and log it
       ({
@@ -109,7 +109,7 @@ export class PilotService {
         ttot: pilot.vacdm.ttot,
       } = await this.cdmService.determineInitialBlock(pilot));
 
-      pilot.operationalLog.push({ logType: 'HI', event: 'determine initial block', content: `Block: ${pilot.vacdm.blockId}, TTOT: ${pilot.vacdm.ttot.getUTCHours()}${pilot.vacdm.ttot.getUTCMinutes()}` });
+      pilot.operationalLog.push({ logType: EOpLogType.History, event: EOpLogEvent.DetermineInitialBlock, content: `Block: ${pilot.vacdm.blockId}, TTOT: ${pilot.vacdm.ttot.getUTCHours()}${pilot.vacdm.ttot.getUTCMinutes()}` });
 
       await this.cdmService.putPilotIntoBlock(pilot);
 
@@ -151,7 +151,7 @@ export class PilotService {
     if (diff.clearance?.dep_rwy) {
       resave = true;
       pilot.vacdm.blockRwyDesignator = await this.airportService.determineRunway(pilot);
-      pilot.operationalLog.push({ logType: 'HI', event: 'determine runway update', content: pilot.vacdm.blockRwyDesignator });
+      pilot.operationalLog.push({ logType: EOpLogType.History, event: EOpLogEvent.DetermineRunwayUpdate, content: pilot.vacdm.blockRwyDesignator });
 
     }
 
@@ -162,7 +162,7 @@ export class PilotService {
         taxiout: pilot.vacdm.taxizoneIsTaxiout,
         taxizone: pilot.vacdm.taxizone,
       } = await this.airportService.determineTaxizone(pilot));
-      pilot.operationalLog.push({ logType: 'HI', event: 'determine taxizone update', content: pilot.vacdm.taxizone });
+      pilot.operationalLog.push({ logType: EOpLogType.History, event: EOpLogEvent.DetermineTaxiZoneUpdate, content: pilot.vacdm.taxizone });
     }
 
     // TODO: run through calculation steps again based on tobt state (last DPI message)
@@ -217,21 +217,15 @@ export class PilotService {
       logger.debug('deactivating pilot %o', pilot.callsign);
 
       await pilot.save();
-      await this.addOperationalLog(pilot.callsign, { logType: 'HI', event: 'Pilot deactivation', content: 'Set Pilot inactive' });
+      await this.addOperationalLog(pilot.callsign, { logType: EOpLogType.History, event: EOpLogEvent.Deactivation, content: 'Set Pilot inactive' });
     }
   }
 
-  async addOperationalLog(callsign: string, logObject: OperationaLogEntry) {
-    const tempPilot = await this.pilotModel.findOne({ callsign }).select('+operationalLog');
-
-    if (!tempPilot) {
-      return;
-    }
-
-    tempPilot.operationalLog.push(logObject);
-
-    await tempPilot.save();
-
-    return tempPilot;
+  addOperationalLog(callsign: string, data: OperationalLogEntry): Promise<PilotDocument | null> {
+    return this.pilotModel.findOneAndUpdate(
+      { callsign },
+      { $push: { operationalLog: data } },
+      { new: true },
+    ).select('+operationalLog').exec();
   }
 }

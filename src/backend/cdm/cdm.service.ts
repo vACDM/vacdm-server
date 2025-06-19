@@ -1,6 +1,7 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { mongo } from 'mongoose';
 
+import { EOpLogEvent, EOpLogType } from '../../shared/interfaces/pilot.interface';
 import { AirportService } from '../airport/airport.service';
 import logger from '../logger';
 import { PilotDocument } from '../pilot/pilot.model';
@@ -138,7 +139,7 @@ export class CdmService {
 
       pilotThatWillBeMoved.vacdm.blockId += 1;
       await pilotThatWillBeMoved.save();
-      await this.pilotService.addOperationalLog(pilotThatWillBeMoved.callsign, { logType: 'HI', event: 'move to next block', content: `New block Id: ${pilotThatWillBeMoved.vacdm.blockId}` });
+      await this.pilotService.addOperationalLog(pilotThatWillBeMoved.callsign, { logType: EOpLogType.History, event: EOpLogEvent.MoveToNextBlock, content: `New block Id: ${pilotThatWillBeMoved.vacdm.blockId}` });
 
       await this.putPilotIntoBlock(pilotThatWillBeMoved, allPilots);
 
@@ -149,7 +150,7 @@ export class CdmService {
     pilot.vacdm.blockId += 1;
 
     await pilot.save();
-    await this.pilotService.addOperationalLog(pilot.callsign, { logType: 'HI', event: 'move to next block', content: `New block Id: ${pilot.vacdm.blockId}` });
+    await this.pilotService.addOperationalLog(pilot.callsign, { logType: EOpLogType.History, event: EOpLogEvent.MoveToNextBlock, content: `New block Id: ${pilot.vacdm.blockId}` });
 
     return this.putPilotIntoBlock(pilot, allPilots);
   }
@@ -222,7 +223,7 @@ export class CdmService {
 
             for (const pilot of pilotsToMoveOut) {
               logger.debug('de-optimizing pilot %s', pilot.callsign);
-              await this.pilotService.addOperationalLog(pilot.callsign, { logType: 'HI', event: 'de-optimizing', content: 'Block has not enough space.' });
+              await this.pilotService.addOperationalLog(pilot.callsign, { logType: EOpLogType.History, event: EOpLogEvent.DeOptimizeOverProvisionedBlock, content: 'Block has not enough space.' });
 
               await this.putPilotIntoBlock(pilot);
             }
@@ -263,7 +264,7 @@ export class CdmService {
             pilot.vacdm.blockId = targetBlockId;
 
             logger.debug('optimizing pilot %s', pilot.callsign);
-            await this.pilotService.addOperationalLog(pilot.callsign, { logType: 'HI', event: 'optimisation', content: `New block Id: ${pilot.vacdm.blockId}` });
+            await this.pilotService.addOperationalLog(pilot.callsign, { logType: EOpLogType.History, event: EOpLogEvent.Optimized, content: `New block Id: ${pilot.vacdm.blockId}` });
 
             await this.setTime(pilot);
           }
