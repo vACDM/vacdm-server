@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { Card } from 'primereact/card';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
@@ -19,10 +20,10 @@ const Debug = () => {
         const data = await PilotService.getPilot(callsign);
 
         setPilot(data);
-        setLoading(false);
       } catch (e) {
-        // disregard :)
+        //
       }
+      setLoading(false);
     }
     const intervalId = setInterval(loadData, 5000);
 
@@ -31,8 +32,19 @@ const Debug = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  if (loading || !pilot) {
+  function dateFormatter(date: Date) {
+    if (new Date(date).getTime() === -1) {
+      return 'N/A';
+    }
+    return dayjs(new Date(date)).utc().format('HH:mm');
+  }
+
+  if (loading) {
     return <div>Loading</div>;
+  }
+
+  if (!pilot) {
+    return <div>Pilot not found.</div>;
   }
 
   return (
@@ -43,9 +55,9 @@ const Debug = () => {
               <div className="grid">
                 <div className="col">
                   <h5>Flight Data</h5>
-                  <div className="flex flex-row flex-wrap gap-3">
+                  <div className="flex flex-row flex-wrap gap-4">
                     <div className="flex align-items-center justify-content-center  ">
-                      <div className="inline-block">
+                      <div className="inline-block border">
                         <div className="text-sm text-center">Callsign</div>
                         <div className="text-2xl text-center">
                           {pilot.callsign}
@@ -85,13 +97,14 @@ const Debug = () => {
                       </div>
                     </div>
                   </div>
-                  <h5>CDM Data</h5>
-                  <div className="flex flex-row flex-wrap gap-3">
+                  <br />
+                  <h3>CDM Data</h3>
+                  <div className="flex flex-row flex-wrap gap-5">
                     <div className="flex align-items-center justify-content-center  ">
                       <div className="inline-block">
                         <div className="text-sm text-center">EOBT</div>
                         <div className="text-2xl text-center">
-                          {new Date(pilot.vacdm.eobt).toISOString()}
+                          {dateFormatter(pilot.vacdm.eobt)}
                         </div>
                       </div>
                     </div>
@@ -99,7 +112,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">TOBT</div>
                         <div className="text-2xl text-center">
-                          {new Date(pilot.vacdm.tobt).toISOString()}
+                          {dateFormatter(pilot.vacdm.tobt)}
                         </div>
                       </div>
                     </div>
@@ -107,41 +120,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">TSAT</div>
                         <div className="text-2xl text-center">
-                          {new Date(pilot.vacdm.tsat).toISOString()}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex align-items-center justify-content-center ">
-                      <div className="inline-block">
-                        <div className="text-sm text-center">TTOT</div>
-                        <div className="text-2xl text-center">
-                          {new Date(pilot.vacdm.ttot).toISOString()}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex align-items-center justify-content-center ">
-                      <div className="inline-block">
-                        <div className="text-sm text-center">ASAT</div>
-                        <div className="text-2xl text-center">
-                          {new Date(pilot.vacdm.asat).toISOString()}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex align-items-center justify-content-center ">
-                      <div className="inline-block">
-                        <div className="text-sm text-center">AOBT</div>
-                        <div className="text-2xl text-center">
-                          {new Date(pilot.vacdm.aobt).toISOString()}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex align-items-center justify-content-center ">
-                      <div className="inline-block">
-                        <div className="text-sm text-center">Prio</div>
-                        <div className="text-2xl text-center">
-                          {pilot.vacdm.prio}
+                          {dateFormatter(pilot.vacdm.tsat)}
                         </div>
                       </div>
                     </div>
@@ -153,14 +132,47 @@ const Debug = () => {
                         </div>
                       </div>
                     </div>
+                    <div className="flex align-items-center justify-content-center ">
+                      <div className="inline-block">
+                        <div className="text-sm text-center">TTOT</div>
+                        <div className="text-2xl text-center">
+                          {dateFormatter(pilot.vacdm.ttot)}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex align-items-center justify-content-center ">
+                      <div className="inline-block">
+                        <div className="text-sm text-center">ASAT</div>
+                        <div className="text-2xl text-center">
+                          {dateFormatter(pilot.vacdm.asat)}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex align-items-center justify-content-center ">
+                      <div className="inline-block">
+                        <div className="text-sm text-center">AOBT</div>
+                        <div className="text-2xl text-center">
+                          {dateFormatter(pilot.vacdm.aobt)}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex align-items-center justify-content-center ">
+                      <div className="inline-block">
+                        <div className="text-sm text-center">Prio</div>
+                        <div className="text-2xl text-center">
+                          {pilot.vacdm.prio}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <h5>Database Data</h5>
+                  <br />
                   <div className="flex flex-row flex-wrap gap-3">
                     <div className="flex align-items-center justify-content-center  ">
                       <div className="inline-block">
                         <div className="text-sm text-center">Created At</div>
                         <div className="text-2xl text-center">
-                        {new Date(pilot.createdAt).toISOString()}
+                        {dayjs(new Date(pilot.createdAt)).utc().format('YYYY-MM-DD HH:MM:ss')}
                         </div>
                       </div>
                     </div>
@@ -168,7 +180,7 @@ const Debug = () => {
                       <div className="inline-block">
                         <div className="text-sm text-center">Updated At</div>
                         <div className="text-2xl text-center">
-                        {new Date(pilot.updatedAt).toISOString()}
+                        {dayjs(new Date(pilot.createdAt)).utc().format('YYYY-MM-DD HH:MM:ss')}
                         </div>
                       </div>
                     </div>
@@ -188,13 +200,16 @@ const Debug = () => {
             </Card>
           </div>
           <div className="col">
+          <Card>
             <DataTable value={pilot.operationalLog}>
               <Column field="time" header="Time" />
               <Column field="logType" header="Log Type" />
               <Column field="event" header="Event" />
               <Column field="content" header="Content" />
             </DataTable>
+          </Card>
           </div>
+
         </div>
     </>
   );

@@ -7,8 +7,7 @@ async function getPilots(): Promise<Pilot[]> {
     const response = await axios.get<{ count: number; pilots: Pilot[] }>('/api/v1/pilots');
     return response.data.pilots;
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw new Error(`Failed to fetch pilots: ${error}`);
   }
 }
 
@@ -20,8 +19,7 @@ async function getPilot(callsign: string | undefined): Promise<Pilot> {
     const response = await axios.get('/api/v1/pilots/' + callsign);
     return response.data;
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw new Error(`Failed to fetch pilot: ${error}`);
   }
 }
 
