@@ -38,7 +38,6 @@ interface Pilot {
 
     blockAssignment: Date;
     blockId: number;
-    blockRwyDesignator: string;
   };
 
   hasBooking: boolean;

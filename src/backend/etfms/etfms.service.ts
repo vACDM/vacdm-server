@@ -130,7 +130,7 @@ export class EtfmsService {
         pilot.vacdm.ttot.valueOf() < nextAllowableTtot
         || (
           pilot.vacdm.tobt.valueOf() <= (nextAllowableTtot - pilot.vacdm.exot * 60000)
-          && await this.cdmService.isSpaceAvailInBlock(pilot.flightplan.adep, pilot.vacdm.blockRwyDesignator, blockNextAllowableTtot)
+          && await this.cdmService.isSpaceAvailInBlock(pilot.flightplan.adep, pilot.clearance.dep_rwy, blockNextAllowableTtot)
         )
       ) {
         if (nextAllowableTtot) {
@@ -144,7 +144,7 @@ export class EtfmsService {
 
       } else if (
         pilot.vacdm.tobt.valueOf() >= (nextAllowableTtot - pilot.vacdm.exot * 60000)
-        && await this.cdmService.isSpaceAvailInBlock(pilot.flightplan.adep, pilot.vacdm.blockRwyDesignator, blockPilotTobt)
+        && await this.cdmService.isSpaceAvailInBlock(pilot.flightplan.adep, pilot.clearance.dep_rwy, blockPilotTobt)
       ) {
         pilot.vacdm.ttot = new Date(pilot.vacdm.tobt.valueOf() + pilot.vacdm.exot * 60000);
 

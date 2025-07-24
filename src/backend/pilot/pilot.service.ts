@@ -77,7 +77,7 @@ export class PilotService {
       // TODO: determine steps to take when pilot is created
       // 0. write history message
       // 1. determine departure runway and log it
-      pilot.vacdm.blockRwyDesignator = await this.airportService.determineRunway(pilot);
+      // pilot.vacdm.blockRwyDesignator = await this.airportService.determineRunway(pilot);
 
       // 2. determine taxi zone and log it
       ({
@@ -128,10 +128,10 @@ export class PilotService {
       throw new NotFoundException();
     }
 
-    if (diff.clearance?.dep_rwy) {
-      resave = true;
-      pilot.vacdm.blockRwyDesignator = await this.airportService.determineRunway(pilot);
-    }
+    // if (diff.clearance?.dep_rwy) {
+    //   resave = true;
+    //   pilot.vacdm.blockRwyDesignator = await this.airportService.determineRunway(pilot);
+    // }
 
     if (this.utilsService.isTimeEmpty(pilot.vacdm.asat) && (diff.position?.lat || diff.position?.lon || diff.clearance?.dep_rwy)) {
       resave = true;
@@ -151,9 +151,7 @@ export class PilotService {
     return pilot;
   }
 
-  @Schedule({
-    interval: '10 minutes',
-  })
+  @Schedule({ interval: '10 minutes' })
   async cleanupPilots() {
     // delete long inactive pilots
     const pilotsToBeDeleted = await this.getPilots({

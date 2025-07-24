@@ -2,35 +2,41 @@ import mongoose, { HydratedDocument, Model } from 'mongoose';
 
 import { DB_PROVIDER } from '../database.module';
 
-import Airport from '@/shared/interfaces/airport.interface';
+import IAirport from '@/shared/interfaces/airport.interface';
 
 export const AIRPORT_MODEL = 'AIRPORT_MODEL';
-export type AirportModel = Model<Airport>;
-export type AirportDocument = HydratedDocument<Airport>;
+export type AirportModel = Model<IAirport>;
+export type AirportDocument = HydratedDocument<IAirport>;
 
-const AirportSchema = new mongoose.Schema<Airport>({
+const AirportSchema = new mongoose.Schema<IAirport>({
   icao: { type: String, unique: true },
-  standard_taxitime: { type: Number, required: true },
-  taxizones: [
-    {
-      polygon: [String],
-      taxitimes: [
-        {
-          rwy_designator: String,
-          minutes: Number,
-        },
-      ],
-      label: { type: String, default: '' },
-      taxiout: { type: Boolean },
+  defaultTaxitime: { type: Number, required: true },
+  taxizones: [{
+    polygon: [String],
+    taxitimes: [
+      {
+        rwy_designator: String,
+        minutes: Number,
+      },
+    ],
+    label: { type: String, default: '' },
+    taxiout: { type: Boolean },
+  }],
+  profiles: [{
+    capacities: [{
+      runways: [String],
+      capacity: { type: Number, required: true },
+      alias: { type: String, default: (cap) => cap?.runways?.join(',') },
+    }],
+    forceActive: { type: Boolean, default: false },
+    default: { type: Boolean, default: false },
+    label: { type: String, default: '' },
+
+    timetable: {
+      from: { type: Number, required: true },
+      until: { type: Number, required: true },
     },
-  ],
-  capacities: [
-    {
-      rwy_designator: String,
-      capacity: Number,
-      alias: String,
-    },
-  ],
+  }],
 }, { timestamps: true });
 
 export const AirportProvider = {
