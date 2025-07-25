@@ -1,6 +1,7 @@
 import { ConflictException, Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import pointInPolygon from 'point-in-polygon';
 
+import { Cache } from '../_utils/cache.utils';
 import logger from '../logger';
 import { PilotDocument } from '../pilot/pilot.model';
 import { PilotService } from '../pilot/pilot.service';
@@ -25,7 +26,7 @@ export class AirportService {
   }
 
   async getAirportFromId(id: string): Promise<AirportDocument> {
-    logger.silly('trying to get an airport with id "%s"', id);
+    // logger.silly('trying to get an airport with id "%s"', id);
     const arpt = await this.airportModel.findById(id);
 
     if (!arpt) {
@@ -37,7 +38,7 @@ export class AirportService {
   }
 
   async getAirportFromIcao(icao: string): Promise<AirportDocument> {
-    logger.silly('trying to get an airport with icao "%s"', icao);
+    // logger.silly('trying to get an airport with icao "%s"', icao);
     const arpt = await this.airportModel.findOne({ icao });
 
     if (!arpt) {
@@ -45,7 +46,7 @@ export class AirportService {
       throw new NotFoundException();
     }
 
-    logger.silly('found airport with icao "%s"', icao);
+    // logger.silly('found airport with icao "%s"', icao);
     return arpt;
   }
 
@@ -99,8 +100,10 @@ export class AirportService {
     return arpt;
   }
 
+  private getAirportFromIcaoCache = new Cache((icao: string) => this.getAirportFromIcao(icao), 10000);
+
   async getCapacityProfile(icao: string, block: number): Promise<IAirportCapacity[]> {
-    const airport = await this.getAirportFromIcao(icao);
+    const airport = await this.getAirportFromIcaoCache.get(icao);
 
     // TODO: Overrides
 
@@ -139,8 +142,6 @@ export class AirportService {
   }
 
   async getCapacityForRwyDesignator(icao: string, rwyDesignator: string, block: number): Promise<IAirportCapacity> {
-    // const airport = await this.getAirportFromIcao(icao);
-
     const capacityProfile = await this.getCapacityProfile(icao, block);
 
     const capacity = capacityProfile.find(c => [c.alias, ...c.runways].includes(rwyDesignator));

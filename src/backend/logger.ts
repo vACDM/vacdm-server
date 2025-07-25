@@ -18,7 +18,7 @@ const transports = [
 const logger = winston.createLogger({
   exitOnError: false,
   format: winston.format.combine(
-    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
     winston.format.splat(),
     winston.format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`),
   ),
@@ -31,8 +31,8 @@ winston.addColors({
   info: 'green',
   http: 'magenta',
   verbose: 'brightBlue',
-  debug: 'brightCyan',
-  silly: 'gray',
+  debug: 'blue',
+  silly: 'black',
 });
 
 process.on('warning', e => logger.warn('%o', e));

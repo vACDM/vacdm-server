@@ -152,7 +152,7 @@ export class EtfmsService {
         pilot.vacdm.tsat = new Date(pilot.vacdm.ttot.valueOf() - pilot.vacdm.exot * 60000);
       }
 
-      await this.cdmService.putPilotIntoBlock(pilot, undefined, nextAllowableTtot);
+      await this.cdmService.putPilotIntoBlock(pilot, nextAllowableTtot);
 
       // ttot also festtackern when no change is necessary
       pilot.vacdm.ctot = pilot.vacdm.ttot;

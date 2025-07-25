@@ -89,10 +89,9 @@ export class CdmService {
 
   async putPilotIntoBlock(
     pilot: PilotDocument,
-    allPilots: PilotDocument[] | void,
     earliestAllowableTtot: Date | number | void,
   ): Promise<IBlockAssignment> {
-    // TODO: determine possible runways to match for
+    logger.silly('putPilotIntoBlock %s', pilot.callsign);
 
     const cap: IAirportCapacity = await this.airportService.getCapacityForRwyDesignator(
       pilot.flightplan.adep,
@@ -100,16 +99,16 @@ export class CdmService {
       pilot.vacdm.blockId,
     );
 
-    allPilots ??= await this.pilotService.getPilots({
+    const otherPilotsInBlockCount = await this.pilotService.countPilots({
       'flightplan.adep': pilot.flightplan.adep,
       'clearance.dep_rwy': { $in: cap.runways },
+      'vacdm.blockId': pilot.vacdm.blockId,
       _id: { $ne: new mongo.ObjectId(pilot._id) },
     });
 
-    // count all pilots in block
-    const otherPilotsInBlock = allPilots.filter(otherPilot => String(otherPilot._id) !== String(pilot._id) && otherPilot.vacdm.blockId === pilot.vacdm.blockId);
+    logger.silly('cdmService.putPilotIntoBlock: otherPilotsInBlockCount=%d', otherPilotsInBlockCount);
 
-    if (cap.capacity > otherPilotsInBlock.length) {
+    if (cap.capacity > otherPilotsInBlockCount) {
       return this.setTime(pilot, earliestAllowableTtot);
     }
 
@@ -122,19 +121,46 @@ export class CdmService {
       ? this.utilsService.getTimeFromBlock(pilot.vacdm.blockId).valueOf() - (pilot.vacdm.exot * 60000) - pilot.vacdm.tobt.valueOf()
       : 0;
 
-    const pilotsThatCouldBeMoved = otherPilotsInBlock.filter(
-      (otherPilot) =>
-        otherPilot.vacdm.tsat > nowPlusTen &&
-        otherPilot.vacdm.prio + otherPilot.vacdm.delay < pilot.vacdm.prio + currentPilotDelay &&
-        this.utilsService.isTimeEmpty(pilot.vacdm.ctot),
-    );
+    const pilotsThatCouldBeMoved = await this.pilotService.aggregatePilots([{
+      $match: {
+        'flightplan.adep': pilot.flightplan.adep,
+        'clearance.dep_rwy': { $in: cap.runways },
+        'vacdm.blockId': pilot.vacdm.blockId,
+        _id: { $ne: new mongo.ObjectId(pilot._id) },
+        'vacdm.tsat': { $gt: nowPlusTen },
+      },
+    }, {
+      $addFields: {
+        totalPrio: { $add: ['$vacdm.prio', '$vacdm.delay'] },
+      },
+    }, {
+      $match: {
+        totalPrio: { $lt: pilot.vacdm.prio + currentPilotDelay },
+      },
+    }, {
+      $sort: {
+        totalPrio: 1,
+        'vacdm.blockAssignment': 1,
+      },
+    }, {
+      $limit: 1,
+    }]);
 
-    pilotsThatCouldBeMoved.sort((pilotA, pilotB) => {
-      return (
-        (pilotA.vacdm.prio + pilotA.vacdm.delay) - (pilotB.vacdm.prio + pilotB.vacdm.delay) ||
-        pilotA.vacdm.blockAssignment.valueOf() - pilotB.vacdm.blockAssignment.valueOf()
-      );
-    });
+    logger.silly('cdmService.putPilotIntoBlock: found pilot to move: %s', Boolean(pilotsThatCouldBeMoved.length));
+
+    // const pilotsThatCouldBeMoved = otherPilotsInBlockCount.filter(
+    //   (otherPilot) =>
+    //     otherPilot.vacdm.tsat > nowPlusTen &&
+    //     otherPilot.vacdm.prio + otherPilot.vacdm.delay < pilot.vacdm.prio + currentPilotDelay &&
+    //     this.utilsService.isTimeEmpty(pilot.vacdm.ctot),
+    // );
+
+    // pilotsThatCouldBeMoved.sort((pilotA, pilotB) => {
+    //   return (
+    //     (pilotA.vacdm.prio + pilotA.vacdm.delay) - (pilotB.vacdm.prio + pilotB.vacdm.delay) ||
+    //     pilotA.vacdm.blockAssignment.valueOf() - pilotB.vacdm.blockAssignment.valueOf()
+    //   );
+    // });
 
     if (pilotsThatCouldBeMoved.length > 0) {
       const pilotThatWillBeMoved = pilotsThatCouldBeMoved[0];
@@ -142,16 +168,18 @@ export class CdmService {
       pilotThatWillBeMoved.vacdm.blockId += 1;
       await pilotThatWillBeMoved.save();
 
-      await this.putPilotIntoBlock(pilotThatWillBeMoved, allPilots);
+      await this.putPilotIntoBlock(pilotThatWillBeMoved);
 
       return this.setTime(pilot, earliestAllowableTtot);
     }
 
     // no pilot could be moved to make space
     pilot.vacdm.blockId += 1;
-    await pilot.save();
+    // logger.silly('before save');
+    // await pilot.save();
+    // logger.silly('after save');
 
-    return this.putPilotIntoBlock(pilot, allPilots);
+    return this.putPilotIntoBlock(pilot);
   }
 
   @Schedule()
