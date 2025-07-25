@@ -1,5 +1,5 @@
 import { ConflictException, Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
-import { FilterQuery } from 'mongoose';
+import { FilterQuery, PipelineStage } from 'mongoose';
 import { Parser } from 'peggy';
 
 import { AirportService } from '../airport/airport.service';
@@ -42,6 +42,10 @@ export class PilotService {
     return this.pilotModel.count(filter).exec();
   }
 
+  aggregatePilots(pipeline: PipelineStage[]): Promise<PilotDocument[]> {
+    return this.pilotModel.aggregate(pipeline).exec();
+  }
+
   async getPilotFromCallsign(callsign: string): Promise<PilotDocument> {
     logger.silly('trying to get an pilot with callsign "%s"', callsign);
     const arpt = await this.pilotModel.findOne({ icao: callsign });
@@ -77,23 +81,30 @@ export class PilotService {
       // TODO: determine steps to take when pilot is created
       // 0. write history message
       // 1. determine departure runway and log it
-      pilot.vacdm.blockRwyDesignator = await this.airportService.determineRunway(pilot);
+      // pilot.vacdm.blockRwyDesignator = await this.airportService.determineRunway(pilot);
 
+      const beforeTaxizone = Date.now();
       // 2. determine taxi zone and log it
       ({
         exot: pilot.vacdm.exot,
         taxiout: pilot.vacdm.taxizoneIsTaxiout,
         taxizone: pilot.vacdm.taxizone,
       } = await this.airportService.determineTaxizone(pilot));
+      const afterTaxizone = Date.now();
 
       // 3. determine departure block and log it
       ({
         block: pilot.vacdm.blockId,
         ttot: pilot.vacdm.ttot,
       } = await this.cdmService.determineInitialBlock(pilot));
+      const afterDetermineInitialBlock = Date.now();
 
       await this.cdmService.putPilotIntoBlock(pilot);
+
+      const afterPutIntoBlock = Date.now();
       await pilot.save();
+
+      logger.info('create pilot %s airportService.determineTaxizone=%dms cdmService.determineInitialBlock=%dms cdmService.putPilotIntoBlock=%dms', pilot.callsign, afterTaxizone - beforeTaxizone, afterDetermineInitialBlock - afterTaxizone, afterPutIntoBlock - afterDetermineInitialBlock);
 
       return pilot;
     } catch (error) {
@@ -128,10 +139,10 @@ export class PilotService {
       throw new NotFoundException();
     }
 
-    if (diff.clearance?.dep_rwy) {
-      resave = true;
-      pilot.vacdm.blockRwyDesignator = await this.airportService.determineRunway(pilot);
-    }
+    // if (diff.clearance?.dep_rwy) {
+    //   resave = true;
+    //   pilot.vacdm.blockRwyDesignator = await this.airportService.determineRunway(pilot);
+    // }
 
     if (this.utilsService.isTimeEmpty(pilot.vacdm.asat) && (diff.position?.lat || diff.position?.lon || diff.clearance?.dep_rwy)) {
       resave = true;
@@ -151,9 +162,7 @@ export class PilotService {
     return pilot;
   }
 
-  @Schedule({
-    interval: '10 minutes',
-  })
+  @Schedule({ interval: '10 minutes' })
   async cleanupPilots() {
     // delete long inactive pilots
     const pilotsToBeDeleted = await this.getPilots({

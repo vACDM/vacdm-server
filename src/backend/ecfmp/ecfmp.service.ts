@@ -91,7 +91,7 @@ export class EcfmpService {
    * - clears all expired or deleted measures
    */
   @Schedule({ interval: '1 minute', nextJob: 'EtfmsService:assignMeasuresToPilots' })
-  private async ensureMeasureCurrency() {
+  async ensureMeasureCurrency() {
     logger.verbose(`${jobNameEnsureMeasureCurrency} > running...`);
 
     try {

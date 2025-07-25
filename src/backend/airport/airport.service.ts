@@ -1,6 +1,7 @@
 import { ConflictException, Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import pointInPolygon from 'point-in-polygon';
 
+import { Cache } from '../_utils/cache.utils';
 import logger from '../logger';
 import { PilotDocument } from '../pilot/pilot.model';
 import { PilotService } from '../pilot/pilot.service';
@@ -9,7 +10,7 @@ import { UtilsService } from '../utils/utils.service';
 import { AirportDto } from './airport.dto';
 import { AIRPORT_MODEL, AirportDocument, AirportModel } from './airport.model';
 
-import { AirportCapacity, AirportTaxizone } from '@/shared/interfaces/airport.interface';
+import { IAirportCapacity, IAirportTaxizone } from '@/shared/interfaces/airport.interface';
 import { AirportBlocks } from '@/shared/interfaces/pilot.interface';
 
 @Injectable()
@@ -25,7 +26,7 @@ export class AirportService {
   }
 
   async getAirportFromId(id: string): Promise<AirportDocument> {
-    logger.silly('trying to get an airport with id "%s"', id);
+    // logger.silly('trying to get an airport with id "%s"', id);
     const arpt = await this.airportModel.findById(id);
 
     if (!arpt) {
@@ -37,7 +38,7 @@ export class AirportService {
   }
 
   async getAirportFromIcao(icao: string): Promise<AirportDocument> {
-    logger.silly('trying to get an airport with icao "%s"', icao);
+    // logger.silly('trying to get an airport with icao "%s"', icao);
     const arpt = await this.airportModel.findOne({ icao });
 
     if (!arpt) {
@@ -45,7 +46,7 @@ export class AirportService {
       throw new NotFoundException();
     }
 
-    logger.silly('found airport with icao "%s"', icao);
+    // logger.silly('found airport with icao "%s"', icao);
     return arpt;
   }
 
@@ -99,25 +100,57 @@ export class AirportService {
     return arpt;
   }
 
-  async getCapacityForRwyDesignator(icao: string, rwyDesignator: string): Promise<AirportCapacity> {
-    const airport = await this.getAirportFromIcao(icao);
+  private getAirportFromIcaoCache = new Cache((icao: string) => this.getAirportFromIcao(icao), 10000);
 
-    const capacity = airport.capacities.find(c => [c.alias, c.rwy_designator].includes(rwyDesignator));
+  async getCapacityProfile(icao: string, block: number): Promise<IAirportCapacity[]> {
+    const airport = await this.getAirportFromIcaoCache.get(icao);
+
+    // TODO: Overrides
+
+    // Force active
+    const profileForceActive = airport.profiles.find(p => p.forceActive);
+
+    if (profileForceActive) {
+      return profileForceActive.capacities;
+    }
+
+    // time table
+    const dailyBlock = block % 144;
+
+    const profileTimeTable = airport.profiles.find(p =>
+      p.timetable && (
+        p.timetable.from < p.timetable.until
+          // span is in same day
+          ? p.timetable.from <= dailyBlock && dailyBlock < p.timetable.until
+          // span includes z midnight
+          : p.timetable.from <= dailyBlock || dailyBlock < p.timetable.until
+      ),
+    );
+
+    if (profileTimeTable) {
+      return profileTimeTable.capacities;
+    }
+
+    // default
+    const profileDefault = airport.profiles.find(p => p.default);
+
+    if (profileDefault) {
+      return profileDefault.capacities;
+    }
+
+    throw new ConflictException(`Airport ${icao.toUpperCase()} has no default profile`);
+  }
+
+  async getCapacityForRwyDesignator(icao: string, rwyDesignator: string, block: number): Promise<IAirportCapacity> {
+    const capacityProfile = await this.getCapacityProfile(icao, block);
+
+    const capacity = capacityProfile.find(c => [c.alias, ...c.runways].includes(rwyDesignator));
 
     if (!capacity) {
       throw new NotFoundException();
     }
 
     return capacity;
-  }
-
-  async determineRunway(pilot: PilotDocument): Promise<string> {
-    const icao = pilot.flightplan.adep;
-    const rwy = pilot.clearance.dep_rwy;
-
-    const cap = await this.getCapacityForRwyDesignator(icao, rwy);
-
-    return cap.alias || cap.rwy_designator;
   }
 
   async getKnownAirportIcaos(): Promise<string[]> {
@@ -139,12 +172,12 @@ export class AirportService {
 
     const defaultTaxiZone = {
       taxizone: 'default taxitime',
-      exot: airport.standard_taxitime,
+      exot: airport.defaultTaxitime,
       taxiout: false,
     };
 
     const pilotPos = [pilot.position.lat, pilot.position.lon];
-    let taxizone: AirportTaxizone | undefined = undefined;
+    let taxizone: IAirportTaxizone | undefined = undefined;
 
     for (const tz of airport.taxizones) {
       const poly = this.utilsService.convertScopeCoordsToLatLonPairs(tz.polygon);
@@ -159,7 +192,7 @@ export class AirportService {
       return defaultTaxiZone;
     }
 
-    const timeDefinition = taxizone.taxitimes.find(d => d.rwy_designator == rwy);
+    const timeDefinition = taxizone.taxitimes.find(d => d.runway == rwy);
 
     if (!timeDefinition) {
       return defaultTaxiZone;
@@ -173,42 +206,43 @@ export class AirportService {
   }
 
   // TODO: refactor this to aggregation at some point
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getBlockUtilization(icao: string, count = 12): Promise<AirportBlocks> {
-    const airport = await this.getAirportFromIcao(icao);
+    // const airport = await this.getAirportFromIcao(icao);
 
     const blocks: AirportBlocks = {
       icao,
       rwys: {},
     };
 
-    const blockOffset = this.utilsService.getBlockFromTime(new Date());
+    // const blockOffset = this.utilsService.getBlockFromTime(new Date());
 
-    const relevantBlocks = Array(count).fill(null).map((_, i) => i + blockOffset);
-    const blockArrays = relevantBlocks.map(blockId => [blockId, []]);
+    // const relevantBlocks = Array(count).fill(null).map((_, i) => i + blockOffset);
+    // const blockArrays = relevantBlocks.map(blockId => [blockId, []]);
 
-    logger.debug('determined offset to be %d, generated relevant blocks: %o', blockOffset, relevantBlocks);
+    // logger.debug('determined offset to be %d, generated relevant blocks: %o', blockOffset, relevantBlocks);
 
-    for (const cap of airport.capacities) {
-      const rwyDesignator = cap.alias || cap.rwy_designator;
+    // for (const cap of airport.capacities) {
+    //   const rwyDesignator = cap.alias || cap.rwy_designator;
 
-      blocks.rwys[rwyDesignator] = Object.fromEntries(blockArrays);
-    }
+    //   blocks.rwys[rwyDesignator] = Object.fromEntries(blockArrays);
+    // }
 
-    const pilots = await this.pilotService.getPilots({
-      'vacdm.blockId': { $in: relevantBlocks },
-      'flightplan.adep': icao,
-    });
+    // const pilots = await this.pilotService.getPilots({
+    //   'vacdm.blockId': { $in: relevantBlocks },
+    //   'flightplan.adep': icao,
+    // });
 
-    for (const pilot of pilots) {
-      const { blockRwyDesignator: blockRwyDesignator, blockId } = pilot.vacdm;
+    // for (const pilot of pilots) {
+    //   const { blockRwyDesignator: blockRwyDesignator, blockId } = pilot.vacdm;
 
-      if (!blocks.rwys[blockRwyDesignator]) {
-        logger.debug('invalid runway %s/%s for pilot %s', pilot.flightplan.adep, blockRwyDesignator, pilot.callsign);
-        continue;
-      }
+    //   if (!blocks.rwys[blockRwyDesignator]) {
+    //     logger.debug('invalid runway %s/%s for pilot %s', pilot.flightplan.adep, blockRwyDesignator, pilot.callsign);
+    //     continue;
+    //   }
 
-      blocks.rwys[blockRwyDesignator][blockId].push(pilot);
-    }
+    //   blocks.rwys[blockRwyDesignator][blockId].push(pilot);
+    // }
 
     return blocks;
   }

@@ -1,28 +1,55 @@
-export interface Airport {
+export interface IAirport {
   id?: string;
   icao: string;
 
-  standard_taxitime: number;
+  defaultTaxitime: number;
 
-  taxizones: AirportTaxizone[];
+  taxizones: IAirportTaxizone[];
 
-  capacities: AirportCapacity[];
+  profiles: IAirportProfile[];
+
+  capacityOverrides: IAirportCapacityOverride[];
 }
 
-export interface AirportTaxizone {
+export interface IAirportCapacityOverride {
+  blockId: number;
+  capacityIdentifier: string;
+  newCapacity: number;
+}
+
+export interface IAirportProfile {
+  capacities: IAirportCapacity[];
+  forceActive: boolean;
+  label: string;
+  default: boolean;
+
+  timetable?: IAirportProfileTimetable;
+}
+
+export interface IAirportProfileTimetable {
+  /** blockId 0-143 */
+  from: number;
+
+  /** blockId 0-143 */
+  until: number;
+}
+
+export interface IAirportTaxizoneTaxitime {
+  runway: string;
+  minutes: number;
+}
+
+export interface IAirportTaxizone {
   polygon: string[];
-  taxitimes: {
-    rwy_designator: string;
-    minutes: number;
-  }[];
+  taxitimes: IAirportTaxizoneTaxitime[];
   label: string;
   taxiout: boolean;
 }
 
-export interface AirportCapacity {
-  rwy_designator: string;
+export interface IAirportCapacity {
+  runways: string[];
   capacity: number;
   alias: string;
 }
 
-export default Airport;
+export default IAirport;

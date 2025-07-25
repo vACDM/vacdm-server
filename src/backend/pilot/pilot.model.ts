@@ -51,7 +51,6 @@ const PilotSchema = new mongoose.Schema<Pilot>({
 
     blockAssignment: { type: Date, default: () => new Date() },
     blockId: { type: Number, default: -1 },
-    blockRwyDesignator: { type: String, default: '' },
   },
   hasBooking: { type: Boolean, default: false },
 

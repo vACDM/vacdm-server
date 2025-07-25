@@ -1,7 +1,7 @@
 
 
 
-const callsigns = Array(10).fill(null).map((_, i) => i + 1);
+const callsigns = Array(32).fill(null).map((_, i) => i + 1);
 
 function makeDate(i) {
   const d = new Date();
