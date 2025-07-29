@@ -26,6 +26,7 @@ services:
       - LOG_LEVEL_FILE=none
       - ECFMP_PLUGIN_URL=https://flow-dev.ecfmp.net/api/v1/plugin
       - FRONTEND_PROXY=http://frontend:5173/
+      - ADMIN_CIDS=10000010,10000004
   frontend:
     build:
       context: .

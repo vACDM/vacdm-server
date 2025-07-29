@@ -11,6 +11,8 @@ interface VacdmConfigEnv {
   CLIENT_ID: string;
   CLIENT_SECRET: string;
 
+  ADMIN_CIDS: string;
+
   PORT: number;
 
   ALLOW_SIM: string | void;
@@ -45,6 +47,8 @@ const configValidationResult = Joi.object<VacdmConfigEnv>({
   VATSIM_AUTH_URL: Joi.string().default('https://auth.vatsim.net'),
   CLIENT_ID: Joi.string().required(),
   CLIENT_SECRET: Joi.string().required(),
+
+  ADMIN_CIDS: Joi.string().required(),
 
   PORT: Joi.number().default(3000),
 
@@ -131,5 +135,7 @@ export default function getAppConfig(): VacdmAppConfig {
     frontendProxy: validatedEnv.FRONTEND_PROXY ?? '',
 
     trustedProxy: validatedEnv.TRUSTED_PROXY,
+
+    admins: Object.fromEntries(validatedEnv.ADMIN_CIDS.split(/,/g).map(cid => [cid.trim(), true])),
   };
 }

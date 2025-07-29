@@ -32,6 +32,8 @@ export interface VacdmAppConfig {
   frontendProxy: string;
 
   trustedProxy: string;
+
+  admins: Record<string, boolean>;
 }
 
 export interface FrontendSettings {
