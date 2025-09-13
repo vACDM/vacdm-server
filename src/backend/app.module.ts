@@ -1,6 +1,7 @@
 import { join } from 'path';
 
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Transport } from '@nestjs/microservices';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { JoiPipeModule } from 'nestjs-joi';
 
@@ -16,6 +17,7 @@ import { EtfmsModule } from './etfms/etfms.module';
 import { FrontendProxyMiddleware } from './frontend-proxy/frontend-proxy.middleware';
 import { FrontendProxyModule } from './frontend-proxy/frontend-proxy.module';
 import { MessageModule } from './message/message.module';
+import { NatsModule } from './nats/nats.module';
 import { PilotModule } from './pilot/pilot.module';
 import { PluginTokenModule } from './plugin-token/plugin-token.module';
 import { ScheduleModule } from './schedule/schedule.module';
@@ -55,6 +57,7 @@ const { frontendProxy } = getAppConfig();
     PluginTokenModule,
     VdgsModule,
     ScheduleModule,
+    NatsModule,
   ],
   providers: [...databaseProviders],
   exports: [...databaseProviders],

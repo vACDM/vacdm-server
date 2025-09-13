@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
@@ -52,6 +53,13 @@ async function bootstrap() {
   })();
 
   await app.listen(3000);
+
+  const server = app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.NATS,
+    options: getAppConfig().nats,
+  });
+
+  await server.listen();
 }
 
 bootstrap();

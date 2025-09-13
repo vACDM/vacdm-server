@@ -136,6 +136,11 @@ export default function getAppConfig(): VacdmAppConfig {
 
     trustedProxy: validatedEnv.TRUSTED_PROXY,
 
+    nats: {
+      servers: ['nats://nats:4222'],
+      queue: 'vacdm-server',
+    },
+
     admins: Object.fromEntries(validatedEnv.ADMIN_CIDS.split(/,/g).map(cid => [cid.trim(), true])),
   };
 }

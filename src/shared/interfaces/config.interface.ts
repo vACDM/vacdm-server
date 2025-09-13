@@ -1,3 +1,5 @@
+import { NatsOptions } from '@nestjs/microservices';
+
 export interface VacdmAppConfig {
   mongoUri: string;
 
@@ -32,6 +34,8 @@ export interface VacdmAppConfig {
   frontendProxy: string;
 
   trustedProxy: string;
+
+  nats: NatsOptions['options'];
 
   admins: Record<string, boolean>;
 }
